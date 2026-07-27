@@ -19,14 +19,15 @@ Internal SOPs, AI instructions, source-priority rules, and detailed knowledge-ba
 
 ## Main Sections
 
-- Approved Answer Search that returns only reviewed Q&A entries
-- Live Cases for customer enquiries
-- Approved Templates with customer-facing campaign names removed
+- Approved Answer Search with 15 reviewed Q&A entries sourced from the Help Desk Sheet and Mun-approved replies
+- Anonymised Live Cases workflow examples
+- Approved Templates that copy the full customer reply
 - SOP & Knowledge Base directory
 - Daily KPI view for CSO responsibilities
 - Risk and escalation classification
 - Human approval before any external sending
 - Admin-only Google Sheets and Respond.io integration setup
+- Device History persisted in the current browser until shared backend authentication is configured
 
 ## Safety Rules
 
