@@ -51,8 +51,8 @@
       </div>
     </div>
     <div style="background:#F5EBD8;border-top:1px solid #E3CFA0;padding:7px 24px;display:flex;gap:8px;align-items:center;justify-content:center;">
-      <span style="font-size:10.5px;font-weight:700;letter-spacing:0.05em;color:#7A5C24;background:#fff;padding:2px 7px;border-radius:5px;">PROTOTYPE</span>
-      <span style="font-size:12px;color:#7A5C24;">Internal workspace — drafts require human review and are never sent automatically.</span>
+      <span style="font-size:10.5px;font-weight:700;letter-spacing:0.05em;color:#7A5C24;background:#fff;padding:2px 7px;border-radius:5px;">PUBLIC TEST BUILD</span>
+      <span style="font-size:12px;color:#7A5C24;">Use anonymised data only. Human review is required and nothing is sent automatically.</span>
     </div>
   </div>
 
@@ -71,9 +71,10 @@
         <textarea placeholder="Example: price range for slimming trial and subsequent sessions" value="{{ approvedSearchQuery }}" onChange="{{ onApprovedSearchChange }}" style="width:100%;min-height:110px;padding:14px;border:1px solid #E6E0D4;border-radius:10px;background:#FBFAF7;font-size:14px;line-height:1.55;color:#2E2B26;resize:vertical;outline:none;"></textarea>
         <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
           <button style="background:#6F8C74;color:#fff;border:none;padding:11px 18px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;" onClick="{{ searchApprovedAnswers }}">Search Approved Answers</button>
+          <button style="background:none;color:#4F6B54;border:1px solid #6F8C74;padding:11px 18px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;" onClick="{{ browseAllApproved }}">Browse All ({{ approvedAnswerCount }})</button>
           <button style="background:none;color:#6E6759;border:1px solid #E6E0D4;padding:11px 18px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;" onClick="{{ clearApprovedSearch }}">Clear</button>
         </div>
-        <div style="margin-top:14px;padding:11px 13px;border-radius:9px;background:#EAF0E7;color:#4F6B54;font-size:12px;line-height:1.5;">Only answers marked Approved are shown. New or unclear questions must be reviewed before they are added to this library.</div>
+        <div style="margin-top:14px;padding:11px 13px;border-radius:9px;background:#EAF0E7;color:#4F6B54;font-size:12px;line-height:1.5;">Only answers with Status = Approved are shown. Source: Mumsrelle CSO AI Help Desk Sheet and Mun-approved replies. New or unclear questions must be reviewed before they are added.</div>
       </div>
 
       <sc-if value="{{ approvedSearchHasRun }}" hint-placeholder-val="{{ false }}">
@@ -90,7 +91,7 @@
                 </div>
                 <div style="font-size:12px;font-weight:700;color:#6E6759;margin-bottom:7px;">CUSTOMER REPLY</div>
                 <div style="white-space:pre-wrap;background:#FBFAF7;border:1px solid #EFEBE1;border-radius:10px;padding:14px;font-size:14px;color:#2E2B26;line-height:1.65;margin-bottom:12px;">{{ a.answer }}</div>
-                <div style="font-size:12px;color:#8A8272;line-height:1.5;margin-bottom:12px;"><strong>Internal note:</strong> {{ a.internalNote }}<br><strong>Source:</strong> {{ a.source }}</div>
+                <div style="font-size:12px;color:#8A8272;line-height:1.6;margin-bottom:12px;"><strong>Internal note:</strong> {{ a.internalNote }}<br><strong>Source:</strong> {{ a.source }}<br><strong>Source case:</strong> {{ a.sourceCaseId }} · <strong>Approved:</strong> {{ a.approvedAt }} · {{ a.reviewedBy }}</div>
                 <button style="background:none;color:#4F6B54;border:1px solid #6F8C74;padding:9px 14px;border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;" onClick="{{ a.onCopy }}">Copy Approved Reply</button>
               </div>
             </sc-for>
@@ -110,8 +111,8 @@
   <sc-if value="{{ isInbox }}" hint-placeholder-val="{{ true }}">
     <div style="max-width:1400px;margin:0 auto;padding:{{ pagePadding }};">
       <div style="margin-bottom:22px;">
-        <h1 style="font-family:'Lora',serif;font-weight:600;font-size:26px;color:#2E2B26;margin:0 0 4px;">Live Cases</h1>
-        <p style="font-size:14px;color:#6E6759;margin:0;">Customer cases from Respond.io, Google Sheets and manual entry, awaiting review and approval.</p>
+        <h1 style="font-family:'Lora',serif;font-weight:600;font-size:26px;color:#2E2B26;margin:0 0 4px;">Live Cases — Sample Data</h1>
+        <p style="font-size:14px;color:#6E6759;margin:0;">Anonymised workflow examples only. The live Google Sheet and Respond.io are not connected to this public test build.</p>
       </div>
 
       <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:16px;">
@@ -189,7 +190,7 @@
     <div style="max-width:1200px;margin:0 auto;padding:{{ pagePadding }};">
       <div style="margin-bottom:22px;">
         <h1 style="font-family:'Lora',serif;font-weight:600;font-size:26px;color:#2E2B26;margin:0 0 4px;">Approved Templates</h1>
-        <p style="font-size:14px;color:#6E6759;margin:0;">Use only active, approved replies. Internal campaign names must not be shown to customers.</p>
+        <p style="font-size:14px;color:#6E6759;margin:0;">Browse and copy full replies with Status = Approved. Check the internal note before sending.</p>
       </div>
       <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:18px;">
         <input placeholder="Search templates" value="{{ templateSearch }}" onChange="{{ onTemplateSearchChange }}" style="flex:1;min-width:220px;padding:11px 16px;border-radius:10px;border:1px solid #E6E0D4;background:#fff;font-size:14px;color:#2E2B26;outline:none;"></input>
@@ -203,9 +204,9 @@
               <span style="{{ t.statusStyle }}">{{ t.statusLabel }}</span>
             </div>
             <div style="font-size:12px;color:#8A8272;margin-bottom:10px;">{{ t.category }} · {{ t.version }}</div>
-            <div style="font-size:13px;color:#6E6759;line-height:1.5;margin-bottom:8px;"><strong style="color:#2E2B26;">Use:</strong> {{ t.approvedUse }}</div>
-            <div style="font-size:12px;color:#8C4B54;line-height:1.5;margin-bottom:14px;"><strong>Do not use:</strong> {{ t.prohibitedUse }}</div>
-            <button style="background:none;color:#4F6B54;border:1px solid #6F8C74;padding:8px 12px;border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;" onClick="{{ t.onCopy }}">Copy Template Name</button>
+            <div style="font-size:13px;color:#6E6759;line-height:1.5;margin-bottom:8px;"><strong style="color:#2E2B26;">Source:</strong> {{ t.approvedUse }}</div>
+            <div style="font-size:12px;color:#8C4B54;line-height:1.5;margin-bottom:14px;"><strong>Internal note:</strong> {{ t.prohibitedUse }}</div>
+            <button style="background:none;color:#4F6B54;border:1px solid #6F8C74;padding:8px 12px;border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;" onClick="{{ t.onCopy }}">Copy Approved Reply</button>
           </div>
         </sc-for>
       </div>
@@ -314,7 +315,7 @@
     <div style="max-width:1400px;margin:0 auto;padding:{{ pagePadding }};">
       <div style="margin-bottom:22px;">
         <h1 style="font-family:'Lora',serif;font-weight:600;font-size:26px;color:#2E2B26;margin:0 0 4px;">Integration Setup</h1>
-        <p style="font-size:14px;color:#6E6759;margin:0;">Google Sheets case-data schema, mapping and mock sync — no live API connection yet. All actions below operate on local prototype data only.</p>
+        <p style="font-size:14px;color:#6E6759;margin:0;">Google Sheets case-data schema, mapping and mock sync — no live API connection yet. Case changes and audit history are saved only in this browser.</p>
       </div>
 
       <div style="display:grid;grid-template-columns:{{ kpiCols }};gap:14px;margin-bottom:20px;">
@@ -404,7 +405,8 @@
 
       <sc-if value="{{ hasAuditLog }}" hint-placeholder-val="{{ false }}">
         <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;margin-bottom:20px;">
-          <div style="font-weight:600;color:#2E2B26;margin-bottom:10px;">Audit Trail — Local Changes</div>
+          <div style="font-weight:600;color:#2E2B26;margin-bottom:4px;">Audit Trail — Device History</div>
+          <div style="font-size:11.5px;color:#8A8272;margin-bottom:10px;">Saved in this browser and retained after refresh. This is not yet shared backend history.</div>
           <sc-for list="{{ auditLogDisplay }}" as="al" hint-placeholder-count="3">
             <div style="padding:9px 0;border-top:1px solid #EFEBE1;">
               <div style="font-size:13px;color:#2E2B26;">{{ al.text }}</div>
@@ -1336,6 +1338,9 @@ const APPROVED_QA = [
     answer:"Part 1\n\nHi dear 😊\n\nFor first-time clients, our slimming trial prices currently start from $38 for a Centre-Based Slimming & Wellness Trial.\n\nFor the 60-minute INDIBA Arm Slimming Trial shown in the advertisement you clicked, the promotional trial price is $119, with a usual price of $379.\n\nPart 2\n\nFor subsequent sessions, the price will depend on the treatment recommended, treatment area and number of sessions required. For this INDIBA Arm Slimming treatment, the listed usual price is $379 per session before any suitable package arrangement.\n\nOur therapist can assess your concern first and explain the available options and exact pricing before you decide. Is your main concern your arms, or would you also like to focus on another area?",
     internalNote:'Confirm which advertisement the customer clicked. Keep the reply in two parts. Do not quote an unverified package price.',
     source:'Approved CSO Q&A — Slimming trial and subsequent-session pricing',
+    sourceCaseId:'Conversation-approved',
+    reviewedBy:'Mun',
+    approvedAt:'27 Jul 2026',
     status:'Approved'
   },
   {
@@ -1346,6 +1351,9 @@ const APPROVED_QA = [
     answer:"Hi dear, just to clarify, you may choose:\n\n• $89 Home-Based Pelvic Restoration Trial\n• Complimentary Centre-Based Slimming & Wellness Treatment — 1 session, valued at $279\n• Or redeem both benefits at our centre in one visit\n\nIf you prefer the home-based option, may I have your postal code and preferred date and timing? We’ll check the therapist and appointment availability for you.",
     internalNote:'The campaign name is internal only and must not be shown to the customer. Both benefits may be redeemed at the centre during the same visit, subject to suitability and availability.',
     source:'Approved CSO Q&A — Home-based and centre-based redemption rules',
+    sourceCaseId:'LIVE-20260723-KT-001',
+    reviewedBy:'ChatGPT Work',
+    approvedAt:'23 Jul 2026',
     status:'Approved'
   },
   {
@@ -1353,14 +1361,175 @@ const APPROVED_QA = [
     category:'Home-Based Trial Setup',
     question:'Will the therapist bring a massage or treatment bed for the home-based trial?',
     keywords:['bed','massage bed','treatment bed','bring bed','home visit','home-based','homebased'],
-    answer:"Hi dear, the treatment bed is not included in the home-based trial, so our therapist will not be bringing one. The session can be carried out using your own bed or a suitable firm surface at home.",
+    answer:"Hi dear, the treatment bed is not included in the home-based trial, so our therapist will not be bringing one. The treatment can be performed on your own bed instead.",
     internalNote:'Do not tell the customer that a treatment bed is included. Confirm any special setup requirement with the treatment team when unclear.',
     source:'Approved CSO Q&A — Home-based Pelvic Restoration trial setup',
+    sourceCaseId:'Approved row 37 / KB-011',
+    reviewedBy:'ChatGPT Work',
+    approvedAt:'22 Jul 2026',
+    status:'Approved'
+  },
+  {
+    id:'QA-004',
+    category:'INDIBA / Promotion',
+    question:'Which treatments are INDIBA?',
+    keywords:['which treatment','indiba','non-indiba','complimentary treatment','radiofrequency','warmth','add on','add-on'],
+    answer:"Part 1\n\nHi dear 😊\n\nThe complimentary Centre-Based Slimming & Wellness Treatment included in this promotion is non-INDIBA.\n\nINDIBA is a non-invasive radiofrequency treatment that uses controlled warmth to support circulation, collagen production and skin firmness.\n\nPart 2\n\nIf you would like to try INDIBA, you may add on the S$99 INDIBA trial session.\n\nBoth treatments may be arranged on the same day, subject to treatment suitability and appointment availability. Would you like us to check for you?",
+    internalNote:'Send as two WhatsApp messages. The internal campaign name must not appear in the customer reply. Confirm eligibility, suitability and availability before arranging both.',
+    source:'KB-009 — INDIBA; official treatment references',
+    sourceCaseId:'TEST-NOTION-001 / TEST-CSO-007',
+    reviewedBy:'ChatGPT Work',
+    approvedAt:'26 Jul 2026',
+    status:'Approved'
+  },
+  {
+    id:'QA-005',
+    category:'General Treatment Enquiry',
+    question:'What treatments do you provide?',
+    keywords:['what treatment','treatments provide','services','slimming','body contouring','pelvic','postpartum','wellness'],
+    answer:"Hi there 😊\n\nWe provide non-invasive slimming, body contouring, pelvic and postpartum wellness treatments. The most suitable option depends on the area and concern you would like to focus on.\n\nWhich area would you like help with—tummy, pelvic area, posture, face or another concern?",
+    internalNote:'Identify the customer’s main concern before recommending a treatment. A body assessment is the appropriate next step.',
+    source:'Official Mumsrelle website; KB-003, KB-004, KB-008',
+    sourceCaseId:'TEST-CSO-001',
+    reviewedBy:'ChatGPT Work',
+    approvedAt:'18 Jul 2026',
+    status:'Approved'
+  },
+  {
+    id:'QA-006',
+    category:'Tummy Slimming',
+    question:'Which treatment is suitable for tummy slimming?',
+    keywords:['tummy','abdomen','abdominal','slimming','stubborn fat','loose skin','bloating','postpartum tummy'],
+    answer:"Hi there 😊\n\nFor tummy slimming and body contouring, we have different treatment options depending on your tummy condition and goals. A complimentary body assessment will help our therapist recommend the most suitable option for you.\n\nMay I know whether your main concern is stubborn fat, loose skin, bloating or postpartum tummy?",
+    internalNote:'Do not prescribe a specific treatment without assessment. After identifying the concern, offer two confirmed assessment slots.',
+    source:'Official Mumsrelle website; KB-003, KB-004',
+    sourceCaseId:'TEST-CSO-002',
+    reviewedBy:'ChatGPT Work',
+    approvedAt:'18 Jul 2026',
+    status:'Approved'
+  },
+  {
+    id:'QA-007',
+    category:'S$38 Centre Trial',
+    question:'How much is the S$38 trial and what is included?',
+    keywords:['$38','s$38','38 trial','centre trial','center trial','what included','body assessment'],
+    answer:"Hi there 😊\n\nThe centre slimming trial is S$38 for first-time clients and includes a complimentary body assessment before the treatment. The exact treatment will be recommended according to your assessment and the current campaign terms.\n\nWould you like us to check the available weekday or weekend slots?",
+    internalNote:'Use only for the current S$38 centre trial. Verify the customer’s campaign source when context is missing.',
+    source:'KB-003, KB-004; approved Live Cases response',
+    sourceCaseId:'TEST-CSO-004',
+    reviewedBy:'ChatGPT Work',
+    approvedAt:'18 Jul 2026',
+    status:'Approved'
+  },
+  {
+    id:'QA-008',
+    category:'Trial Package Commitment',
+    question:'Do I need to sign or purchase a package after the trial?',
+    keywords:['sign package','buy package','purchase package','package after trial','commitment','obligation','need package'],
+    answer:"Hi there 😊\n\nYou may attend the trial first. During the visit, our therapist will assess your needs and explain any suitable options for your consideration. You do not need to make a package decision before attending the trial.\n\nWould you like us to check the available trial slots?",
+    internalNote:'This confirms that the customer does not need to decide on a package before attending. Do not make broader promises about campaign terms.',
+    source:'KB-003, KB-004; approved Live Cases response',
+    sourceCaseId:'TEST-CSO-005',
+    reviewedBy:'ChatGPT Work',
+    approvedAt:'18 Jul 2026',
+    status:'Approved'
+  },
+  {
+    id:'QA-009',
+    category:'Late Arrival',
+    question:'I will be around 20 minutes late. Can I still do both treatments?',
+    keywords:['late','20 minutes','10 minutes','15 minutes','both treatments','appointment delay'],
+    answer:"Hi dear, thank you for letting us know.\n\nAs you’ll be around 20 minutes late, the centre may only be able to complete one treatment, depending on the remaining appointment time.\n\nWe’ll check with the centre now and confirm which treatment can still be arranged for you.",
+    internalNote:'For delays over 10–15 minutes, only one treatment item may be possible. Contact the centre immediately.',
+    source:'KB-006 — Late arrival',
+    sourceCaseId:'TEST-CSO-011',
+    reviewedBy:'ChatGPT Work',
+    approvedAt:'18 Jul 2026',
+    status:'Approved'
+  },
+  {
+    id:'QA-010',
+    category:'Baby / Pumping',
+    question:'Can I bring my baby and pump during the appointment?',
+    keywords:['bring baby','baby appointment','pump','pumping','breast pump','nursing room','accompany'],
+    answer:"Hi there 😊\n\nFor your comfort, we recommend pumping before the body assessment or treatment. There is a nursing room at Orchardgateway, Level B1, which you may use before your appointment.\n\nIf you’ll be bringing your baby, may I know whether another adult will accompany you to care for the baby during the session? Please also share your preferred date and pumping time, and we’ll help arrange a suitable appointment after pumping and confirm the baby arrangement with the centre.",
+    internalNote:'Baby attendance still requires centre confirmation. Collect the pumping schedule and accompanying-adult details before finalising.',
+    source:'Management confirmation; Orchardgateway nursing-room guidance',
+    sourceCaseId:'TEST-CSO-012',
+    reviewedBy:'ChatGPT Work',
+    approvedAt:'18 Jul 2026',
+    status:'Approved'
+  },
+  {
+    id:'QA-011',
+    category:'Medical Holding Reply',
+    question:'I had spine surgery but no metal implant. Can I do Pelvic Restoration?',
+    keywords:['spine surgery','back surgery','metal implant','pelvic restoration','doctor clearance','pain','numbness'],
+    answer:"Thank you for sharing your surgery history.\n\nEven without a metal implant, Pelvic Restoration still requires a suitability review because of your previous spine surgery.\n\nMay I know when the surgery was, which area was involved, whether you have any ongoing pain or numbness, and whether your doctor has cleared you for the treatment?",
+    internalNote:'Medical suitability case. Do not arrange treatment yet. Collect surgery and symptom details, then escalate to Hazelle / Treatment Team.',
+    source:'Official Pelvic Restoration safety information; KB-001, KB-007',
+    sourceCaseId:'TEST-CSO-018',
+    reviewedBy:'ChatGPT Work',
+    approvedAt:'18 Jul 2026',
+    sensitive:true,
+    status:'Approved'
+  },
+  {
+    id:'QA-012',
+    category:'KIV / Considering',
+    question:'I will consider first.',
+    keywords:['consider first','think about it','let me consider','get back','not sure yet','kiv'],
+    answer:"No worries at all 😊\n\nYou may take some time to consider. Is there anything you’d like us to clarify first—such as the treatment, what’s included or the appointment timing?\n\nWe’ll be happy to help, and we can follow up with you again in a few days.",
+    internalNote:'This is a warm KIV lead. Ask the main hesitation and schedule the next follow-up; do not leave it as a dead end.',
+    source:'KB-004; Setup & Rules closing and no-dead-end requirements',
+    sourceCaseId:'TEST-CSO-031',
+    reviewedBy:'ChatGPT Work',
+    approvedAt:'18 Jul 2026',
+    status:'Approved'
+  },
+  {
+    id:'QA-013',
+    category:'Price Objection',
+    question:'It is still a little pricey. Let me consider and get back.',
+    keywords:['pricey','expensive','costly','price objection','atome','instalment','installment','consider'],
+    answer:"Totally understand 😊\n\nJust to share, this offer works out to a lower price per treatment, and an interest-free instalment option via Atome is also available for your consideration.\n\nWould you like us to share the Atome instalment breakdown so you can compare the payment amount first? ☺️",
+    internalNote:'Use only when Atome is applicable and approved. Do not introduce another promotion or make unsupported market-price claims.',
+    source:'Official CSE SOP — template fu2',
+    sourceCaseId:'TEST-CSO-033',
+    reviewedBy:'ChatGPT Work',
+    approvedAt:'20 Jul 2026',
+    status:'Approved'
+  },
+  {
+    id:'QA-014',
+    category:'Separate Redemption Dates',
+    question:'Can I arrange the centre treatment and home-based session on separate dates?',
+    keywords:['separate dates','different dates','centre treatment','center treatment','home-based session','home visit','two sessions separately'],
+    answer:"Hi dear 😊\n\nYes, we can arrange the two sessions separately:\n\n• Centre-Based Slimming & Wellness treatment\n• Home-Based Pelvic Restoration session\n\nFor the S$89 home-based trial, a portable massage bed is not included. The treatment can be performed on your own bed instead.\n\nMay I have your postal code and preferred date and timing for both sessions? We’ll check the therapist and appointment availability for you.",
+    internalNote:'Replace “dear” with the customer’s name when appropriate. Collect the postal code and both preferred timings; do not promise a portable bed.',
+    source:'KB-010 redemption options; KB-011 home-based setup',
+    sourceCaseId:'Approved row 37',
+    reviewedBy:'ChatGPT Work',
+    approvedAt:'22 Jul 2026',
+    status:'Approved'
+  },
+  {
+    id:'QA-015',
+    category:'Buy 1 Free 1 Pricing',
+    question:'Does the Buy 1 Free 1 price include GST, and is there a minimum purchase?',
+    keywords:['gst','minimum purchase','minimum spend','buy 1 free 1','buy one free one','$279','$379','two sessions'],
+    answer:"Hi dear 😊\n\nThere is no GST and no additional minimum purchase required.\n\nThe total promotional price is S$279 for 2 Non-INDIBA sessions or S$379 for 2 INDIBA sessions. You do not need to purchase any additional package to enjoy this offer.",
+    internalNote:'Use only for the approved Buy 1 Free 1 Postpartum Slimming offer. Do not generalise the no-GST or no-minimum-purchase rule to other promotions.',
+    source:'KB-012 — Buy 1 Free 1 GST and minimum purchase',
+    sourceCaseId:'LIVE-20260726-SYL-001',
+    reviewedBy:'ChatGPT Work',
+    approvedAt:'26 Jul 2026',
     status:'Approved'
   }
 ];
 
 const CSO_NAMES = ['Mun','Rebecca','Yihui','Fiverr'];
+const WORKSPACE_HISTORY_KEY = 'mumsrelle-cso-helpdesk-device-history-v1';
 function getSavedCsoName(){
   if(typeof window==='undefined') return 'Mun';
   try {
@@ -1368,6 +1537,29 @@ function getSavedCsoName(){
     return CSO_NAMES.includes(saved) ? saved : 'Mun';
   } catch (_) {
     return 'Mun';
+  }
+}
+function getSavedWorkspaceState(){
+  if(typeof window==='undefined') return {};
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(WORKSPACE_HISTORY_KEY) || '{}');
+    if(!parsed || typeof parsed!=='object' || Array.isArray(parsed)) return {};
+    return {
+      draftOverrides: parsed.draftOverrides || {},
+      categoryOverrides: parsed.categoryOverrides || {},
+      priorityOverrides: parsed.priorityOverrides || {},
+      holdOverrides: parsed.holdOverrides || {},
+      holdFieldOverrides: parsed.holdFieldOverrides || {},
+      statusOverrides: parsed.statusOverrides || {},
+      historyAppends: parsed.historyAppends || {},
+      approvalMeta: parsed.approvalMeta || {},
+      auditLog: Array.isArray(parsed.auditLog) ? parsed.auditLog.slice(0,100) : [],
+      unsyncedChangeIds: parsed.unsyncedChangeIds || {},
+      sentOverrides: parsed.sentOverrides || {},
+      copiedAtOverrides: parsed.copiedAtOverrides || {},
+    };
+  } catch (_) {
+    return {};
   }
 }
 
@@ -1402,6 +1594,7 @@ class Component extends DCLogic {
     showMappingPreview: false, showUnsyncedPanel: false,
     respondIoSync: { lastMockEvent: null }, respondIoValidation: { errors: [], warnings: [] }, respondIoAmbiguous: [],
     respondIoSeenEventIds: [], respondIoSeenMessageIds: [], sentOverrides: {}, copiedAtOverrides: {}, showRespondIoTemplates: false,
+    ...getSavedWorkspaceState(),
   };
 
   componentDidMount(){
@@ -1409,6 +1602,17 @@ class Component extends DCLogic {
     window.addEventListener('resize', this._onResize);
   }
   componentWillUnmount(){ window.removeEventListener('resize', this._onResize); }
+  componentDidUpdate(){
+    try {
+      const s = this.state;
+      window.localStorage.setItem(WORKSPACE_HISTORY_KEY, JSON.stringify({
+        draftOverrides:s.draftOverrides, categoryOverrides:s.categoryOverrides, priorityOverrides:s.priorityOverrides,
+        holdOverrides:s.holdOverrides, holdFieldOverrides:s.holdFieldOverrides, statusOverrides:s.statusOverrides,
+        historyAppends:s.historyAppends, approvalMeta:s.approvalMeta, auditLog:s.auditLog,
+        unsyncedChangeIds:s.unsyncedChangeIds, sentOverrides:s.sentOverrides, copiedAtOverrides:s.copiedAtOverrides,
+      }));
+    } catch (_) {}
+  }
 
   showToast(msg){
     this.setState({ toast: msg });
@@ -1469,7 +1673,9 @@ class Component extends DCLogic {
         return;
       }
       const tokens = approvedSearchText.split(/[^a-z0-9$-]+/).filter(t=>t.length>1);
-      const ranked = APPROVED_QA.map(item => {
+      const sensitiveQuery = /(hysteroscopy|surgery|pain|painful|numb|wound|bleed|breastfeed|pregnan|c-section|c section|doctor|implant|medical|diabetic|cancer|heart|refund|cancel.*package|complaint|bad service|pressed to buy)/.test(approvedSearchText);
+      const eligibleAnswers = sensitiveQuery ? APPROVED_QA.filter(item=>item.sensitive===true) : APPROVED_QA;
+      const ranked = eligibleAnswers.map(item => {
         const questionText = `${item.question} ${item.category}`.toLowerCase();
         const keywordScore = item.keywords.reduce((score, keyword)=>score+(approvedSearchText.includes(keyword.toLowerCase())?3:0),0);
         const tokenScore = tokens.reduce((score, token)=>score+(questionText.includes(token)?1:0),0);
@@ -1481,6 +1687,7 @@ class Component extends DCLogic {
       if(!ids.length) this.showToast('No approved answer found. Please add this question to Live Cases.');
     };
     const clearApprovedSearch = () => this.setState({ approvedSearchQuery:'', approvedSearchHasRun:false, approvedMatchIds:[] });
+    const browseAllApproved = () => this.setState({ approvedSearchQuery:'', approvedSearchHasRun:true, approvedMatchIds:APPROVED_QA.map(a=>a.id) });
     const approvedAnswerMatches = s.approvedMatchIds.map(id=>APPROVED_QA.find(a=>a.id===id)).filter(Boolean).map(a=>({
       ...a,
       statusStyle:pillStyle(SAGE_BG,SAGE_DARK),
@@ -1702,18 +1909,12 @@ class Component extends DCLogic {
     ];
 
     const tq = (s.templateSearch || '').trim().toLowerCase();
-    const approvedTemplates = TEMPLATE_REGISTRY
-      .filter(t=>t.active && t.kind!=='deprecated')
-      .filter(t=>!tq || `${t.name} ${t.category} ${t.approvedUse}`.toLowerCase().includes(tq))
-      .map(t => {
-        const displayName = t.name
-          .replace(/^Promotion 8 Day \d+ — /, '')
-          .replace(/^Medical Holding Reply$/, 'Medical Review Holding Reply')
-          .replace(/^Refund Holding Reply$/, 'Management Review Holding Reply');
-        return { ...t, displayName, statusStyle:pillStyle(SAGE_BG,SAGE_DARK), statusLabel:'Approved',
-          onCopy:()=>{ if(typeof navigator!=='undefined' && navigator.clipboard) navigator.clipboard.writeText(displayName).catch(()=>{}); this.showToast('Template name copied.'); } };
-      });
-    const approvedTemplateCount = TEMPLATE_REGISTRY.filter(t=>t.active && t.kind!=='deprecated').length;
+    const approvedTemplates = APPROVED_QA
+      .filter(t=>!tq || `${t.question} ${t.category} ${t.answer} ${t.source}`.toLowerCase().includes(tq))
+      .map(t => ({ ...t, displayName:t.question, name:t.question, version:t.approvedAt,
+        approvedUse:t.source, prohibitedUse:t.internalNote, statusStyle:pillStyle(SAGE_BG,SAGE_DARK), statusLabel:'Approved',
+        onCopy:()=>{ if(typeof navigator!=='undefined' && navigator.clipboard) navigator.clipboard.writeText(t.answer).catch(()=>{}); this.showToast('Approved reply copied. Review the customer details before sending.'); } }));
+    const approvedTemplateCount = APPROVED_QA.length;
     const templateCols = isMobile ? '1fr' : 'repeat(2,1fr)';
     const knowledgeCols = isMobile ? '1fr' : 'repeat(3,1fr)';
     const knowledgeSections = [
@@ -1883,7 +2084,7 @@ class Component extends DCLogic {
       toast: s.toast, isAsk: s.view==='ask', isInbox: s.view==='inbox', isTemplates: s.view==='templates',
       isKnowledge: s.view==='knowledge', isDashboard: s.view==='dashboard', isDetail: s.view==='detail', isIntegration: s.view==='integration',
       approvedSearchQuery:s.approvedSearchQuery, onApprovedSearchChange:(e)=>this.setState({approvedSearchQuery:e.target.value}),
-      searchApprovedAnswers, clearApprovedSearch, approvedSearchHasRun:s.approvedSearchHasRun,
+      searchApprovedAnswers, clearApprovedSearch, browseAllApproved, approvedAnswerCount:APPROVED_QA.length, approvedSearchHasRun:s.approvedSearchHasRun,
       approvedAnswerMatches, hasApprovedMatches:approvedAnswerMatches.length>0, noApprovedMatches:s.approvedSearchHasRun&&approvedAnswerMatches.length===0,
       templateSearch:s.templateSearch, onTemplateSearchChange:(e)=>this.setState({templateSearch:e.target.value}),
       approvedTemplates, approvedTemplateCount, templateCols, knowledgeCols, knowledgeSections, dailyKpiRows,
