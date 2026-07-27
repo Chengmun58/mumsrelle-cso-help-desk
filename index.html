@@ -1589,7 +1589,7 @@ const APPROVED_QA = [
     question:'Does the Buy 1 Free 1 price include GST, and is there a minimum purchase?',
     keywords:['gst','minimum purchase','minimum spend','buy 1 free 1','buy one free one','$279','$379','two sessions'],
     answer:"Hi dear 😊\n\nThere is no GST and no additional minimum purchase required.\n\nThe total promotional price is S$279 for 2 Non-INDIBA sessions or S$379 for 2 INDIBA sessions. You do not need to purchase any additional package to enjoy this offer.",
-    internalNote:'Use only for the approved Buy 1 Free 1 Postpartum Slimming offer. Do not generalise the no-GST or no-minimum-purchase rule to other promotions.',
+    internalNote:'Before sending, confirm the customer is referring to the S$279/S$379 Buy 1 Free 1 Postpartum Slimming offer. Do not generalise the no-GST or no-minimum-purchase rule to other promotions.',
     source:'KB-012 — Buy 1 Free 1 GST and minimum purchase',
     sourceCaseId:'LIVE-20260726-SYL-001',
     reviewedBy:'ChatGPT Work',
@@ -2128,7 +2128,7 @@ class Component extends DCLogic {
     const liveGuideCols = isMobile ? '1fr' : 'repeat(3,1fr)';
     const backendGuide = [
       { step:'1 · EDIT', text:'Open cso_helpdesk_approved_answers in Supabase.' },
-      { step:'2 · CONTROL', text:'Set Status = Approved and Active = true only after review.' },
+      { step:'2 · CONTROL', text:'Update Reviewed By, then set Status = Approved and Active = true only after review.' },
       { step:'3 · PUBLISH', text:'Return here and press Refresh Answers.' },
       { step:'4 · AUDIT', text:'Use cso_helpdesk_change_history to review every change.' },
     ];
