@@ -39,7 +39,7 @@ Use the Supabase Table Editor for:
 - `cso_helpdesk_approved_answers`: add, edit, approve, activate, or deactivate customer answers.
 - `cso_helpdesk_change_history`: review the old value, new value, operation, timestamp, and actor for every change.
 
-Publishing rule: only rows with `status = Approved` and `active = true` are returned to the website. After editing, use **Refresh Answers** in the Help Desk or reload the page.
+Publishing rule: update `reviewed_by`, then publish only when `status = Approved` and `active = true`. After editing, use **Refresh Answers** in the Help Desk or reload the page.
 
 Security rule: the publishable browser key has `SELECT` access only to active Approved answers. Anonymous users have no insert, update, delete, or Change History access.
 
