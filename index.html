@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mumsrelle CSO AI Help Desk</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -29,10 +30,12 @@
           <div style="font-size:11px;color:#8A8272;letter-spacing:0.04em;">CSO AI HELP DESK 2.0</div>
         </div>
       </div>
-      <div style="display:flex;gap:4px;margin-left:12px;">
-        <button style="{{ navBtnStyleInbox }}" onClick="{{ goToInbox }}">Case Inbox</button>
-        <button style="{{ navBtnStyleDash }}" onClick="{{ goToDashboard }}">Dashboard</button>
-        <button style="{{ navBtnStyleIntegration }}" onClick="{{ goToIntegration }}">Integration Setup</button>
+      <div style="display:flex;gap:4px;margin-left:12px;overflow-x:auto;">
+        <button style="{{ navBtnStyleAsk }}" onClick="{{ goToAsk }}">Ask AI</button>
+        <button style="{{ navBtnStyleInbox }}" onClick="{{ goToInbox }}">Live Cases</button>
+        <button style="{{ navBtnStyleTemplates }}" onClick="{{ goToTemplates }}">Approved Templates</button>
+        <button style="{{ navBtnStyleKnowledge }}" onClick="{{ goToKnowledge }}">SOP &amp; Knowledge Base</button>
+        <button style="{{ navBtnStyleDash }}" onClick="{{ goToDashboard }}">Daily KPI</button>
       </div>
       <div style="margin-left:auto;display:flex;align-items:center;gap:10px;">
         <div style="text-align:right;">
@@ -49,7 +52,7 @@
     </div>
     <div style="background:#F5EBD8;border-top:1px solid #E3CFA0;padding:7px 24px;display:flex;gap:8px;align-items:center;justify-content:center;">
       <span style="font-size:10.5px;font-weight:700;letter-spacing:0.05em;color:#7A5C24;background:#fff;padding:2px 7px;border-radius:5px;">PROTOTYPE</span>
-      <span style="font-size:12px;color:#7A5C24;">Interactive workflow prototype — no live Respond.io or Google Sheets connection.</span>
+      <span style="font-size:12px;color:#7A5C24;">Internal workspace — drafts require human review and are never sent automatically.</span>
     </div>
   </div>
 
@@ -57,10 +60,42 @@
     <div style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:60;background:#2E2B26;color:#FAF6EF;padding:12px 20px;border-radius:10px;font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,0.2);max-width:90vw;text-align:center;">{{ toast }}</div>
   </sc-if>
 
+  <sc-if value="{{ isAsk }}" hint-placeholder-val="{{ false }}">
+    <div style="max-width:1100px;margin:0 auto;padding:{{ pagePadding }};">
+      <div style="margin-bottom:22px;">
+        <h1 style="font-family:'Lora',serif;font-weight:600;font-size:26px;color:#2E2B26;margin:0 0 4px;">Ask AI</h1>
+        <p style="font-size:14px;color:#6E6759;margin:0;">Paste the customer’s exact question. The assistant prepares an internal draft for review — it does not send anything.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:{{ askCols }};gap:18px;align-items:start;">
+        <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;">
+          <label style="display:block;font-size:12px;font-weight:700;color:#6E6759;margin-bottom:8px;">CUSTOMER QUESTION</label>
+          <textarea placeholder="Paste the customer's exact message here…" value="{{ askQuestion }}" onChange="{{ onAskQuestionChange }}" style="width:100%;min-height:180px;padding:14px;border:1px solid #E6E0D4;border-radius:10px;background:#FBFAF7;font-size:14px;line-height:1.55;color:#2E2B26;resize:vertical;outline:none;"></textarea>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
+            <button style="background:#6F8C74;color:#fff;border:none;padding:11px 18px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;" onClick="{{ generateAskDraft }}">Prepare Draft</button>
+            <button style="background:none;color:#6E6759;border:1px solid #E6E0D4;padding:11px 18px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;" onClick="{{ clearAsk }}">Clear</button>
+          </div>
+          <div style="margin-top:14px;padding:11px 13px;border-radius:9px;background:#F5EBD8;color:#7A5C24;font-size:12px;line-height:1.5;">Medical, refund, complaint, safety and unclear cases must be escalated. Never promise suitability, refunds or outcomes.</div>
+        </div>
+        <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;">
+            <div>
+              <div style="font-size:12px;font-weight:700;color:#6E6759;">CUSTOMER REPLY DRAFT</div>
+              <div style="font-size:11.5px;color:#8A8272;margin-top:3px;">Review before copying to Respond.io</div>
+            </div>
+            <span style="{{ askStatusStyle }}">{{ askStatus }}</span>
+          </div>
+          <textarea value="{{ askDraft }}" onChange="{{ onAskDraftChange }}" placeholder="Your reviewed draft will appear here." style="width:100%;min-height:260px;padding:14px;border:1px solid #E6E0D4;border-radius:10px;background:#FBFAF7;font-size:14px;line-height:1.6;color:#2E2B26;resize:vertical;outline:none;"></textarea>
+          <div style="font-size:12px;color:#8A8272;margin:10px 0;">{{ askAssessment }}</div>
+          <button style="background:none;color:#4F6B54;border:1px solid #6F8C74;padding:10px 16px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;" onClick="{{ copyAskDraft }}">Copy Reviewed Draft</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
   <sc-if value="{{ isInbox }}" hint-placeholder-val="{{ true }}">
     <div style="max-width:1400px;margin:0 auto;padding:{{ pagePadding }};">
       <div style="margin-bottom:22px;">
-        <h1 style="font-family:'Lora',serif;font-weight:600;font-size:26px;color:#2E2B26;margin:0 0 4px;">Case Inbox</h1>
+        <h1 style="font-family:'Lora',serif;font-weight:600;font-size:26px;color:#2E2B26;margin:0 0 4px;">Live Cases</h1>
         <p style="font-size:14px;color:#6E6759;margin:0;">Customer cases from Respond.io, Google Sheets and manual entry, awaiting review and approval.</p>
       </div>
 
@@ -135,11 +170,79 @@
     </div>
   </sc-if>
 
+  <sc-if value="{{ isTemplates }}" hint-placeholder-val="{{ false }}">
+    <div style="max-width:1200px;margin:0 auto;padding:{{ pagePadding }};">
+      <div style="margin-bottom:22px;">
+        <h1 style="font-family:'Lora',serif;font-weight:600;font-size:26px;color:#2E2B26;margin:0 0 4px;">Approved Templates</h1>
+        <p style="font-size:14px;color:#6E6759;margin:0;">Use only active, approved replies. Internal campaign names must not be shown to customers.</p>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:18px;">
+        <input placeholder="Search templates" value="{{ templateSearch }}" onChange="{{ onTemplateSearchChange }}" style="flex:1;min-width:220px;padding:11px 16px;border-radius:10px;border:1px solid #E6E0D4;background:#fff;font-size:14px;color:#2E2B26;outline:none;"></input>
+        <span style="font-size:12px;color:#8A8272;">{{ approvedTemplateCount }} approved templates</span>
+      </div>
+      <div style="display:grid;grid-template-columns:{{ templateCols }};gap:14px;">
+        <sc-for list="{{ approvedTemplates }}" as="t" hint-placeholder-count="6">
+          <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:18px;">
+            <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:10px;">
+              <div style="font-weight:600;color:#2E2B26;font-size:14px;line-height:1.4;">{{ t.displayName }}</div>
+              <span style="{{ t.statusStyle }}">{{ t.statusLabel }}</span>
+            </div>
+            <div style="font-size:12px;color:#8A8272;margin-bottom:10px;">{{ t.category }} · {{ t.version }}</div>
+            <div style="font-size:13px;color:#6E6759;line-height:1.5;margin-bottom:8px;"><strong style="color:#2E2B26;">Use:</strong> {{ t.approvedUse }}</div>
+            <div style="font-size:12px;color:#8C4B54;line-height:1.5;margin-bottom:14px;"><strong>Do not use:</strong> {{ t.prohibitedUse }}</div>
+            <button style="background:none;color:#4F6B54;border:1px solid #6F8C74;padding:8px 12px;border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;" onClick="{{ t.onCopy }}">Copy Template Name</button>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isKnowledge }}" hint-placeholder-val="{{ false }}">
+    <div style="max-width:1200px;margin:0 auto;padding:{{ pagePadding }};">
+      <div style="margin-bottom:22px;">
+        <h1 style="font-family:'Lora',serif;font-weight:600;font-size:26px;color:#2E2B26;margin:0 0 4px;">SOP &amp; Knowledge Base</h1>
+        <p style="font-size:14px;color:#6E6759;margin:0;">Internal approved references for CSO replies, escalation and daily operations.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:{{ knowledgeCols }};gap:14px;margin-bottom:22px;">
+        <sc-for list="{{ knowledgeSections }}" as="k" hint-placeholder-count="6">
+          <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:18px;">
+            <div style="font-size:20px;margin-bottom:8px;">{{ k.icon }}</div>
+            <div style="font-weight:600;color:#2E2B26;margin-bottom:6px;">{{ k.title }}</div>
+            <div style="font-size:12.5px;color:#6E6759;line-height:1.5;margin-bottom:10px;">{{ k.description }}</div>
+            <div style="font-size:11.5px;color:#8A8272;">{{ k.source }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;">
+        <div>
+          <div style="font-weight:600;color:#2E2B26;margin-bottom:4px;">System &amp; Integration Settings</div>
+          <div style="font-size:12.5px;color:#6E6759;">Google Sheets mapping and Respond.io mock workflow are kept here for administrators.</div>
+        </div>
+        <button style="background:none;color:#4F6B54;border:1px solid #6F8C74;padding:10px 16px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;" onClick="{{ goToIntegration }}">Open Settings</button>
+      </div>
+    </div>
+  </sc-if>
+
   <sc-if value="{{ isDashboard }}" hint-placeholder-val="{{ false }}">
     <div style="max-width:1400px;margin:0 auto;padding:{{ pagePadding }};">
       <div style="margin-bottom:22px;">
-        <h1 style="font-family:'Lora',serif;font-weight:600;font-size:26px;color:#2E2B26;margin:0 0 4px;">Management Dashboard</h1>
-        <p style="font-size:14px;color:#6E6759;margin:0;">Operational snapshot across the CSO team.</p>
+        <h1 style="font-family:'Lora',serif;font-weight:600;font-size:26px;color:#2E2B26;margin:0 0 4px;">Daily KPI</h1>
+        <p style="font-size:14px;color:#6E6759;margin:0;">Simple daily view for BAs, KIVs, existing-client follow-ups and lead activity.</p>
+      </div>
+
+      <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;margin-bottom:18px;overflow-x:auto;">
+        <div style="font-weight:600;color:#2E2B26;margin-bottom:12px;">Today’s CSO Responsibilities</div>
+        <div style="min-width:680px;">
+          <div style="display:grid;grid-template-columns:1fr 1.2fr 0.8fr 0.8fr 1.4fr;padding:9px 0;font-size:11px;font-weight:700;color:#8A8272;text-transform:uppercase;">
+            <div>CSO</div><div>Coverage</div><div>BA Target</div><div>BA Done</div><div>Main Focus</div>
+          </div>
+          <sc-for list="{{ dailyKpiRows }}" as="r" hint-placeholder-count="4">
+            <div style="display:grid;grid-template-columns:1fr 1.2fr 0.8fr 0.8fr 1.4fr;padding:12px 0;border-top:1px solid #EFEBE1;font-size:13px;color:#2E2B26;align-items:center;">
+              <div style="font-weight:600;">{{ r.name }}</div><div style="color:#6E6759;">{{ r.coverage }}</div><div>{{ r.target }}</div><div><span style="{{ r.doneStyle }}">{{ r.done }}</span></div><div style="color:#6E6759;">{{ r.focus }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="font-size:11.5px;color:#8A8272;margin-top:12px;">Live Google Sheets connection is not enabled yet. Update figures from the CSO Daily Update sheet after verification.</div>
       </div>
 
       <div style="display:grid;grid-template-columns:{{ kpiCols }};gap:14px;margin-bottom:24px;">
@@ -1235,8 +1338,10 @@ const MOCK_RESPONDIO_EVENTS = [
 
 class Component extends DCLogic {
   state = {
-    view: 'inbox', selectedCaseId: null, isMobile: (typeof window!=='undefined' && window.innerWidth < 920),
+    view: 'ask', selectedCaseId: null, isMobile: (typeof window!=='undefined' && window.innerWidth < 920),
     currentCso: getSavedCsoName(),
+    askQuestion: '', askDraft: '', askAssessment: 'No draft prepared yet.', askStatus: 'Awaiting question',
+    templateSearch: '',
     searchQuery: '', activeTab: 'All', priorityFilter: 'All',
     cases: RAW_CASES.map(c=>({...c})),
     draftOverrides: {}, categoryOverrides: {}, priorityOverrides: {},
@@ -1286,10 +1391,15 @@ class Component extends DCLogic {
     const pagePadding = isMobile ? '20px 16px' : '32px 24px';
 
     const navBtnBase = 'padding:9px 16px;border-radius:8px;font-size:13.5px;font-weight:600;border:none;cursor:pointer;';
+    const navBtnStyleAsk = navBtnBase + (s.view==='ask' ? `background:${SAGE_BG};color:${SAGE_DARK};` : `background:none;color:${INK_MUTED};`);
     const navBtnStyleInbox = navBtnBase + (s.view==='inbox'||s.view==='detail' ? `background:${SAGE_BG};color:${SAGE_DARK};` : `background:none;color:${INK_MUTED};`);
+    const navBtnStyleTemplates = navBtnBase + (s.view==='templates' ? `background:${SAGE_BG};color:${SAGE_DARK};` : `background:none;color:${INK_MUTED};`);
+    const navBtnStyleKnowledge = navBtnBase + (s.view==='knowledge'||s.view==='integration' ? `background:${SAGE_BG};color:${SAGE_DARK};` : `background:none;color:${INK_MUTED};`);
     const navBtnStyleDash = navBtnBase + (s.view==='dashboard' ? `background:${SAGE_BG};color:${SAGE_DARK};` : `background:none;color:${INK_MUTED};`);
-    const navBtnStyleIntegration = navBtnBase + (s.view==='integration' ? `background:${SAGE_BG};color:${SAGE_DARK};` : `background:none;color:${INK_MUTED};`);
+    const goToAsk = () => this.setState({ view:'ask' });
     const goToInbox = () => this.setState({ view:'inbox' });
+    const goToTemplates = () => this.setState({ view:'templates' });
+    const goToKnowledge = () => this.setState({ view:'knowledge' });
     const goToDashboard = () => this.setState({ view:'dashboard' });
     const goToIntegration = () => this.setState({ view:'integration' });
 
@@ -1302,6 +1412,49 @@ class Component extends DCLogic {
       const history = Array.isArray(c.history) ? c.history : [];
       return { ...c, ...d, onHold, status: underlyingStatus, displayStatus, history: [...history, ...(s.historyAppends[c.id]||[])] };
     });
+
+    const askText = (s.askQuestion || '').trim();
+    const generateAskDraft = () => {
+      if(!askText){
+        this.setState({ askDraft:'', askAssessment:'Paste the customer’s exact question before preparing a draft.', askStatus:'Awaiting question' });
+        this.showToast('Please paste the customer question first.');
+        return;
+      }
+      const qLower = askText.toLowerCase();
+      const isMedical = /(pain|painful|c-section|c section|postpartum|pregnant|pregnancy|medical|surgery|wound|sore|diabetic|breastfeed)/.test(qLower);
+      const isRefund = /(refund|cancel.*package|money back|chargeback)/.test(qLower);
+      const isComplaint = /(complaint|unhappy|disappointed|bad service|angry)/.test(qLower);
+      const isPrice = /(price|pricing|cost|how much|trial)/.test(qLower);
+      let draft = "Hi dear, thank you for checking with us. May we know a little more about your main concern so we can confirm the most suitable option and current details for you?";
+      let assessment = 'Routine enquiry. Verify the latest approved details before sending.';
+      let status = 'Review required';
+      if(isMedical){
+        draft = "Hi dear, thank you for sharing this with us. As treatment suitability depends on your recovery and condition, we’d like our Centre Manager and treatment team to review the details before confirming what would be suitable for you. We’ll check and get back to you shortly.";
+        assessment = 'Medical or treatment-suitability wording detected. Escalate to Hazelle / Centre Manager. Do not confirm suitability.';
+        status = 'Escalation required';
+      } else if(isRefund){
+        draft = "Hi dear, thank you for letting us know. We’ve noted your request and will check it with our Management team before advising you further. We’ll follow up once the review is completed.";
+        assessment = 'Refund or cancellation wording detected. Escalate to Sharon or Suzen. Do not promise a refund, amount or timeline.';
+        status = 'Escalation required';
+      } else if(isComplaint){
+        draft = "Hi dear, thank you for bringing this to our attention. We’ve noted your concern and will have our Management team review it properly before we follow up with you.";
+        assessment = 'Complaint wording detected. Escalate to Management and preserve the customer’s exact message.';
+        status = 'Escalation required';
+      } else if(isPrice){
+        draft = "Hi dear, thank you for checking with us. Our first-time trial price depends on the treatment and current promotion you enquired about. Subsequent-session pricing will depend on the recommended treatment, treatment area and number of sessions required.\n\nMay we know which advertisement or treatment you are referring to, and which area you would like to focus on? We’ll confirm the exact current price for you before booking.";
+        assessment = 'Pricing enquiry. Confirm the exact advertisement, approved trial price and current package terms before sending.';
+        status = 'Review required';
+      }
+      this.setState({ askDraft:draft, askAssessment:assessment, askStatus:status });
+    };
+    const clearAsk = () => this.setState({ askQuestion:'', askDraft:'', askAssessment:'No draft prepared yet.', askStatus:'Awaiting question' });
+    const copyAskDraft = () => {
+      if(!String(s.askDraft||'').trim()){ this.showToast('There is no draft to copy yet.'); return; }
+      if(typeof navigator!=='undefined' && navigator.clipboard) navigator.clipboard.writeText(s.askDraft).catch(()=>{});
+      this.showToast('Draft copied. Review it once more before sending manually.');
+    };
+    const askStatusStyle = s.askStatus==='Escalation required' ? pillStyle(RED_BG,RED) : (s.askStatus==='Review required' ? pillStyle(AMBER_BG,AMBER) : pillStyle(GRAY_BG,INK_MUTED));
+    const askCols = isMobile ? '1fr' : '1fr 1fr';
 
     const statusTabsDef = ['All','New','AI Drafted','Pending Approval','Escalated','On Hold','Approved','Closed'];
     const q = s.searchQuery.trim().toLowerCase();
@@ -1510,6 +1663,36 @@ class Component extends DCLogic {
       const count = cases.filter(c=>c.category===cat).length;
       return { name:cat, count, pct: Math.round(count/Math.max(...cats.map(x=>cases.filter(c=>c.category===x).length),1)*100)+'%' };
     });
+    const dailyKpiRows = [
+      { name:'Rebecca', coverage:'Full-time / Primary', target:'4 BAs', done:'Update', focus:'KIVs, blast messages, existing clients', doneStyle:pillStyle(AMBER_BG,AMBER) },
+      { name:'Yihui', coverage:'Weekend / PH / Leave cover', target:'As assigned', done:'Update', focus:'Assigned KIVs and live cases', doneStyle:pillStyle(GRAY_BG,INK_MUTED) },
+      { name:'Fiverr', coverage:'Weekend / PH / Leave cover', target:'As assigned', done:'Update', focus:'Routine enquiries; escalate unclear cases', doneStyle:pillStyle(GRAY_BG,INK_MUTED) },
+      { name:'Mun', coverage:'Review / Management', target:'Review', done:'—', focus:'Approvals, escalations and SOP gaps', doneStyle:pillStyle(SAGE_BG,SAGE_DARK) },
+    ];
+
+    const tq = (s.templateSearch || '').trim().toLowerCase();
+    const approvedTemplates = TEMPLATE_REGISTRY
+      .filter(t=>t.active && t.kind!=='deprecated')
+      .filter(t=>!tq || `${t.name} ${t.category} ${t.approvedUse}`.toLowerCase().includes(tq))
+      .map(t => {
+        const displayName = t.name
+          .replace(/^Promotion 8 Day \d+ — /, '')
+          .replace(/^Medical Holding Reply$/, 'Medical Review Holding Reply')
+          .replace(/^Refund Holding Reply$/, 'Management Review Holding Reply');
+        return { ...t, displayName, statusStyle:pillStyle(SAGE_BG,SAGE_DARK), statusLabel:'Approved',
+          onCopy:()=>{ if(typeof navigator!=='undefined' && navigator.clipboard) navigator.clipboard.writeText(displayName).catch(()=>{}); this.showToast('Template name copied.'); } };
+      });
+    const approvedTemplateCount = TEMPLATE_REGISTRY.filter(t=>t.active && t.kind!=='deprecated').length;
+    const templateCols = isMobile ? '1fr' : 'repeat(2,1fr)';
+    const knowledgeCols = isMobile ? '1fr' : 'repeat(3,1fr)';
+    const knowledgeSections = [
+      { icon:'💬', title:'Customer Reply Guidelines', description:'Tone, message structure, approved wording and customer-facing terminology.', source:'Templates & CSE SOP' },
+      { icon:'📅', title:'Appointment & BA SOP', description:'Booking, BA arrangements, reminders, KIVs and follow-up responsibilities.', source:'SC Appointment SOP' },
+      { icon:'🏠', title:'Trials & Campaigns', description:'Current trial options, redemption rules and internal campaign references.', source:'Active Promotions Reference' },
+      { icon:'🩺', title:'Medical & Contraindications', description:'Safety flags, treatment suitability limits and mandatory escalation rules.', source:'Medical Policy — escalate when unclear' },
+      { icon:'🧾', title:'Packages, Billing & Refunds', description:'Balance checks, billing questions and Management-only refund decisions.', source:'Internal Policies' },
+      { icon:'⚙️', title:'Respond.io Workflows', description:'Approved workflow sequence, reminders and manual-send requirements.', source:'Respond.io Workflow Reference' },
+    ];
 
     // ---- Phase 2A: Google Sheets integration layer (mock, local-only) ----
     const schemaRows = CASE_FIELD_SCHEMA.map(sc => ({
@@ -1664,8 +1847,15 @@ class Component extends DCLogic {
 
     return {
       rootStyle, pagePadding, isMobile, currentCso, currentCsoInitials, onCsoChange,
-      navBtnStyleInbox, navBtnStyleDash, navBtnStyleIntegration, goToInbox, goToDashboard, goToIntegration,
-      toast: s.toast, isInbox: s.view==='inbox', isDashboard: s.view==='dashboard', isDetail: s.view==='detail', isIntegration: s.view==='integration',
+      navBtnStyleAsk, navBtnStyleInbox, navBtnStyleTemplates, navBtnStyleKnowledge, navBtnStyleDash,
+      goToAsk, goToInbox, goToTemplates, goToKnowledge, goToDashboard, goToIntegration,
+      toast: s.toast, isAsk: s.view==='ask', isInbox: s.view==='inbox', isTemplates: s.view==='templates',
+      isKnowledge: s.view==='knowledge', isDashboard: s.view==='dashboard', isDetail: s.view==='detail', isIntegration: s.view==='integration',
+      askCols, askQuestion:s.askQuestion, askDraft:s.askDraft, askAssessment:s.askAssessment, askStatus:s.askStatus, askStatusStyle,
+      onAskQuestionChange:(e)=>this.setState({askQuestion:e.target.value}), onAskDraftChange:(e)=>this.setState({askDraft:e.target.value}),
+      generateAskDraft, clearAsk, copyAskDraft,
+      templateSearch:s.templateSearch, onTemplateSearchChange:(e)=>this.setState({templateSearch:e.target.value}),
+      approvedTemplates, approvedTemplateCount, templateCols, knowledgeCols, knowledgeSections, dailyKpiRows,
       schemaRows, syncCards, importMockRows, exportMockRows, previewMapping, toggleUnsyncedPanel,
       validationSection, auditLogDisplay, hasAuditLog: auditLogDisplay.length>0,
       showMappingPreview: s.showMappingPreview, mappingPreviewRows, hasMappingPreview: mappingPreviewRows.length>0,
