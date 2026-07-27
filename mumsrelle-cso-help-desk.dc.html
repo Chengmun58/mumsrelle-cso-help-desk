@@ -1,0 +1,1673 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,500&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { margin: 0; background: #FAF6EF; font-family: 'Public Sans', sans-serif; -webkit-font-smoothing: antialiased; }
+    * { box-sizing: border-box; }
+    ::selection { background: #EAF0E7; }
+    textarea, select, input, button { font-family: inherit; }
+  </style>
+</helmet>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 140"><rect width="200" height="140" fill="#6F8C74"/><text x="100" y="78" font-size="48" font-family="Georgia,serif" fill="#FAF6EF" text-anchor="middle">M</text></svg></template>
+<div style="{{ rootStyle }}">
+
+  <div style="position:sticky;top:0;z-index:40;background:#FFFFFF;border-bottom:1px solid #E6E0D4;">
+    <div style="max-width:1400px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:10px;cursor:pointer;" onClick="{{ goToInbox }}">
+        <div style="width:34px;height:34px;border-radius:10px;background:#6F8C74;display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Lora',serif;font-weight:600;font-size:16px;">M</div>
+        <div>
+          <div style="font-family:'Lora',serif;font-weight:600;font-size:16px;color:#2E2B26;line-height:1.1;">Mumsrelle</div>
+          <div style="font-size:11px;color:#8A8272;letter-spacing:0.04em;">CSO AI HELP DESK 2.0</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:4px;margin-left:12px;">
+        <button style="{{ navBtnStyleInbox }}" onClick="{{ goToInbox }}">Case Inbox</button>
+        <button style="{{ navBtnStyleDash }}" onClick="{{ goToDashboard }}">Dashboard</button>
+        <button style="{{ navBtnStyleIntegration }}" onClick="{{ goToIntegration }}">Integration Setup</button>
+      </div>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:10px;">
+        <div style="text-align:right;">
+          <div style="font-size:13px;font-weight:600;color:#2E2B26;">Brenda</div>
+          <div style="font-size:11px;color:#8A8272;">CSO Team</div>
+        </div>
+        <div style="width:34px;height:34px;border-radius:50%;background:#F5E7E7;color:#8C4B54;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px;">BR</div>
+      </div>
+    </div>
+    <div style="background:#F5EBD8;border-top:1px solid #E3CFA0;padding:7px 24px;display:flex;gap:8px;align-items:center;justify-content:center;">
+      <span style="font-size:10.5px;font-weight:700;letter-spacing:0.05em;color:#7A5C24;background:#fff;padding:2px 7px;border-radius:5px;">PROTOTYPE</span>
+      <span style="font-size:12px;color:#7A5C24;">Interactive workflow prototype — no live Respond.io or Google Sheets connection.</span>
+    </div>
+  </div>
+
+  <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:60;background:#2E2B26;color:#FAF6EF;padding:12px 20px;border-radius:10px;font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,0.2);max-width:90vw;text-align:center;">{{ toast }}</div>
+  </sc-if>
+
+  <sc-if value="{{ isInbox }}" hint-placeholder-val="{{ true }}">
+    <div style="max-width:1400px;margin:0 auto;padding:{{ pagePadding }};">
+      <div style="margin-bottom:22px;">
+        <h1 style="font-family:'Lora',serif;font-weight:600;font-size:26px;color:#2E2B26;margin:0 0 4px;">Case Inbox</h1>
+        <p style="font-size:14px;color:#6E6759;margin:0;">Customer cases from Respond.io, Google Sheets and manual entry, awaiting review and approval.</p>
+      </div>
+
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:16px;">
+        <input placeholder="Search by customer, case ID or category" value="{{ searchQuery }}" onChange="{{ onSearchChange }}" style="flex:1;min-width:220px;padding:11px 16px;border-radius:10px;border:1px solid #E6E0D4;background:#fff;font-size:14px;color:#2E2B26;outline:none;"></input>
+        <sc-for list="{{ priorityFilters }}" as="pf" hint-placeholder-count="4">
+          <button style="{{ pf.style }}" onClick="{{ pf.onClick }}">{{ pf.label }}</button>
+        </sc-for>
+      </div>
+
+      <div style="display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid #E6E0D4;margin-bottom:18px;overflow-x:auto;">
+        <sc-for list="{{ statusTabs }}" as="tab" hint-placeholder-count="8">
+          <button style="{{ tab.style }}" onClick="{{ tab.onClick }}">{{ tab.label }} <span style="{{ tab.countStyle }}">{{ tab.count }}</span></button>
+        </sc-for>
+      </div>
+
+      <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <sc-for list="{{ filteredCases }}" as="c" hint-placeholder-count="4">
+            <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:16px;cursor:pointer;" onClick="{{ c.onClick }}">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+                <div>
+                  <div style="font-size:11px;color:#8A8272;font-weight:600;letter-spacing:0.03em;">{{ c.id }}</div>
+                  <div style="font-size:15px;font-weight:600;color:#2E2B26;">{{ c.customer }}</div>
+                </div>
+                <span style="{{ c.statusStyle }}">{{ c.status }}</span>
+              </div>
+              <div style="font-size:13px;color:#6E6759;margin-bottom:10px;">{{ c.category }}</div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+                <span style="{{ c.priorityStyle }}">{{ c.priority }} priority</span>
+                <span style="{{ c.riskStyle }}">{{ c.riskLabel }}</span>
+                <sc-if value="{{ c.overdue }}" hint-placeholder-val="{{ false }}">
+                  <span style="background:#FBEAEA;color:#B3261E;font-size:11px;font-weight:600;padding:4px 9px;border-radius:100px;">Overdue</span>
+                </sc-if>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;color:#8A8272;">
+                <span>{{ c.owner }} · {{ c.source }}</span>
+                <span>{{ c.updatedTime }}</span>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showDesktopTable }}" hint-placeholder-val="{{ true }}">
+        <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;overflow:hidden;">
+          <div style="display:grid;grid-template-columns:100px 1.3fr 1.3fr 0.9fr 1fr 1fr 0.9fr 1fr;padding:12px 20px;background:#F5F2EA;font-size:11px;font-weight:700;color:#8A8272;letter-spacing:0.04em;text-transform:uppercase;">
+            <div>Case ID</div><div>Customer</div><div>Category</div><div>Priority</div><div>Risk</div><div>Owner</div><div>Source</div><div>Updated</div>
+          </div>
+          <sc-for list="{{ filteredCases }}" as="c" hint-placeholder-count="6">
+            <div style="display:grid;grid-template-columns:100px 1.3fr 1.3fr 0.9fr 1fr 1fr 0.9fr 1fr;padding:16px 20px;border-top:1px solid #EFEBE1;align-items:center;cursor:pointer;font-size:13.5px;color:#2E2B26;" onClick="{{ c.onClick }}">
+              <div style="font-weight:600;color:#6E6759;font-size:12.5px;">{{ c.id }}</div>
+              <div>
+                <div style="font-weight:600;">{{ c.customer }}</div>
+                <span style="{{ c.statusStyle }}">{{ c.status }}</span>
+              </div>
+              <div style="color:#6E6759;">{{ c.category }}</div>
+              <div><span style="{{ c.priorityStyle }}">{{ c.priority }}</span></div>
+              <div><span style="{{ c.riskStyle }}">{{ c.riskLabel }}</span></div>
+              <div style="color:#6E6759;">{{ c.owner }}</div>
+              <div style="color:#6E6759;">{{ c.source }}</div>
+              <div>
+                <div style="color:#6E6759;">{{ c.updatedTime }}</div>
+                <sc-if value="{{ c.overdue }}" hint-placeholder-val="{{ false }}">
+                  <span style="color:#B3261E;font-size:11px;font-weight:600;">● Overdue</span>
+                </sc-if>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isDashboard }}" hint-placeholder-val="{{ false }}">
+    <div style="max-width:1400px;margin:0 auto;padding:{{ pagePadding }};">
+      <div style="margin-bottom:22px;">
+        <h1 style="font-family:'Lora',serif;font-weight:600;font-size:26px;color:#2E2B26;margin:0 0 4px;">Management Dashboard</h1>
+        <p style="font-size:14px;color:#6E6759;margin:0;">Operational snapshot across the CSO team.</p>
+      </div>
+
+      <div style="display:grid;grid-template-columns:{{ kpiCols }};gap:14px;margin-bottom:24px;">
+        <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="7">
+          <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:18px;">
+            <div style="font-size:12px;color:#8A8272;margin-bottom:8px;">{{ k.label }}</div>
+            <div style="font-family:'Lora',serif;font-size:28px;font-weight:600;color:{{ k.color }};">{{ k.value }}</div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="display:grid;grid-template-columns:{{ dashCols }};gap:16px;margin-bottom:16px;">
+        <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;">
+          <div style="font-weight:600;color:#2E2B26;margin-bottom:12px;">Repeated Customer Questions</div>
+          <sc-for list="{{ repeatedQuestions }}" as="q" hint-placeholder-count="3">
+            <div style="display:flex;justify-content:space-between;padding:10px 0;border-top:1px solid #EFEBE1;font-size:13.5px;color:#2E2B26;">
+              <span>{{ q.text }}</span>
+              <span style="color:#8A8272;font-size:12.5px;">{{ q.count }} this week</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;">
+          <div style="font-weight:600;color:#2E2B26;margin-bottom:12px;">Knowledge Gaps Identified</div>
+          <sc-for list="{{ knowledgeGaps }}" as="g" hint-placeholder-count="2">
+            <div style="padding:10px 0;border-top:1px solid #EFEBE1;font-size:13.5px;color:#2E2B26;">{{ g }}</div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:{{ dashCols }};gap:16px;">
+        <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;">
+          <div style="font-weight:600;color:#2E2B26;margin-bottom:14px;">Case Volume by CSO</div>
+          <sc-for list="{{ csoVolume }}" as="v" hint-placeholder-count="4">
+            <div style="margin-bottom:12px;">
+              <div style="display:flex;justify-content:space-between;font-size:12.5px;color:#6E6759;margin-bottom:4px;"><span>{{ v.name }}</span><span>{{ v.count }}</span></div>
+              <div style="background:#F1EFE9;border-radius:100px;height:8px;overflow:hidden;"><div style="height:100%;background:#6F8C74;border-radius:100px;width:{{ v.pct }};"></div></div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;">
+          <div style="font-weight:600;color:#2E2B26;margin-bottom:14px;">Category Distribution</div>
+          <sc-for list="{{ categoryDist }}" as="d" hint-placeholder-count="5">
+            <div style="margin-bottom:12px;">
+              <div style="display:flex;justify-content:space-between;font-size:12.5px;color:#6E6759;margin-bottom:4px;"><span>{{ d.name }}</span><span>{{ d.count }}</span></div>
+              <div style="background:#F1EFE9;border-radius:100px;height:8px;overflow:hidden;"><div style="height:100%;background:#BD7F88;border-radius:100px;width:{{ d.pct }};"></div></div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isIntegration }}" hint-placeholder-val="{{ false }}">
+    <div style="max-width:1400px;margin:0 auto;padding:{{ pagePadding }};">
+      <div style="margin-bottom:22px;">
+        <h1 style="font-family:'Lora',serif;font-weight:600;font-size:26px;color:#2E2B26;margin:0 0 4px;">Integration Setup</h1>
+        <p style="font-size:14px;color:#6E6759;margin:0;">Google Sheets case-data schema, mapping and mock sync — no live API connection yet. All actions below operate on local prototype data only.</p>
+      </div>
+
+      <div style="display:grid;grid-template-columns:{{ kpiCols }};gap:14px;margin-bottom:20px;">
+        <sc-for list="{{ syncCards }}" as="sc" hint-placeholder-count="7">
+          <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:16px;">
+            <div style="font-size:11.5px;color:#8A8272;margin-bottom:8px;">{{ sc.label }}</div>
+            <span style="{{ sc.style }}">{{ sc.value }}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;">
+        <button style="background:#6F8C74;color:#fff;border:none;padding:10px 16px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;" onClick="{{ importMockRows }}">Import Mock Sheet Rows</button>
+        <button style="background:none;border:1px solid #E6E0D4;color:#2E2B26;padding:10px 16px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;" onClick="{{ previewMapping }}">Preview Mapping</button>
+        <button style="background:none;border:1px solid #E6E0D4;color:#2E2B26;padding:10px 16px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;" onClick="{{ exportMockRows }}">Export Current Cases as Sheet Rows</button>
+        <button style="background:none;border:1px solid #E6E0D4;color:#2E2B26;padding:10px 16px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;" onClick="{{ toggleUnsyncedPanel }}">View Unsynced Changes ({{ unsyncedCount }})</button>
+      </div>
+
+      <sc-if value="{{ hasMappingPreview }}" hint-placeholder-val="{{ false }}">
+        <sc-if value="{{ showMappingPreview }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;margin-bottom:20px;">
+            <div style="font-weight:600;color:#2E2B26;margin-bottom:10px;">Mapping Preview — sample sheet row → normalized case</div>
+            <div style="display:flex;flex-direction:column;gap:0;">
+              <sc-for list="{{ mappingPreviewRows }}" as="mp" hint-placeholder-count="6">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:7px 0;border-top:1px solid #EFEBE1;font-size:12.5px;">
+                  <span style="color:#8A8272;">{{ mp.k }}</span><span style="color:#2E2B26;">{{ mp.v }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+      </sc-if>
+
+      <sc-if value="{{ showUnsyncedPanel }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;margin-bottom:20px;">
+          <div style="font-weight:600;color:#2E2B26;margin-bottom:10px;">Unsynced Local Changes</div>
+          <sc-if value="{{ hasUnsyncedList }}" hint-placeholder-val="{{ false }}">
+            <sc-for list="{{ unsyncedList }}" as="u" hint-placeholder-count="2">
+              <div style="display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid #EFEBE1;font-size:13px;color:#2E2B26;">
+                <span>{{ u.refNo }} · {{ u.customer }}</span><span style="color:#8A8272;">{{ u.status }}</span>
+              </div>
+            </sc-for>
+          </sc-if>
+          <sc-if value="{{ noUnsyncedList }}" hint-placeholder-val="{{ true }}">
+            <div style="font-size:13px;color:#6E6759;">No unsynced local changes.</div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ hasExportPreview }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;margin-bottom:20px;overflow-x:auto;">
+          <div style="font-weight:600;color:#2E2B26;margin-bottom:10px;">Export Preview (first 5 rows, local only)</div>
+          <div style="display:grid;grid-template-columns:1fr 1.4fr 1.4fr 1fr 1fr;padding:8px 0;font-size:11px;font-weight:700;color:#8A8272;text-transform:uppercase;">
+            <div>Ref No.</div><div>Customer Name</div><div>Category</div><div>Status</div><div>Approval Status</div>
+          </div>
+          <sc-for list="{{ exportPreviewDisplay }}" as="ex" hint-placeholder-count="3">
+            <div style="display:grid;grid-template-columns:1fr 1.4fr 1.4fr 1fr 1fr;padding:8px 0;border-top:1px solid #EFEBE1;font-size:12.5px;color:#2E2B26;">
+              <div>{{ ex.refNo }}</div><div>{{ ex.customer }}</div><div>{{ ex.category }}</div><div>{{ ex.status }}</div><div>{{ ex.approvalStatus }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ validationSection.hasReport }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;margin-bottom:20px;">
+          <div style="font-weight:600;color:#2E2B26;margin-bottom:12px;">Validation Report</div>
+          <sc-if value="{{ validationSection.hasErrors }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:12px;font-weight:700;color:#B3261E;margin-bottom:6px;">Errors</div>
+            <sc-for list="{{ validationSection.errors }}" as="e" hint-placeholder-count="1">
+              <div style="font-size:12.5px;color:#B3261E;background:#FBEAEA;border-radius:8px;padding:8px 12px;margin-bottom:6px;">{{ e }}</div>
+            </sc-for>
+          </sc-if>
+          <sc-if value="{{ validationSection.hasWarnings }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:12px;font-weight:700;color:#7A5C24;margin:10px 0 6px;">Warnings</div>
+            <sc-for list="{{ validationSection.warnings }}" as="w" hint-placeholder-count="1">
+              <div style="font-size:12.5px;color:#7A5C24;background:#F5EBD8;border-radius:8px;padding:8px 12px;margin-bottom:6px;">{{ w }}</div>
+            </sc-for>
+          </sc-if>
+          <sc-if value="{{ validationSection.hasAutoCorrected }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:12px;font-weight:700;color:#6E6759;margin:10px 0 6px;">Auto-corrected fields</div>
+            <sc-for list="{{ validationSection.autoCorrected }}" as="a" hint-placeholder-count="1">
+              <div style="font-size:12.5px;color:#6E6759;background:#F1EFE9;border-radius:8px;padding:8px 12px;margin-bottom:6px;">{{ a }}</div>
+            </sc-for>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ hasAuditLog }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;margin-bottom:20px;">
+          <div style="font-weight:600;color:#2E2B26;margin-bottom:10px;">Audit Trail — Local Changes</div>
+          <sc-for list="{{ auditLogDisplay }}" as="al" hint-placeholder-count="3">
+            <div style="padding:9px 0;border-top:1px solid #EFEBE1;">
+              <div style="font-size:13px;color:#2E2B26;">{{ al.text }}</div>
+              <div style="font-size:11px;color:#8A8272;margin-top:2px;">{{ al.meta }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <div style="margin:32px 0 16px;border-top:1px solid #E6E0D4;padding-top:24px;">
+        <h2 style="font-family:'Lora',serif;font-weight:600;font-size:20px;color:#2E2B26;margin:0 0 4px;">Respond.io Integration</h2>
+        <p style="font-size:13px;color:#6E6759;margin:0;">Incoming message mapping, case matching and reply-preparation — simulated locally, no live webhook.</p>
+      </div>
+
+      <div style="display:grid;grid-template-columns:{{ kpiCols }};gap:14px;margin-bottom:20px;">
+        <sc-for list="{{ respondIoSyncCards }}" as="rc" hint-placeholder-count="9">
+          <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:16px;">
+            <div style="font-size:11.5px;color:#8A8272;margin-bottom:8px;">{{ rc.label }}</div>
+            <span style="{{ rc.style }}">{{ rc.value }}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;">
+        <button style="background:#6F8C74;color:#fff;border:none;padding:10px 16px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;" onClick="{{ importMockRespondIoEvents }}">Import Mock Respond.io Event(s)</button>
+        <button style="background:none;border:1px solid #E6E0D4;color:#2E2B26;padding:10px 16px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;" onClick="{{ toggleRespondIoTemplates }}">{{ showTemplatesLabel }}</button>
+      </div>
+
+      <sc-if value="{{ hasAmbiguous }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#fff;border:1px solid #E3CFA0;border-radius:14px;padding:20px;margin-bottom:20px;">
+          <div style="font-weight:600;color:#7A5C24;margin-bottom:10px;">Ambiguous Case Matches — Human Selection Required</div>
+          <sc-for list="{{ ambiguousDisplay }}" as="am" hint-placeholder-count="1">
+            <div style="padding:10px 0;border-top:1px solid #EFEBE1;">
+              <div style="font-size:12.5px;color:#453F35;margin-bottom:6px;">Event {{ am.eventId }} · Contact {{ am.contactNumber }} matches multiple open cases:</div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <sc-for list="{{ am.candidates }}" as="cd" hint-placeholder-count="2">
+                  <button style="background:#fff;border:1px solid #E3CFA0;color:#7A5C24;padding:7px 12px;border-radius:8px;font-size:12.5px;cursor:pointer;" onClick="{{ cd.onClick }}">Attach to {{ cd.refNo }} ({{ cd.customer }})</button>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ respondIoValidationSection.hasReport }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;margin-bottom:20px;">
+          <div style="font-weight:600;color:#2E2B26;margin-bottom:12px;">Respond.io Validation Report</div>
+          <sc-if value="{{ respondIoValidationSection.hasErrors }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:12px;font-weight:700;color:#B3261E;margin-bottom:6px;">Errors</div>
+            <sc-for list="{{ respondIoValidationSection.errors }}" as="e" hint-placeholder-count="1">
+              <div style="font-size:12.5px;color:#B3261E;background:#FBEAEA;border-radius:8px;padding:8px 12px;margin-bottom:6px;">{{ e }}</div>
+            </sc-for>
+          </sc-if>
+          <sc-if value="{{ respondIoValidationSection.hasWarnings }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:12px;font-weight:700;color:#7A5C24;margin:10px 0 6px;">Warnings</div>
+            <sc-for list="{{ respondIoValidationSection.warnings }}" as="w" hint-placeholder-count="1">
+              <div style="font-size:12.5px;color:#7A5C24;background:#F5EBD8;border-radius:8px;padding:8px 12px;margin-bottom:6px;">{{ w }}</div>
+            </sc-for>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showRespondIoTemplates }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;margin-bottom:20px;overflow-x:auto;">
+          <div style="font-weight:600;color:#2E2B26;margin-bottom:4px;">Respond.io Template Registry (local)</div>
+          <div style="font-size:11.5px;color:#8A8272;margin-bottom:12px;">Deprecated templates are excluded from suggestions everywhere in this prototype.</div>
+          <div style="display:grid;grid-template-columns:1.6fr 1.1fr 0.9fr 1.3fr 1fr 0.8fr;padding:8px 0;font-size:10.5px;font-weight:700;color:#8A8272;text-transform:uppercase;">
+            <div>Template</div><div>Category</div><div>KB Source</div><div>Approved Use</div><div>Kind</div><div>Status</div>
+          </div>
+          <sc-for list="{{ templateRegistryDisplay }}" as="t" hint-placeholder-count="6">
+            <div style="display:grid;grid-template-columns:1.6fr 1.1fr 0.9fr 1.3fr 1fr 0.8fr;padding:9px 0;border-top:1px solid #EFEBE1;font-size:12px;align-items:center;">
+              <div style="color:#2E2B26;font-weight:600;">{{ t.name }}</div>
+              <div style="color:#6E6759;">{{ t.category }}</div>
+              <div style="color:#6E6759;">{{ t.sourceKbId }}</div>
+              <div style="color:#8A8272;font-size:11px;">{{ t.approvedUse }}</div>
+              <div style="color:#6E6759;font-size:11px;">{{ t.kindLabel }}</div>
+              <div><span style="{{ t.statusStyle }}">{{ t.statusLabel }}</span></div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;">
+        <div style="font-weight:600;color:#2E2B26;margin-bottom:4px;">Data Schema — Google Sheets Column Mapping</div>
+        <div style="font-size:11.5px;color:#8A8272;margin-bottom:12px;">Canonical case fields, mapped to proposed Google Sheets columns. Read-only fields are computed by the Case Engine and cannot be overridden from the sheet.</div>
+        <div style="max-height:520px;overflow-y:auto;border:1px solid #EFEBE1;border-radius:10px;">
+          <div style="display:grid;grid-template-columns:1.3fr 0.9fr 0.6fr 0.7fr 0.8fr 0.7fr 0.8fr 1.6fr;padding:10px 14px;background:#F5F2EA;font-size:10.5px;font-weight:700;color:#8A8272;text-transform:uppercase;position:sticky;top:0;">
+            <div>Sheet Column</div><div>Internal Field</div><div>Type</div><div>Required</div><div>Integration</div><div>CSO UI</div><div>Engine</div><div>Validation / Notes</div>
+          </div>
+          <sc-for list="{{ schemaRows }}" as="row" hint-placeholder-count="10">
+            <div style="display:grid;grid-template-columns:1.3fr 0.9fr 0.6fr 0.7fr 0.8fr 0.7fr 0.8fr 1.6fr;padding:9px 14px;border-top:1px solid #EFEBE1;font-size:11.5px;align-items:center;">
+              <div style="color:#2E2B26;font-weight:600;">{{ row.col }}</div>
+              <div style="color:#6E6759;">{{ row.field }}</div>
+              <div style="color:#6E6759;">{{ row.type }}</div>
+              <div style="color:#6E6759;">{{ row.required }}</div>
+              <div><span style="{{ row.integrationStyle }}">{{ row.integration }}</span></div>
+              <div><span style="{{ row.csoStyle }}">{{ row.cso }}</span></div>
+              <div><span style="{{ row.engineStyle }}">{{ row.engine }}</span></div>
+              <div style="color:#8A8272;font-size:11px;">{{ row.val }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isDetail }}" hint-placeholder-val="{{ false }}">
+    <div style="max-width:1400px;margin:0 auto;padding:{{ pagePadding }};">
+      <button style="background:none;border:none;color:#6E6759;font-size:13px;cursor:pointer;padding:0;margin-bottom:14px;display:flex;align-items:center;gap:6px;" onClick="{{ goToInbox }}">← Back to Case Inbox</button>
+
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+        <div>
+          <div style="font-size:12px;color:#8A8272;font-weight:600;margin-bottom:4px;">{{ selectedCase.id }} · {{ selectedCase.refNo }}</div>
+          <h1 style="font-family:'Lora',serif;font-weight:600;font-size:24px;color:#2E2B26;margin:0 0 6px;">{{ selectedCase.customer }}</h1>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <span style="{{ selectedCase.statusStyle }}">{{ selectedCase.displayStatus }}</span>
+            <span style="{{ selectedCase.priorityStyle }}">{{ selectedCase.priority }} priority</span>
+            <span style="{{ selectedCase.riskStyle }}">{{ selectedCase.riskLabel }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="{{ detailGridStyle }}">
+        <div style="display:flex;flex-direction:column;gap:16px;">
+
+          <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;">
+            <div style="font-weight:600;color:#2E2B26;margin-bottom:12px;">Customer Information</div>
+            <div style="display:grid;grid-template-columns:{{ infoCols }};gap:12px;font-size:13.5px;">
+              <div><div style="color:#8A8272;font-size:11.5px;margin-bottom:2px;">Phone</div><div style="color:#2E2B26;">{{ selectedCase.phone }}</div></div>
+              <div><div style="color:#8A8272;font-size:11.5px;margin-bottom:2px;">Email</div><div style="color:#2E2B26;">{{ selectedCase.email }}</div></div>
+              <div><div style="color:#8A8272;font-size:11.5px;margin-bottom:2px;">Customer Type</div><div style="color:#2E2B26;">{{ selectedCase.customerType }}</div></div>
+              <div><div style="color:#8A8272;font-size:11.5px;margin-bottom:2px;">Package</div><div style="color:#2E2B26;">{{ selectedCase.package }}</div></div>
+              <div><div style="color:#8A8272;font-size:11.5px;margin-bottom:2px;">Package Balance</div><div style="color:#2E2B26;">{{ selectedCase.packageBalance }}</div></div>
+              <div><div style="color:#8A8272;font-size:11.5px;margin-bottom:2px;">Last Treatment Date</div><div style="color:#2E2B26;">{{ selectedCase.lastTreatmentDate }}</div></div>
+              <div><div style="color:#8A8272;font-size:11.5px;margin-bottom:2px;">Respond.io Conversation</div><div style="color:#8A8272;font-style:italic;">{{ selectedCase.respondIoLink }}</div></div>
+              <div><div style="color:#8A8272;font-size:11.5px;margin-bottom:2px;">Follow-up Deadline</div><div style="color:#2E2B26;">{{ selectedCase.followUpDeadline }}</div></div>
+            </div>
+          </div>
+
+          <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+              <div style="font-weight:600;color:#2E2B26;">{{ selectedCase.messageLabel }}</div>
+              <div style="font-size:11.5px;color:#8A8272;">{{ selectedCase.receivedTime }}</div>
+            </div>
+            <div style="background:#F5F2EA;border-radius:10px;padding:14px 16px;font-size:14px;color:#2E2B26;line-height:1.55;font-style:italic;">"{{ selectedCase.originalMessage }}"</div>
+            <div style="font-size:12px;color:#8A8272;margin-top:10px;">Conversation context: {{ selectedCase.conversationContext }}</div>
+          </div>
+
+          <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+              <div style="font-weight:600;color:#2E2B26;">AI-Generated Customer Reply Draft</div>
+              <div style="display:flex;gap:8px;">
+                <button style="{{ editDraftBtnStyle }}" onClick="{{ toggleEditDraft }}">{{ editDraftLabel }}</button>
+                <button style="background:none;border:1px solid #E6E0D4;color:#6E6759;font-size:12.5px;padding:6px 12px;border-radius:8px;cursor:pointer;" onClick="{{ copyDraft }}">Copy Draft</button>
+              </div>
+            </div>
+            <textarea readOnly="{{ draftReadOnly }}" value="{{ draftText }}" onChange="{{ onDraftChange }}" style="{{ draftAreaStyle }}"></textarea>
+            <div style="font-size:11.5px;color:#8A8272;margin-top:8px;">{{ draftCharCount }} characters · Draft grounded in cited sources below</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
+              <sc-for list="{{ selectedCase.citations }}" as="cite" hint-placeholder-count="2">
+                <span style="{{ cite.style }}">{{ cite.label }}</span>
+              </sc-for>
+            </div>
+          </div>
+
+          <sc-if value="{{ selectedCase.isFinalized }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;">
+              <div style="font-weight:600;color:#2E2B26;margin-bottom:10px;">Final Customer Reply (Approved)</div>
+              <div style="background:#EAF0E7;border-radius:10px;padding:14px 16px;font-size:14px;color:#2E2B26;line-height:1.55;">{{ selectedCase.finalCustomerReply }}</div>
+              <div style="display:flex;gap:16px;margin-top:10px;font-size:12px;color:#6E6759;flex-wrap:wrap;">
+                <span>Approved by {{ selectedCase.approvedBy }} · {{ selectedCase.approvedTime }}</span>
+                <span>Respond.io Sent: {{ selectedCase.respondIoSentLabel }}</span>
+              </div>
+            </div>
+          </sc-if>
+
+          <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;">
+            <div style="font-weight:600;color:#2E2B26;margin-bottom:8px;">Internal Assessment</div>
+            <div style="font-size:13.5px;color:#453F35;line-height:1.6;">{{ selectedCase.internalAssessment }}</div>
+          </div>
+
+          <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;">
+            <div style="font-weight:600;color:#2E2B26;margin-bottom:8px;">CSO Next Action</div>
+            <div style="font-size:13.5px;color:#453F35;line-height:1.6;">{{ selectedCase.nextAction }}</div>
+          </div>
+
+          <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;">
+            <div style="display:grid;grid-template-columns:{{ infoCols }};gap:16px;margin-bottom:16px;">
+              <div>
+                <div style="color:#8A8272;font-size:11.5px;margin-bottom:6px;">Category</div>
+                <select value="{{ selectedCase.category }}" onChange="{{ onCategoryChange }}" style="width:100%;padding:9px 10px;border-radius:8px;border:1px solid #E6E0D4;font-size:13.5px;color:#2E2B26;background:#fff;">
+                  <option>Appointment Enquiry</option>
+                  <option>Package / Billing Enquiry</option>
+                  <option>Medical / Treatment Suitability</option>
+                  <option>Post-Treatment Concern</option>
+                  <option>Refund / Cancellation / Package Dispute</option>
+                  <option>Complaint / Dispute</option>
+                </select>
+              </div>
+              <div>
+                <div style="color:#8A8272;font-size:11.5px;margin-bottom:6px;">Priority</div>
+                <select value="{{ selectedCase.priority }}" onChange="{{ onPriorityChange }}" style="width:100%;padding:9px 10px;border-radius:8px;border:1px solid #E6E0D4;font-size:13.5px;color:#2E2B26;background:#fff;">
+                  <option>Low</option><option>Medium</option><option>High</option>
+                </select>
+              </div>
+            </div>
+            <div style="color:#8A8272;font-size:11.5px;margin-bottom:8px;">Missing Information</div>
+            <sc-if value="{{ selectedCase.hasMissingInfo }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <sc-for list="{{ selectedCase.missingInfo }}" as="m" hint-placeholder-count="2">
+                  <div style="font-size:13px;color:#7A5C24;background:#F5EBD8;border-radius:8px;padding:8px 12px;">{{ m }}</div>
+                </sc-for>
+              </div>
+            </sc-if>
+            <sc-if value="{{ selectedCase.noMissingInfo }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:13px;color:#6E6759;">None identified.</div>
+            </sc-if>
+          </div>
+
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:16px;">
+
+          <div style="background:#fff;border:1px solid {{ selectedCase.escBorder }};border-radius:14px;padding:20px;">
+            <div style="font-weight:600;color:#2E2B26;margin-bottom:12px;">Risk &amp; Escalation Panel</div>
+            <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
+              <sc-for list="{{ riskFlagsAll }}" as="rf" hint-placeholder-count="7">
+                <div style="{{ rf.style }}">
+                  <span>{{ rf.icon }}</span><span>{{ rf.label }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid #EFEBE1;">
+              <span style="font-size:13px;color:#6E6759;">Escalation required</span>
+              <span style="{{ selectedCase.escRequiredStyle }}">{{ selectedCase.escRequiredLabel }}</span>
+            </div>
+            <div style="padding:12px 0;border-top:1px solid #EFEBE1;">
+              <div style="font-size:11.5px;color:#8A8272;margin-bottom:4px;">Required Reviewer</div>
+              <div style="font-size:13.5px;font-weight:600;color:#2E2B26;">{{ selectedCase.reviewerRole }}</div>
+            </div>
+            <sc-if value="{{ selectedCase.escalationRequired }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:12px 0;border-top:1px solid #EFEBE1;">
+                <div style="font-size:11.5px;color:#8A8272;margin-bottom:4px;">Escalate to</div>
+                <div style="font-size:13.5px;font-weight:600;color:#2E2B26;margin-bottom:10px;">{{ selectedCase.escalateTo }}</div>
+                <div style="font-size:11.5px;color:#8A8272;margin-bottom:4px;">Reason</div>
+                <div style="font-size:13px;color:#453F35;line-height:1.5;margin-bottom:12px;">{{ selectedCase.escalationReason }}</div>
+                <div style="font-size:11.5px;color:#8A8272;margin-bottom:6px;">Safe holding reply preview</div>
+                <div style="background:#F5F2EA;border-radius:10px;padding:12px 14px;font-size:13px;color:#2E2B26;line-height:1.55;">{{ selectedCase.holdingReply }}</div>
+              </div>
+            </sc-if>
+          </div>
+
+          <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;">
+            <div style="font-weight:600;color:#2E2B26;margin-bottom:6px;">Customer Data Sources</div>
+            <div style="font-size:11.5px;color:#8A8272;margin-bottom:10px;">Where this case's raw information originated.</div>
+            <sc-for list="{{ customerDataSources }}" as="ds" hint-placeholder-count="4">
+              <div style="padding:8px 0;border-top:1px solid #EFEBE1;">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                  <span style="font-size:12.5px;color:{{ ds.color }};">{{ ds.name }}</span>
+                  <span style="{{ ds.style }}">{{ ds.tag }}</span>
+                </div>
+                <div style="font-size:11px;color:#A8A192;margin-top:2px;">{{ ds.note }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;">
+            <div style="font-weight:600;color:#2E2B26;margin-bottom:6px;">Integration Status</div>
+            <div style="font-size:11.5px;color:#8A8272;margin-bottom:10px;">What is live in this prototype vs. requires the real API/Sheet connection.</div>
+            <sc-for list="{{ integrationStatus }}" as="is" hint-placeholder-count="3">
+              <div style="padding:9px 0;border-top:1px solid #EFEBE1;">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                  <span style="font-size:12.5px;color:#453F35;">{{ is.name }}</span>
+                  <span style="{{ is.style }}">{{ is.state }}</span>
+                </div>
+                <div style="font-size:11px;color:#A8A192;margin-top:2px;">{{ is.detail }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;">
+            <div style="font-weight:600;color:#2E2B26;margin-bottom:6px;">Approved Answer Sources</div>
+            <div style="font-size:11.5px;color:#8A8272;margin-bottom:10px;">Hierarchy used to ground the AI draft.</div>
+            <sc-for list="{{ knowledgeHierarchy }}" as="k" hint-placeholder-count="5">
+              <div style="padding:9px 0;border-top:1px solid #EFEBE1;">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                  <span style="font-size:12.5px;color:#453F35;">{{ k.name }}</span>
+                  <span style="{{ k.style }}">{{ k.tier }}</span>
+                </div>
+                <div style="font-size:11px;color:#A8A192;margin-top:2px;">{{ k.version }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;">
+            <div style="font-weight:600;color:#2E2B26;margin-bottom:12px;">Message &amp; Event Timeline</div>
+            <sc-for list="{{ timelineDisplay }}" as="h" hint-placeholder-count="3">
+              <div style="display:flex;gap:10px;padding-bottom:14px;position:relative;">
+                <div style="width:8px;height:8px;border-radius:50%;background:#6F8C74;margin-top:5px;flex-shrink:0;"></div>
+                <div>
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <span style="font-size:13px;font-weight:600;color:#2E2B26;">{{ h.status }}</span>
+                    <span style="{{ h.visibilityStyle }}">{{ h.visibility }}</span>
+                  </div>
+                  <div style="font-size:11.5px;color:#8A8272;">{{ h.timestamp }} · {{ h.actor }}</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;">
+            <div style="font-weight:600;color:#2E2B26;margin-bottom:6px;">Suggested Templates</div>
+            <div style="font-size:11.5px;color:#8A8272;margin-bottom:10px;">From the local Respond.io template registry — deprecated templates never suggested.</div>
+            <sc-for list="{{ selectedCase.suggestedTemplates }}" as="tn" hint-placeholder-count="2">
+              <div style="font-size:12.5px;color:#2E2B26;padding:7px 0;border-top:1px solid #EFEBE1;">{{ tn }}</div>
+            </sc-for>
+          </div>
+
+          <sc-if value="{{ selectedCase.onHold }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#F5EBD8;border:1px solid #E3CFA0;border-radius:14px;padding:20px;">
+              <div style="font-weight:600;color:#7A5C24;margin-bottom:12px;">Case On Hold</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div>
+                  <div style="font-size:11px;color:#7A5C24;margin-bottom:4px;">Hold Reason</div>
+                  <select value="{{ selectedCase.holdReason }}" onChange="{{ onHoldFieldChange('reason') }}" style="width:100%;padding:8px 10px;border-radius:8px;border:1px solid #E3CFA0;font-size:13px;background:#fff;color:#2E2B26;">
+                    <option>Awaiting Management Decision</option>
+                    <option>Awaiting Therapist Review</option>
+                    <option>Awaiting Customer Response</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+                <div>
+                  <div style="font-size:11px;color:#7A5C24;margin-bottom:4px;">Hold Until / Follow-up Date</div>
+                  <input type="date" value="{{ selectedCase.holdUntil }}" onChange="{{ onHoldFieldChange('until') }}" style="width:100%;padding:8px 10px;border-radius:8px;border:1px solid #E3CFA0;font-size:13px;background:#fff;color:#2E2B26;"></input>
+                </div>
+                <div>
+                  <div style="font-size:11px;color:#7A5C24;margin-bottom:4px;">Follow-up Owner</div>
+                  <select value="{{ selectedCase.holdOwner }}" onChange="{{ onHoldFieldChange('owner') }}" style="width:100%;padding:8px 10px;border-radius:8px;border:1px solid #E3CFA0;font-size:13px;background:#fff;color:#2E2B26;">
+                    <option>Brenda</option><option>Joe</option><option>Faizan</option><option>Hazelle</option><option>Operations Manager</option>
+                  </select>
+                </div>
+                <div>
+                  <div style="font-size:11px;color:#7A5C24;margin-bottom:4px;">Validity Protection Approved</div>
+                  <select value="{{ selectedCase.holdValidityApproved }}" onChange="{{ onHoldFieldChange('validityApproved') }}" style="width:100%;padding:8px 10px;border-radius:8px;border:1px solid #E3CFA0;font-size:13px;background:#fff;color:#2E2B26;">
+                    <option>No</option><option>Yes</option>
+                  </select>
+                </div>
+                <div>
+                  <div style="font-size:11px;color:#7A5C24;margin-bottom:4px;">Approved By</div>
+                  <input type="text" placeholder="e.g. Sharon" value="{{ selectedCase.holdApprovedBy }}" onChange="{{ onHoldFieldChange('approvedBy') }}" style="width:100%;padding:8px 10px;border-radius:8px;border:1px solid #E3CFA0;font-size:13px;background:#fff;color:#2E2B26;"></input>
+                </div>
+                <button style="background:#7A5C24;color:#fff;border:none;padding:10px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;margin-top:4px;" onClick="{{ resumeCase }}">Resume Case</button>
+              </div>
+            </div>
+          </sc-if>
+
+          <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;position:sticky;top:130px;">
+            <div style="font-weight:600;color:#2E2B26;margin-bottom:12px;">Human Approval</div>
+            <sc-if value="{{ selectedCase.hasImportOverrideNotice }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:11.5px;color:#7A5C24;background:#F5EBD8;border-radius:8px;padding:8px 12px;margin-bottom:10px;line-height:1.5;">{{ selectedCase.importOverrideNoticeText }}</div>
+            </sc-if>
+            <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px;">
+              <button style="{{ approveBtnStyle }}" onClick="{{ approveCase }}">Approve for Use</button>
+              <sc-if value="{{ selectedCase.hasBlockReasons }}" hint-placeholder-val="{{ false }}">
+                <div style="font-size:11.5px;color:#B3261E;line-height:1.5;">{{ selectedCase.blockReasonsText }}</div>
+              </sc-if>
+              <button style="{{ revisionBtnStyle }}" onClick="{{ requestRevision }}">Request Revision</button>
+              <button style="{{ escalateBtnStyle }}" onClick="{{ escalateCase }}">Escalate</button>
+              <sc-if value="{{ selectedCase.onHoldBtnVisible }}" hint-placeholder-val="{{ true }}">
+                <button style="{{ holdBtnStyle }}" onClick="{{ holdCase }}">Place on Hold</button>
+              </sc-if>
+              <sc-if value="{{ selectedCase.canConfirmSent }}" hint-placeholder-val="{{ false }}">
+                <button style="background:none;color:#4F6B54;border:1px solid #6F8C74;padding:11px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;" onClick="{{ confirmReplySentManually }}">Confirm Reply Sent Manually</button>
+              </sc-if>
+            </div>
+            <div style="font-size:11.5px;color:#8A8272;line-height:1.5;background:#F5F2EA;border-radius:8px;padding:10px 12px;margin-bottom:8px;">Approving marks this draft ready for the CSO to copy into Respond.io. Nothing is sent to the customer automatically — sending is always a manual CSO action, confirmed manually afterwards.</div>
+            <div style="display:flex;justify-content:space-between;font-size:11.5px;color:#8A8272;">
+              <span>Copied: {{ selectedCase.copiedAt }}</span><span>Respond.io Sent: {{ selectedCase.respondIoSentLabel }}</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const IVORY='#FAF6EF', INK='#2E2B26', INK_MUTED='#6E6759', SAGE='#6F8C74', SAGE_BG='#EAF0E7', SAGE_DARK='#4F6B54',
+  ROSE_BG='#F5E7E7', ROSE_DARK='#8C4B54', AMBER='#B08A3E', AMBER_BG='#F5EBD8', RED='#B3261E', RED_BG='#FBEAEA',
+  GRAY_BG='#F1EFE9', BORDER='#E6E0D4';
+
+function pillStyle(bg,color){return `background:${bg};color:${color};font-size:11.5px;font-weight:600;padding:5px 11px;border-radius:100px;display:inline-block;`}
+function priorityStyle(p){
+  if(p==='High') return pillStyle(ROSE_BG,ROSE_DARK);
+  if(p==='Medium') return pillStyle(AMBER_BG,AMBER);
+  return pillStyle(SAGE_BG,SAGE_DARK);
+}
+function riskInfo(level='Low', safety=false){
+  if(safety) return {label:'High · Safety',style:pillStyle(RED_BG,RED)};
+  if(level==='High') return {label:'High',style:pillStyle(ROSE_BG,ROSE_DARK)};
+  if(level==='Medium') return {label:'Medium',style:pillStyle(AMBER_BG,AMBER)};
+  return {label:'Low',style:pillStyle(SAGE_BG,SAGE_DARK)};
+}
+function statusStyle(s){
+  const map={
+    'New':[GRAY_BG,INK_MUTED],'AI Drafted':[SAGE_BG,SAGE_DARK],'Pending Approval':[AMBER_BG,AMBER],
+    'Escalated':[RED_BG,RED],'On Hold':[AMBER_BG,'#7A5C24'],'Approved':[SAGE,'#fff'],'Closed':['#EDEAE2',INK_MUTED]
+  };
+  const c=map[s]||[GRAY_BG,INK_MUTED];
+  return pillStyle(c[0],c[1]);
+}
+function labelForSource(source){
+  if(source==='Google Sheets') return 'Case Submission — Google Sheets';
+  if(source==='Manual') return 'Manual Case Entry — CSO Help Desk';
+  return 'Original Message — Respond.io';
+}
+
+const CATEGORY_RULES = {
+  'Appointment Enquiry': { riskLevel:'Low', safety:false, escalationRequired:false, escalateTo:'', reviewerRole:'Operations Manager / Authorised CSO Reviewer',
+    holdingReply:'', nextAction:'Confirm details directly with customer and update booking records.', missingInfo:[], sensitive:false, escalationReason:'' },
+  'Package / Billing Enquiry': { riskLevel:'Medium', safety:false, escalationRequired:false, escalateTo:'', reviewerRole:'Operations Manager / Authorised CSO Reviewer',
+    holdingReply:'', nextAction:'Verify package/session balance against Google Sheets before responding.', missingInfo:['Order / receipt reference number'], sensitive:false, escalationReason:'' },
+  'Medical / Treatment Suitability': { riskLevel:'High', safety:true, escalationRequired:true, escalateTo:'Hazelle / Centre Manager', reviewerRole:'Hazelle / Centre Manager',
+    holdingReply:"Thank you for sharing this. We'd like our Centre Manager to review your case before confirming what's suitable, and she may consult your treating therapist. We'll follow up shortly — please don't start any new treatment until we confirm.",
+    nextAction:'Escalate to Hazelle / Centre Manager for clinical review. Do not provide medical advice.', missingInfo:['Doctor / medical clearance status','Details of any surgical recovery'], sensitive:true,
+    escalationReason:'Medical / treatment suitability question requires Centre Manager review; Centre Manager may consult the treating therapist.' },
+  'Post-Treatment Concern': { riskLevel:'High', safety:true, escalationRequired:true, escalateTo:'Hazelle / Centre Manager', reviewerRole:'Hazelle / Centre Manager',
+    holdingReply:"Thank you for telling us, and we're sorry you're uncomfortable. We're escalating this to our Centre Manager right away, who may consult your treating therapist. If symptoms are severe or worsening, please seek medical attention immediately.",
+    nextAction:'Escalate immediately to Hazelle / Centre Manager. Do not offer treatment advice.', missingInfo:['Symptom severity and duration','Whether medical attention has been sought'], sensitive:true,
+    escalationReason:'Possible adverse reaction or post-treatment symptom — safety protocol requires immediate Centre Manager review.' },
+  'Refund / Cancellation / Package Dispute': { riskLevel:'High', safety:false, escalationRequired:true, escalateTo:'Sharon or Suzen / Management', reviewerRole:'Sharon or Suzen / Management',
+    holdingReply:"Thank you for letting us know. Treatment packages are generally non-refundable once purchased, and requests like this are reviewed individually by our Management team. We've forwarded this for review and will follow up once it's been assessed — we're not able to confirm a refund, amount or timeline at this stage.",
+    nextAction:'Escalate to Management (Sharon or Suzen). Do not quote a refund amount, hold, transfer or timeline. Accounts assists with calculations only after Management approves.', missingInfo:['Reason for request (documented)','Confirmation of any prior exception granted'], sensitive:true,
+    escalationReason:'Refund, cancellation and package dispute requests must be escalated to Management. CSO must not promise a refund amount or timeline.' },
+  'Complaint / Dispute': { riskLevel:'Medium', safety:false, escalationRequired:true, escalateTo:'Sharon or Suzen / Management', reviewerRole:'Sharon or Suzen / Management',
+    holdingReply:"Thank you for raising this with us. We take this seriously and want to make sure it's reviewed properly by Management. We've escalated your case and will follow up shortly.",
+    nextAction:'Escalate to Management (Sharon or Suzen) for review.', missingInfo:['Details of the specific incident/date'], sensitive:true, escalationReason:'Complaint or dispute requires Management review.' },
+};
+
+const RAW_CASES = [
+  { id:'CASE-1042', refNo:'REF-2026-1042', customer:'Customer A', customerType:'Returning', phone:'PHONE_REDACTED', email:'EMAIL_REDACTED',
+    package:'Postnatal Recovery (6 sessions)', packageBalance:'4 of 6 sessions remaining', lastTreatmentDate:'18 Jul 2026',
+    respondIoLink:'Not connected in this prototype', category:'Appointment Enquiry', priority:'Low', owner:'Brenda', source:'Respond.io',
+    status:'Approved', updatedTime:'2h ago', receivedTime:'Today, 9:14 AM', overdue:false, followUpDeadline:'None',
+    originalMessage:"Hi, just wanted to check what time slots are available next week for my confinement massage? Also can I bring my baby along?",
+    conversationContext:'Customer confirmed package purchase 3 days ago; no prior issues on file.',
+    aiDraft:"Hi Customer A! Thank you for reaching out. We currently have slots available next Tuesday and Thursday between 10am-4pm for your confinement massage. Babies are welcome to accompany you during the session, and our therapists are happy to help make you both comfortable. Would you like us to pencil in Tuesday 11am?",
+    internalAssessment:'Routine scheduling enquiry with no medical or financial risk. Package balance confirmed via Google Sheets.',
+    missingInfo:[], customerDataUsed:['Respond.io','Google Sheets case records'],
+    citations:[{label:'Official Mumsrelle website — Service Hours',tier:1},{label:'Current approved CSE SOP — Booking Policy',tier:2}],
+    onHold:false, approvedBy:'Brenda', approvedTime:'Today, 10:02 AM', respondIoSent:false, finalCustomerReply:"Hi Customer A! Thank you for reaching out. We currently have slots available next Tuesday and Thursday between 10am-4pm for your confinement massage. Babies are welcome to accompany you during the session.",
+    history:[{status:'New',timestamp:'Today, 9:14 AM',actor:'Respond.io'},{status:'AI Drafted',timestamp:'Today, 9:16 AM',actor:'AI Assistant'},
+      {status:'Pending Approval',timestamp:'Today, 9:20 AM',actor:'Brenda'},{status:'Approved',timestamp:'Today, 10:02 AM',actor:'Brenda'}] },
+
+  { id:'CASE-1043', refNo:'REF-2026-1043', customer:'Customer B', customerType:'Returning', phone:'PHONE_REDACTED', email:'EMAIL_REDACTED',
+    package:'Postnatal Recovery (8 sessions)', packageBalance:'7 of 8 sessions remaining', lastTreatmentDate:'2 weeks ago (initial consult)',
+    respondIoLink:'Not connected in this prototype', category:'Medical / Treatment Suitability', priority:'Medium', owner:'Joe', source:'Respond.io',
+    status:'Escalated', updatedTime:'25m ago', receivedTime:'Today, 11:02 AM', overdue:true, followUpDeadline:'Today, 5:00 PM',
+    originalMessage:"Hi, I gave birth 7 weeks ago via C-section. Is it safe for me to start the abdominal binding and deep tissue massage now? I still have some soreness near the scar.",
+    conversationContext:'Customer asked about general postnatal package inclusions 2 weeks ago.',
+    aiDraft:"Thank you for sharing this, Customer B. Since you mentioned a C-section and ongoing soreness near the scar, we'd like our Centre Manager to review your case before confirming which treatments are suitable at 7 weeks postpartum. We'll follow up shortly with guidance to support your recovery safely.",
+    internalAssessment:'Post-surgical recovery timeline requires Centre Manager review (who may consult the treating therapist) before deep tissue work or abdominal binding. SOP flags C-section clients for individual assessment before week 8.',
+    missingInfo:['C-section wound healing status','Doctor / medical clearance status'], customerDataUsed:['Respond.io','Sequoia for historical records'],
+    citations:[{label:'Current approved CSE SOP — Postpartum Treatment Timelines',tier:2},{label:'Requires Verification — Abdominal Binding Guidance',tier:5}],
+    onHold:false, approvedBy:'', approvedTime:'', respondIoSent:false, finalCustomerReply:'',
+    history:[{status:'New',timestamp:'Today, 11:02 AM',actor:'Respond.io'},{status:'AI Drafted',timestamp:'Today, 11:05 AM',actor:'AI Assistant'},
+      {status:'Escalated → Hazelle / Centre Manager',timestamp:'Today, 11:18 AM',actor:'Joe'}] },
+
+  { id:'CASE-1044', refNo:'REF-2026-1044', customer:'Customer C', customerType:'Existing', phone:'PHONE_REDACTED', email:'EMAIL_REDACTED',
+    package:'Confinement Care (6 sessions)', packageBalance:'3 of 6 sessions remaining', lastTreatmentDate:'20 Jun 2026',
+    respondIoLink:'Not connected in this prototype', category:'Refund / Cancellation / Package Dispute', priority:'High', owner:'Faizan', source:'Google Sheets',
+    status:'Pending Approval', updatedTime:'1h ago', receivedTime:'Today, 8:40 AM', overdue:false, followUpDeadline:'28 Jul 2026',
+    originalMessage:"I'd like to cancel my remaining sessions and get money back for the sessions I haven't used. Can you refund me this week?",
+    conversationContext:'Package purchased 5 weeks ago; 3 of 6 sessions used, no prior dispute history.',
+    aiDraft:"Hi Customer C, thank you for letting us know. Treatment packages are generally non-refundable once purchased, and requests like this are reviewed individually by our Management team. We've forwarded this for review and will follow up once it's been assessed — we're not able to confirm a refund, amount or timeline at this stage.",
+    internalAssessment:'Packages are non-refundable per policy; this request must go to Management for exception review. Accounts may assist with transaction calculation only after Management approves.',
+    missingInfo:['Reason for request (documented)','Confirmation of any prior exception granted'], customerDataUsed:['Google Sheets case records'],
+    citations:[{label:'Current approved CSE SOP — Refund & Cancellation Policy',tier:2},{label:'Management-approved instructions — Package Dispute Handling',tier:3}],
+    onHold:true, holdReason:'Awaiting Management Decision', holdUntil:'2026-07-28', holdOwner:'Faizan', holdValidityApproved:'No', holdApprovedBy:'',
+    approvedBy:'', approvedTime:'', respondIoSent:false, finalCustomerReply:'',
+    history:[{status:'New',timestamp:'Today, 8:40 AM',actor:'Google Sheets Import'},{status:'AI Drafted',timestamp:'Today, 8:44 AM',actor:'AI Assistant'},
+      {status:'Pending Approval',timestamp:'Today, 8:50 AM',actor:'Faizan'},{status:'On Hold — Awaiting Management Decision',timestamp:'Today, 9:00 AM',actor:'Faizan'}] },
+
+  { id:'CASE-1045', refNo:'REF-2026-1045', customer:'Customer D', customerType:'New', phone:'PHONE_REDACTED', email:'EMAIL_REDACTED',
+    package:'Postnatal Recovery (6 sessions)', packageBalance:'5 of 6 sessions remaining', lastTreatmentDate:'Yesterday',
+    respondIoLink:'Not connected in this prototype', category:'Post-Treatment Concern', priority:'High', owner:'Brenda', source:'Respond.io',
+    status:'Escalated', updatedTime:'10m ago', receivedTime:'Today, 12:30 PM', overdue:true, followUpDeadline:'Today, 3:00 PM',
+    originalMessage:"I had my postnatal massage yesterday and today I'm having quite bad abdominal pain, worse than before the session. Is this normal? Should I be worried?",
+    conversationContext:'First session of package completed yesterday per booking sheet.',
+    aiDraft:"Thank you for letting us know, Customer D, and we're sorry to hear you're uncomfortable. We're escalating this to our Centre Manager right away, who may consult your treating therapist. If the pain is severe or worsening, please seek medical attention right away.",
+    internalAssessment:'Reported worsening abdominal pain post-treatment. Requires immediate Centre Manager review and possible therapist consultation per incident protocol.',
+    missingInfo:['Pain severity and duration','Whether customer has sought medical care'], customerDataUsed:['Respond.io'],
+    citations:[{label:'Current approved CSE SOP — Post-Treatment Incident Protocol',tier:2}],
+    onHold:false, approvedBy:'', approvedTime:'', respondIoSent:false, finalCustomerReply:'',
+    history:[{status:'New',timestamp:'Today, 12:30 PM',actor:'Respond.io'},{status:'AI Drafted',timestamp:'Today, 12:32 PM',actor:'AI Assistant'},
+      {status:'Pending Approval',timestamp:'Today, 12:33 PM',actor:'Brenda'},{status:'Escalated → Hazelle / Centre Manager',timestamp:'Today, 12:40 PM',actor:'Brenda'}] },
+
+  { id:'CASE-1046', refNo:'REF-2026-1046', customer:'Customer E', customerType:'Unknown / Unverified', phone:'PHONE_REDACTED', email:'EMAIL_REDACTED',
+    package:'Unidentified', packageBalance:'Unable to verify', lastTreatmentDate:'Unknown',
+    respondIoLink:'Not connected in this prototype', category:'Package / Billing Enquiry', priority:'Low', owner:'Joe', source:'Respond.io',
+    status:'AI Drafted', updatedTime:'40m ago', receivedTime:'Today, 1:15 PM', overdue:false, followUpDeadline:'Pending customer reply',
+    originalMessage:"Hi, how many sessions do I have left in my package? I can't remember what I signed up for.",
+    conversationContext:'No prior record found matching this phone number; possible name mismatch in Google Sheets.',
+    aiDraft:"Hi Customer E, thanks for reaching out! We couldn't immediately locate a package under this number in our system — could you kindly share your full name and order or receipt reference so we can confirm your remaining sessions accurately?",
+    internalAssessment:'Customer record not found in Google Sheets tracker; likely booked under a different contact number or name. Needs manual lookup before any package detail is shared.',
+    missingInfo:['Order / receipt reference number','Correct registered contact number'], customerDataUsed:['Respond.io','Aoikumo'],
+    citations:[{label:'Approved customer reply templates — Package Balance Enquiry',tier:4},{label:'Requires Verification — Customer Record Match',tier:5}],
+    onHold:false, approvedBy:'', approvedTime:'', respondIoSent:false, finalCustomerReply:'',
+    history:[{status:'New',timestamp:'Today, 1:15 PM',actor:'Respond.io'},{status:'AI Drafted',timestamp:'Today, 1:17 PM',actor:'AI Assistant'}] },
+
+  { id:'CASE-1047', refNo:'REF-2026-1047', customer:'Customer F', customerType:'New / Prospective', phone:'PHONE_REDACTED', email:'EMAIL_REDACTED',
+    package:'No package purchased', packageBalance:'—', lastTreatmentDate:'N/A',
+    respondIoLink:'Not connected in this prototype', category:'Appointment Enquiry', priority:'Low', owner:'Unassigned', source:'Respond.io',
+    status:'New', updatedTime:'3m ago', receivedTime:'Today, 2:05 PM', overdue:false, followUpDeadline:'Pending CSO review',
+    originalMessage:"Hi! Do you offer any first-time booking discount for confinement packages? A friend recommended you.",
+    conversationContext:'First contact from this customer.',
+    aiDraft:'', internalAssessment:'Not yet reviewed.', missingInfo:[], customerDataUsed:['Respond.io'],
+    citations:[], onHold:false, approvedBy:'', approvedTime:'', respondIoSent:false, finalCustomerReply:'',
+    history:[{status:'New',timestamp:'Today, 2:05 PM',actor:'Respond.io'}] },
+
+  { id:'CASE-1048', refNo:'REF-2026-1048', customer:'Customer G', customerType:'Returning', phone:'PHONE_REDACTED', email:'EMAIL_REDACTED',
+    package:'Postnatal Recovery (4 sessions)', packageBalance:'0 of 4 remaining (completed)', lastTreatmentDate:'This week',
+    respondIoLink:'Not connected in this prototype', category:'Package / Billing Enquiry', priority:'Low', owner:'Faizan', source:'Manual',
+    status:'Closed', updatedTime:'Yesterday', receivedTime:'Yesterday, 3:40 PM', overdue:false, followUpDeadline:'None',
+    originalMessage:"Just checking the price for a top-up package of 4 more sessions?",
+    conversationContext:'Completed full 4-session package this week; logged manually after a phone call.',
+    aiDraft:"Hi Customer G, thanks for checking in! A 4-session top-up is available at our current published rate — let us know if you'd like us to help set this up.",
+    internalAssessment:'Simple pricing enquiry, answered from published rate card.', missingInfo:[], customerDataUsed:['Manual Case Entry'],
+    citations:[{label:'Official Mumsrelle website — Pricing',tier:1}],
+    onHold:false, approvedBy:'Faizan', approvedTime:'Yesterday, 4:00 PM', respondIoSent:false,
+    finalCustomerReply:"Hi Customer G, thanks for checking in! A 4-session top-up is available at our current published rate — let us know if you'd like us to help set this up.",
+    history:[{status:'New',timestamp:'Yesterday, 3:40 PM',actor:'Manual Entry'},{status:'AI Drafted',timestamp:'Yesterday, 3:42 PM',actor:'AI Assistant'},
+      {status:'Pending Approval',timestamp:'Yesterday, 3:50 PM',actor:'Faizan'},{status:'Approved',timestamp:'Yesterday, 4:00 PM',actor:'Faizan'},
+      {status:'Closed',timestamp:'Yesterday, 4:05 PM',actor:'Faizan'}] },
+];
+
+const RISK_FLAG_DEFS = [
+  {key:'medical', label:'Medical or post-treatment concern'},
+  {key:'refund', label:'Refund request'},
+  {key:'complaint', label:'Complaint or dispute'},
+  {key:'safety', label:'Safety concern'},
+  {key:'eligibility', label:'Unclear eligibility'},
+  {key:'missing', label:'Missing information'},
+  {key:'conflicting', label:'Conflicting sources'},
+];
+
+function detectFlags(caseItem){
+  const f = {medical:false,refund:false,complaint:false,safety:false,eligibility:false,missing:false,conflicting:false};
+  if(!caseItem) return f;
+  const category = caseItem.category || '';
+  const missingInfo = Array.isArray(caseItem.missingInfo) ? caseItem.missingInfo : [];
+  const citations = Array.isArray(caseItem.citations) ? caseItem.citations : [];
+  if(category==='Medical / Treatment Suitability'){ f.medical=true; f.eligibility=true; }
+  if(category==='Post-Treatment Concern'){ f.medical=true; f.safety=true; }
+  if(category.includes('Refund')) f.refund = true;
+  if(category==='Complaint / Dispute') f.complaint = true;
+  if(missingInfo.length) f.missing = true;
+  if(citations.some(ct=>ct && ct.tier===5)) f.conflicting = true;
+  return f;
+}
+
+const DEFAULT_RULES = { riskLevel:'Low', safety:false, escalationRequired:false, escalateTo:'', reviewerRole:'Operations Manager / Authorised CSO Reviewer',
+  holdingReply:'', nextAction:'Review case details and respond per SOP.', missingInfo:[], sensitive:false, escalationReason:'' };
+
+function deriveCase(raw, categoryOverride, priorityOverride){
+  raw = raw || {};
+  const category = categoryOverride || raw.category || 'General Enquiry';
+  const priority = priorityOverride || raw.priority || 'Low';
+  const rules = CATEGORY_RULES[category] || DEFAULT_RULES;
+  const changed = !!categoryOverride && categoryOverride !== raw.category;
+  const rawMissingInfo = Array.isArray(raw.missingInfo) ? raw.missingInfo : [];
+  const rawCitations = Array.isArray(raw.citations) ? raw.citations : [];
+  let riskLevel = rules.riskLevel || 'Low';
+  if(priority==='High' && riskLevel==='Medium') riskLevel='High';
+  else if(priority==='High' && riskLevel==='Low') riskLevel='Medium';
+  else if(priority==='Low' && riskLevel==='High') riskLevel='Medium';
+  const missingInfo = changed ? rules.missingInfo : (rawMissingInfo.length ? rawMissingInfo : rules.missingInfo);
+  const nextAction = rules.nextAction;
+  const holdingReply = rules.holdingReply;
+  const escalationReason = rules.escalationReason;
+  const citations = changed ? [] : rawCitations;
+  return { category, priority, riskLevel, safety: !!rules.safety, escalationRequired: !!rules.escalationRequired,
+    escalateTo: rules.escalateTo || '', reviewerRole: rules.reviewerRole || 'Operations Manager / Authorised CSO Reviewer', sensitive: !!rules.sensitive,
+    missingInfo: missingInfo || [], nextAction: nextAction || '', holdingReply: holdingReply || '', escalationReason: escalationReason || '',
+    citations: citations || [], status: raw.status || 'New' };
+}
+
+// Field ownership: integrationWritable (import/sync may set it), uiEditable (CSO can edit in the Help Desk UI),
+// computed (Case Engine derives/overwrites it — sheet and UI values are ignored for calculation).
+const CASE_FIELD_SCHEMA = [
+  {f:'id', col:'Case ID', t:'string', req:true, iw:false, ue:false, comp:true, def:'', val:'Generated by Help Desk'},
+  {f:'refNo', col:'Ref No.', t:'string', req:true, iw:true, ue:true, comp:false, def:'', val:'Must be unique — primary match key'},
+  {f:'createdAt', col:'Created At', t:'date', req:false, iw:true, ue:false, comp:false, def:'', val:'ISO date; invalid → blank + warning'},
+  {f:'updatedAt', col:'Updated At', t:'date', req:false, iw:true, ue:true, comp:false, def:'', val:'ISO date; invalid → blank + warning'},
+  {f:'receivedTime', col:'Received Time', t:'string', req:false, iw:true, ue:true, comp:false, def:''},
+  {f:'customerName', col:'Customer Name', t:'string', req:true, iw:true, ue:true, comp:false, def:'Unknown Customer'},
+  {f:'contactNumber', col:'Contact Number', t:'string', req:false, iw:true, ue:true, comp:false, def:''},
+  {f:'customerType', col:'Customer Type', t:'string', req:false, iw:true, ue:true, comp:false, def:'Unknown'},
+  {f:'brand', col:'Brand', t:'string', req:false, iw:true, ue:true, comp:false, def:'Mumsrelle'},
+  {f:'customerMessage', col:'Customer Message', t:'string', req:true, iw:true, ue:false, comp:false, def:''},
+  {f:'conversationSummary', col:'Conversation Summary', t:'string', req:false, iw:true, ue:true, comp:false, def:''},
+  {f:'respondIoConversationUrl', col:'Respond.io Conversation URL', t:'string', req:false, iw:true, ue:false, comp:false, def:'Not connected in this prototype'},
+  {f:'respondIoContactId', col:'Respond.io Contact ID', t:'string', req:false, iw:true, ue:false, comp:false, def:'', val:'Integration/sync writable only — CSO cannot hand-edit; never regenerated by Case Engine'},
+  {f:'messageChannel', col:'Message Channel', t:'string', req:false, iw:true, ue:false, comp:false, def:'WhatsApp'},
+  {f:'language', col:'Language', t:'string', req:false, iw:true, ue:true, comp:false, def:'English'},
+  {f:'category', col:'Category', t:'string', req:true, iw:true, ue:true, comp:false, def:'General Enquiry', val:'Unknown category → defaulted + warning'},
+  {f:'subcategory', col:'Subcategory', t:'string', req:false, iw:true, ue:true, comp:false, def:''},
+  {f:'priority', col:'Priority', t:'string', req:false, iw:true, ue:true, comp:false, def:'Low', val:'Low / Medium / High only'},
+  {f:'riskLevel', col:'Risk Level', t:'string', req:false, iw:false, ue:false, comp:true, def:'Low', val:'Computed by Case Engine — sheet/UI value ignored'},
+  {f:'safety', col:'Safety Flag', t:'boolean', req:false, iw:false, ue:false, comp:true, def:false, val:'Computed by Case Engine'},
+  {f:'status', col:'Status', t:'string', req:false, iw:true, ue:true, comp:false, def:'New', val:'Must be a known status value'},
+  {f:'escalationRequired', col:'Escalation Required', t:'boolean', req:false, iw:false, ue:false, comp:true, def:false, val:'Computed — sheet/UI cannot disable a mandatory escalation', audit:true},
+  {f:'escalateTo', col:'Escalate To', t:'string', req:false, iw:false, ue:false, comp:true, def:''},
+  {f:'escalationReason', col:'Escalation Reason', t:'string', req:false, iw:false, ue:false, comp:true, def:''},
+  {f:'packageName', col:'Package Name', t:'string', req:false, iw:true, ue:true, comp:false, def:'Unidentified'},
+  {f:'packageBalance', col:'Package Balance', t:'string', req:false, iw:true, ue:true, comp:false, def:'Unable to verify'},
+  {f:'lastTreatmentDate', col:'Last Treatment Date', t:'date', req:false, iw:true, ue:true, comp:false, def:'Unknown'},
+  {f:'nextAppointmentDate', col:'Next Appointment Date', t:'date', req:false, iw:true, ue:true, comp:false, def:''},
+  {f:'customerDataUsed', col:'Customer Data Used', t:'array', req:false, iw:true, ue:true, comp:false, def:[]},
+  {f:'aoikumoLookupRequired', col:'Aoikumo Lookup Required', t:'boolean', req:false, iw:true, ue:true, comp:false, def:false, val:'True only when package/appointment/sales/balance info is needed'},
+  {f:'aoikumoLookupType', col:'Aoikumo Lookup Type', t:'string', req:false, iw:true, ue:true, comp:false, def:''},
+  {f:'internalAssessment', col:'Internal Assessment', t:'string', req:false, iw:true, ue:true, comp:false, def:''},
+  {f:'draftReply', col:'Draft Reply', t:'string', req:false, iw:true, ue:true, comp:false, def:''},
+  {f:'finalReply', col:'Final Reply', t:'string', req:false, iw:true, ue:false, comp:false, def:''},
+  {f:'missingInfo', col:'Missing Info', t:'array', req:false, iw:true, ue:false, comp:false, def:[]},
+  {f:'conflictingSources', col:'Conflicting Sources', t:'boolean', req:false, iw:false, ue:false, comp:true, def:false},
+  {f:'citations', col:'Citations', t:'array', req:false, iw:true, ue:false, comp:false, def:[]},
+  {f:'knowledgeSourceIds', col:'Knowledge Source IDs', t:'array', req:false, iw:true, ue:false, comp:false, def:[]},
+  {f:'confidence', col:'Confidence', t:'number', req:false, iw:false, ue:false, comp:true, def:0},
+  {f:'nextAction', col:'Next Action', t:'string', req:false, iw:false, ue:false, comp:true, def:''},
+  {f:'reviewer', col:'Reviewer', t:'string', req:false, iw:true, ue:true, comp:false, def:''},
+  {f:'reviewedAt', col:'Reviewed At', t:'date', req:false, iw:true, ue:true, comp:false, def:''},
+  {f:'approvedBy', col:'Approved By', t:'string', req:false, iw:true, ue:true, comp:false, def:'', audit:true},
+  {f:'approvedAt', col:'Approved At', t:'date', req:false, iw:true, ue:true, comp:false, def:''},
+  {f:'importedApprovalStatus', col:'Imported Approval Status', t:'string', req:false, iw:true, ue:false, comp:false, def:'', val:'Preserved verbatim from sheet/import for audit — never used to unlock a case', audit:true},
+  {f:'effectiveApprovalStatus', col:'Effective Approval Status', t:'string', req:false, iw:false, ue:false, comp:true, def:'Not Approved', val:'Computed by Case Engine; overrides imported value when blocking conditions exist', audit:true},
+  {f:'approvalStatus', col:'Approval Status', t:'string', req:false, iw:true, ue:true, comp:false, def:'Not Approved', val:'Sheet/UI value never overrides approval-lock rules', audit:true},
+  {f:'approvalBlockedReason', col:'Approval Blocked Reason', t:'string', req:false, iw:false, ue:false, comp:true, def:''},
+  {f:'respondIoSent', col:'Respond.io Sent', t:'boolean', req:false, iw:true, ue:false, comp:false, def:false, val:'Must have a Final Reply and an Approved case; UI requires manual confirmation', audit:true},
+  {f:'sentAt', col:'Sent At', t:'date', req:false, iw:true, ue:false, comp:false, def:''},
+  {f:'onHold', col:'On Hold', t:'boolean', req:false, iw:true, ue:true, comp:false, def:false, audit:true},
+  {f:'holdReason', col:'Hold Reason', t:'string', req:false, iw:true, ue:true, comp:false, def:'Awaiting Management Decision'},
+  {f:'holdUntil', col:'Hold Until', t:'date', req:false, iw:true, ue:true, comp:false, def:''},
+  {f:'followUpOwner', col:'Follow-up Owner', t:'string', req:false, iw:true, ue:true, comp:false, def:'Brenda'},
+  {f:'followUpDeadline', col:'Follow-up Deadline', t:'string', req:false, iw:true, ue:true, comp:false, def:'Pending CSO review'},
+  {f:'validityProtectionApproved', col:'Validity Protection Approved', t:'boolean', req:false, iw:true, ue:true, comp:false, def:false},
+  {f:'validityProtectionApprover', col:'Validity Protection Approver', t:'string', req:false, iw:true, ue:true, comp:false, def:''},
+  {f:'resumedAt', col:'Resumed At', t:'date', req:false, iw:true, ue:true, comp:false, def:''},
+  {f:'sourceVersion', col:'Source Version', t:'string', req:false, iw:true, ue:false, comp:false, def:'v1'},
+  {f:'recordVersion', col:'Record Version', t:'number', req:false, iw:false, ue:false, comp:true, def:1},
+  {f:'lastEditedBy', col:'Last Edited By', t:'string', req:false, iw:false, ue:false, comp:true, def:'System'},
+  {f:'changeHistory', col:'Change History', t:'array', req:false, iw:false, ue:false, comp:true, def:[]},
+];
+const CASE_DEFAULTS = Object.fromEntries(CASE_FIELD_SCHEMA.map(s=>[s.f, Array.isArray(s.def)?[]:s.def]));
+const SHEET_FIELD_MAP = Object.fromEntries(CASE_FIELD_SCHEMA.map(s=>[s.col, s.f]));
+const VALID_STATUSES = ['New','AI Drafted','Pending Approval','Escalated','On Hold','Approved','Closed'];
+const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}/;
+
+function coerceValue(raw, schema){
+  if(raw===undefined || raw===null || raw==='') return Array.isArray(schema.def) ? [] : schema.def;
+  if(schema.t==='boolean'){
+    const s = String(raw).trim().toLowerCase();
+    if(['true','yes','1'].includes(s)) return true;
+    if(['false','no','0'].includes(s)) return false;
+    return !!schema.def;
+  }
+  if(schema.t==='array') return Array.isArray(raw) ? raw : String(raw).split(';').map(x=>x.trim()).filter(Boolean);
+  if(schema.t==='date') return ISO_DATE_RE.test(String(raw).trim()) ? String(raw).trim() : '';
+  if(schema.t==='number'){ const n = Number(raw); return isNaN(n) ? schema.def : n; }
+  return String(raw);
+}
+
+function sheetRowToCase(row){
+  row = row && typeof row==='object' ? row : {};
+  const canonical = {...CASE_DEFAULTS};
+  const extraFields = {};
+  CASE_FIELD_SCHEMA.forEach(schema => { canonical[schema.f] = coerceValue(row[schema.col], schema); });
+  Object.keys(row).forEach(col => { if(!SHEET_FIELD_MAP[col] && row[col]!==undefined && row[col]!=='') extraFields[col] = row[col]; });
+  canonical.extraFields = extraFields;
+  return canonical;
+}
+
+function caseToSheetRow(canonicalCase){
+  canonicalCase = canonicalCase || {};
+  const row = {};
+  CASE_FIELD_SCHEMA.forEach(schema => { row[schema.col] = canonicalCase[schema.f] ?? (Array.isArray(schema.def)?[]:schema.def); });
+  return row;
+}
+
+function normalizeCase(caseItem){
+  const c = {...CASE_DEFAULTS, ...(caseItem||{})};
+  CASE_FIELD_SCHEMA.forEach(schema => {
+    if(schema.t==='array' && !Array.isArray(c[schema.f])) c[schema.f] = [];
+    if(schema.t==='boolean' && typeof c[schema.f] !== 'boolean') c[schema.f] = !!schema.def;
+    if(schema.t==='date' && c[schema.f] && !ISO_DATE_RE.test(String(c[schema.f]))) c[schema.f] = '';
+  });
+  return c;
+}
+
+function validateCase(canonical, existingRefNos, rawRow){
+  const errors = [], warnings = [], autoCorrected = [];
+  rawRow = rawRow || {};
+  if(!canonical.refNo) errors.push('Missing Ref No.');
+  if(!canonical.customerMessage) warnings.push('Missing customer message');
+  if(canonical.category && !CATEGORY_RULES[canonical.category] && canonical.category !== 'General Enquiry'){
+    warnings.push(`Unknown category "${canonical.category}" — defaulted to General Enquiry`); autoCorrected.push('category');
+  }
+  if(canonical.priority && !['Low','Medium','High'].includes(canonical.priority)){
+    warnings.push(`Unknown priority "${canonical.priority}" — defaulted to Low`); autoCorrected.push('priority');
+  }
+  if(canonical.status && !VALID_STATUSES.includes(canonical.status)) warnings.push(`Invalid status "${canonical.status}"`);
+  if(existingRefNos && canonical.refNo && existingRefNos.has(canonical.refNo)) errors.push('Duplicate Ref No.');
+  if(canonical.respondIoSent && !canonical.finalReply) errors.push('Marked Respond.io Sent without an approved Final Reply');
+  CASE_FIELD_SCHEMA.forEach(schema => {
+    const raw = rawRow[schema.col];
+    if(raw===undefined || raw==='') return;
+    if(schema.t==='boolean' && !['true','false','yes','no','1','0'].includes(String(raw).trim().toLowerCase())) warnings.push(`Invalid boolean value "${raw}" for ${schema.col} — defaulted to ${schema.def}`);
+    if(schema.t==='date' && !ISO_DATE_RE.test(String(raw).trim())) warnings.push(`Invalid date "${raw}" for ${schema.col} — left blank`);
+  });
+  return { errors, warnings, autoCorrected };
+}
+
+function mergeCaseUpdate(existingCase, incomingData){
+  return normalizeCase({ ...(existingCase||{}), ...(incomingData||{}) });
+}
+
+function computeImportBlockReasons(internalCase, derived, flags){
+  const missingInfo = Array.isArray(derived.missingInfo) ? derived.missingInfo : [];
+  const reasons = [];
+  if(derived.escalationRequired) reasons.push('Escalation required before approval');
+  if(derived.sensitive) reasons.push('Category requires Management/Centre Manager review');
+  if(missingInfo.length) reasons.push('Required information is missing');
+  if(flags && flags.conflicting) reasons.push('Approved sources conflict — requires verification');
+  if(!String(internalCase.aiDraft||'').trim()) reasons.push('Draft is empty');
+  if(internalCase.onHold) reasons.push('Case is on hold');
+  return reasons;
+}
+
+function canonicalToInternal(canonical, idx){
+  canonical = canonical || {};
+  const id = canonical.refNo ? 'CASE-' + canonical.refNo.replace(/\D/g,'').slice(-4) : ('CASE-IMPORT-' + idx);
+  return {
+    id, refNo: canonical.refNo || '', customer: canonical.customerName || 'Unknown Customer', customerType: canonical.customerType || 'Unknown',
+    phone: canonical.contactNumber || '', email: '', package: canonical.packageName || 'Unidentified', packageBalance: canonical.packageBalance || 'Unable to verify',
+    lastTreatmentDate: canonical.lastTreatmentDate || 'Unknown', respondIoLink: canonical.respondIoConversationUrl || 'Not connected in this prototype',
+    category: canonical.category || 'General Enquiry', priority: ['Low','Medium','High'].includes(canonical.priority) ? canonical.priority : 'Low',
+    owner: canonical.reviewer || 'Unassigned', source: 'Google Sheets (mock import)', status: 'New',
+    updatedTime: 'Just now', receivedTime: canonical.receivedTime || 'Just now', overdue: false,
+    followUpDeadline: canonical.followUpDeadline || 'Pending CSO review', originalMessage: canonical.customerMessage || '', conversationContext: canonical.conversationSummary || '',
+    aiDraft: canonical.draftReply || '', internalAssessment: canonical.internalAssessment || 'Imported via mock Google Sheets sync — pending CSO review.',
+    missingInfo: canonical.missingInfo || [], customerDataUsed: canonical.customerDataUsed && canonical.customerDataUsed.length ? canonical.customerDataUsed : ['Google Sheets case records'],
+    citations: canonical.citations || [], onHold: !!canonical.onHold, holdReason: canonical.holdReason || 'Awaiting Management Decision',
+    holdUntil: canonical.holdUntil || '', holdOwner: canonical.followUpOwner || 'Brenda', holdValidityApproved: canonical.validityProtectionApproved ? 'Yes' : 'No',
+    holdApprovedBy: canonical.validityProtectionApprover || '', approvedBy: '', approvedTime: '', respondIoSent: false, finalCustomerReply: canonical.finalReply || '',
+    history: [{status:'New', timestamp:'Just now', actor:'Mock Sheet Import'}], __canonical: canonical,
+    importedApprovalStatus: canonical.approvalStatus || '', effectiveApprovalStatus: 'Not Approved', approvalBlockedReason: '',
+  };
+}
+
+function internalToCanonical(c){
+  c = c || {};
+  return { ...CASE_DEFAULTS, id:c.id||'', refNo:c.refNo||'', customerName:c.customer||'', contactNumber:c.phone||'', customerType:c.customerType||'Unknown',
+    customerMessage:c.originalMessage||'', conversationSummary:c.conversationContext||'', respondIoConversationUrl:c.respondIoLink||'',
+    category:c.category||'General Enquiry', priority:c.priority||'Low', riskLevel:c.riskLevel||'Low', safety: !!c.safety,
+    status:c.displayStatus||c.status||'New', escalationRequired: !!c.escalationRequired, escalateTo:c.escalateTo||'', escalationReason:c.escalationReason||'',
+    packageName:c.package||'', packageBalance:c.packageBalance||'', lastTreatmentDate:c.lastTreatmentDate||'', customerDataUsed:c.customerDataUsed||[],
+    internalAssessment:c.internalAssessment||'', draftReply:c.aiDraft||'', finalReply:c.finalCustomerReply||'', missingInfo:c.missingInfo||[], citations:c.citations||[],
+    nextAction:c.nextAction||'', approvedBy:c.approvedBy||'', approvedAt:c.approvedTime||'', respondIoSent: !!c.respondIoSent, onHold: !!c.onHold,
+    holdReason:c.holdReason||'', holdUntil:c.holdUntil||'', followUpOwner:c.holdOwner||'', followUpDeadline:c.followUpDeadline||'',
+    validityProtectionApproved: c.holdValidityApproved==='Yes', validityProtectionApprover:c.holdApprovedBy||'' };
+}
+
+const MOCK_SHEET_ROWS = [
+  {'Ref No.':'REF-2026-1050','Customer Name':'Priya Nathan','Contact Number':'PHONE_REDACTED','Customer Type':'New','Customer Message':'Can I reschedule my body assessment to next Friday?','Category':'Appointment Enquiry','Priority':'Low','Status':'New','Package Name':'Postnatal Recovery (6 sessions)','Package Balance':'6 of 6 sessions remaining','Received Time':'Today, 3:00 PM'},
+  {'Ref No.':'REF-2026-1051','Customer Name':'Farah Yusof','Contact Number':'PHONE_REDACTED','Customer Type':'Returning','Customer Message':"I'm 5 weeks post C-section, can I do the deep tissue massage?",'Category':'Medical / Treatment Suitability','Priority':'Medium','Status':'New','Approval Status':'Approved','Draft Reply':'Sure, that should be fine!','Received Time':'Today, 3:05 PM'},
+  {'Customer Name':'Unknown Caller','Customer Message':'Hi, do you have any promo?','Category':'Appointment Enquiry','Received Time':'Today, 3:10 PM'},
+  {'Ref No.':'REF-2026-1052','Customer Name':'Alicia Goh','Contact Number':'PHONE_REDACTED','Customer Message':'Can you check my Aoikumo wallet balance?','Category':'Wallet Balance Query','Priority':'Medium','Aoikumo Lookup Required':'true','Aoikumo Lookup Type':'Cash Wallet Balance','Received Time':'Today, 3:15 PM'},
+  {'Ref No.':'REF-2026-1042','Customer Name':'Customer A Duplicate','Customer Message':'Testing duplicate ref no.','Category':'Appointment Enquiry','Received Time':'Today, 3:20 PM'},
+  {'Ref No.':'REF-2026-1053','Customer Name':'Ken Lim','Contact Number':'PHONE_REDACTED','Customer Message':'Refund please, cancel my remaining sessions.','Category':'Refund / Cancellation / Package Dispute','Priority':'High','Status':'Weird Status','On Hold':'maybe','Hold Until':'not-a-date','Respond.io Sent':'yes','Received Time':'Today, 3:25 PM'},
+  {'Ref No.':'REF-2026-1054','Customer Name':'Siti Rahman','Category':'Appointment Enquiry','Received Time':'Today, 3:30 PM'},
+];
+
+// ---- Phase 2B: Respond.io event models, mapping and matching (mock/local only) ----
+const RESPONDIO_INCOMING_SCHEMA = [
+  {f:'eventId', t:'string', req:true, iw:true, ue:false, comp:false, audit:true, def:''},
+  {f:'eventType', t:'string', req:true, iw:true, ue:false, comp:false, def:'message.received'},
+  {f:'receivedAt', t:'date', req:false, iw:true, ue:false, comp:false, def:''},
+  {f:'workspaceId', t:'string', req:false, iw:true, ue:false, comp:false, def:''},
+  {f:'channel', t:'string', req:true, iw:true, ue:false, comp:false, def:'WhatsApp'},
+  {f:'contactId', t:'string', req:false, iw:true, ue:false, comp:false, def:''},
+  {f:'contactName', t:'string', req:false, iw:true, ue:true, comp:false, def:''},
+  {f:'contactNumber', t:'string', req:false, iw:true, ue:true, comp:false, def:''},
+  {f:'conversationId', t:'string', req:false, iw:true, ue:false, comp:false, def:''},
+  {f:'conversationUrl', t:'string', req:false, iw:true, ue:false, comp:false, def:''},
+  {f:'messageId', t:'string', req:true, iw:true, ue:false, comp:false, audit:true, def:''},
+  {f:'messageText', t:'string', req:true, iw:true, ue:false, comp:false, def:''},
+  {f:'messageLanguage', t:'string', req:false, iw:true, ue:false, comp:false, def:'English'},
+  {f:'attachmentType', t:'string', req:false, iw:true, ue:false, comp:false, def:''},
+  {f:'attachmentUrl', t:'string', req:false, iw:true, ue:false, comp:false, def:''},
+  {f:'assignedUser', t:'string', req:false, iw:true, ue:false, comp:false, def:''},
+  {f:'inboxName', t:'string', req:false, iw:true, ue:false, comp:false, def:''},
+  {f:'tags', t:'array', req:false, iw:true, ue:false, comp:false, sensitive:true, def:[], val:'Metadata only — never unlocks a case (e.g. "approved" tag has no effect on approval)'},
+  {f:'sourcePayloadVersion', t:'string', req:false, iw:true, ue:false, comp:false, def:'v1'},
+];
+const RESPONDIO_INCOMING_DEFAULTS = Object.fromEntries(RESPONDIO_INCOMING_SCHEMA.map(s=>[s.f, Array.isArray(s.def)?[]:s.def]));
+
+const OUTGOING_REPLY_SCHEMA = [
+  {f:'caseId', iw:false, ue:false, comp:true, def:''},
+  {f:'refNo', iw:false, ue:false, comp:true, def:''},
+  {f:'contactId', iw:false, ue:false, comp:true, def:''},
+  {f:'conversationId', iw:false, ue:false, comp:true, def:''},
+  {f:'finalReply', iw:false, ue:false, comp:true, def:''},
+  {f:'approvedBy', iw:false, ue:false, comp:true, def:''},
+  {f:'approvedAt', iw:false, ue:false, comp:true, def:''},
+  {f:'copiedAt', iw:false, ue:false, comp:true, def:''},
+  {f:'sentBy', iw:false, ue:true, comp:false, def:''},
+  {f:'sentAt', iw:false, ue:true, comp:false, def:''},
+  {f:'messageId', iw:false, ue:true, comp:false, def:''},
+  {f:'sendStatus', iw:false, ue:false, comp:true, def:'Not Sent'},
+  {f:'failureReason', iw:false, ue:true, comp:false, def:''},
+];
+
+const ALLOWED_CHANNELS = ['WhatsApp','SMS','Facebook Messenger','Instagram','Email'];
+const RESPONDIO_URL_ALLOWLIST = ['https://app.respond.io/'];
+function isValidRespondIoUrl(url){ return typeof url==='string' && url.length>0 && RESPONDIO_URL_ALLOWLIST.some(base=>url.startsWith(base)); }
+function normalizeContactNumber(n){ return String(n||'').replace(/\D/g,''); }
+
+function normalizeRespondIoEvent(event){
+  event = event && typeof event==='object' ? event : {};
+  const out = {...RESPONDIO_INCOMING_DEFAULTS};
+  const extraFields = {};
+  RESPONDIO_INCOMING_SCHEMA.forEach(s=>{
+    const raw = event[s.f];
+    if(s.f==='tags') out[s.f] = Array.isArray(raw) ? raw : (raw ? String(raw).split(',').map(x=>x.trim()).filter(Boolean) : []);
+    else out[s.f] = (raw===undefined||raw===null||raw==='') ? s.def : raw;
+  });
+  Object.keys(event).forEach(k=>{ if(!RESPONDIO_INCOMING_SCHEMA.some(s=>s.f===k)) extraFields[k]=event[k]; });
+  out.extraFields = extraFields;
+  return out;
+}
+
+function validateRespondIoEvent(event, seenEventIds, seenMessageIds){
+  const errors=[], warnings=[];
+  if(!event.eventId) errors.push('Missing event ID');
+  if(!event.contactId && !event.contactNumber) errors.push('Missing contact ID and contact number');
+  if(!event.messageText) errors.push('Missing message text');
+  if(event.eventId && seenEventIds && seenEventIds.has(event.eventId)) errors.push('Duplicate event ID');
+  if(event.messageId && seenMessageIds && seenMessageIds.has(event.messageId)) errors.push('Duplicate message ID');
+  if(event.channel && !ALLOWED_CHANNELS.includes(event.channel)) errors.push(`Unsupported channel "${event.channel}"`);
+  if(event.conversationUrl && !isValidRespondIoUrl(event.conversationUrl)) warnings.push(`Invalid Respond.io conversation URL "${event.conversationUrl}" — link unavailable, original value preserved for audit`);
+  return { errors, warnings };
+}
+
+function respondIoEventToCase(event, idx){
+  event = normalizeRespondIoEvent(event);
+  const refNo = 'REF-2026-' + (9000+idx);
+  return {
+    id: 'CASE-RIO-' + (idx+1), refNo, customer: event.contactName || 'Unknown Customer', customerType:'New',
+    phone: event.contactNumber || '', email:'', package:'Unidentified', packageBalance:'Unable to verify', lastTreatmentDate:'Unknown',
+    respondIoLink: isValidRespondIoUrl(event.conversationUrl) ? event.conversationUrl : 'Not connected in this prototype',
+    respondIoLinkRaw: event.conversationUrl || '', respondIoConversationId: event.conversationId || '', respondIoContactId: event.contactId || '',
+    category:'General Enquiry', priority:'Low', owner:'Unassigned', source:'Respond.io', status:'New', updatedTime:'Just now',
+    receivedTime: event.receivedAt || 'Just now', overdue:false, followUpDeadline:'Pending CSO review',
+    originalMessage: event.messageText || '', conversationContext:'New inbound message via Respond.io — not yet classified by CSO.',
+    aiDraft:'', internalAssessment:'Proposed case created from a Respond.io event. Category and priority are pending CSO/AI classification; escalation rules apply once set.',
+    missingInfo:[], customerDataUsed:['Respond.io'], citations:[], onHold:false, approvedBy:'', approvedTime:'', respondIoSent:false, finalCustomerReply:'',
+    history:[{status:'New', timestamp:'Just now', actor:'Respond.io (mock event)'}],
+    importedApprovalStatus:'', effectiveApprovalStatus:'Not Approved', approvalBlockedReason:'',
+  };
+}
+
+function mergeRespondIoUpdate(existingCase, event){
+  existingCase = existingCase || {};
+  event = normalizeRespondIoEvent(event);
+  const merged = { ...existingCase };
+  merged.conversationContext = `${existingCase.conversationContext||''} | New message: "${event.messageText}"`.replace(/^ \| /,'');
+  merged.updatedTime = 'Just now';
+  merged.history = [...(existingCase.history||[]), {status:'New message received (Respond.io)', timestamp: event.receivedAt || 'Just now', actor:'Respond.io'}];
+  // finalCustomerReply, respondIoSent, approvalStatus, escalationRequired intentionally left untouched — a webhook event is never approval.
+  return merged;
+}
+
+function respondIoEventToSheetRow(event){ return caseToSheetRow(internalToCanonical(respondIoEventToCase(normalizeRespondIoEvent(event), 0))); }
+
+function caseToRespondIoDraft(caseItem){
+  caseItem = caseItem || {};
+  return { caseId: caseItem.id||'', refNo: caseItem.refNo||'', contactId: caseItem.respondIoContactId||'', conversationId: caseItem.respondIoConversationId||'',
+    finalReply: caseItem.finalCustomerReply || caseItem.aiDraft || '', approvedBy: caseItem.approvedBy||'', approvedAt: caseItem.approvedTime||'',
+    copiedAt:'', sentBy:'', sentAt:'', messageId:'', sendStatus:'Not Sent', failureReason:'' };
+}
+
+function matchEventToCase(event, casesList){
+  const openStatuses = ['New','AI Drafted','Pending Approval','Escalated','On Hold'];
+  const isOpen = c => openStatuses.includes(c.displayStatus||c.status);
+  let matches = [];
+  if(event.conversationId) matches = casesList.filter(c => c.respondIoConversationId && c.respondIoConversationId===event.conversationId);
+  if(!matches.length && event.contactId) matches = casesList.filter(c => c.respondIoContactId && c.respondIoContactId===event.contactId);
+  if(!matches.length && event.contactNumber) matches = casesList.filter(c => c.phone && normalizeContactNumber(c.phone)===normalizeContactNumber(event.contactNumber));
+  if(!matches.length && event.refNo) matches = casesList.filter(c => c.refNo===event.refNo);
+  if(!matches.length) return { status:'no-match' };
+  const openMatches = matches.filter(isOpen);
+  if(openMatches.length > 1) return { status:'ambiguous', matches: openMatches };
+  if(openMatches.length === 1) return { status:'matched', case: openMatches[0] };
+  return { status:'matched', case: matches[0] };
+}
+
+const TEMPLATE_REGISTRY = [
+  {id:'TPL-P8-D1', name:'Promotion 8 Day 1 — Entitlement + Trial Offer', category:'Promotion / Campaign', workflowDay:1, kind:'approved-reply', approvedUse:'First-touch entitlement + $89 PRHB trial offer', prohibitedUse:'Do not use for existing package holders', placeholders:['{{contactName}}'], sourceKbId:'KB-WF-P8B-D1', version:'2026.07', active:true},
+  {id:'TPL-P8-D2', name:'Promotion 8 Day 2 — Testimonial', category:'Promotion / Campaign', workflowDay:2, kind:'approved-reply', approvedUse:'Follow-up testimonial + booking CTA', prohibitedUse:'—', placeholders:['{{contactName}}'], sourceKbId:'KB-WF-P8B-D2', version:'2026.07', active:true},
+  {id:'TPL-P8-D3', name:'Promotion 8 Day 3 — Assessment Reminder', category:'Promotion / Campaign', workflowDay:3, kind:'workflow-reminder', approvedUse:'Reminder of free assessment + visit-time ask', prohibitedUse:'—', placeholders:['{{contactName}}','{{location}}'], sourceKbId:'KB-WF-P8B-D3', version:'2026.07', active:true},
+  {id:'TPL-P8-D4', name:'Promotion 8 Day 4 — PRHB Cross-sell', category:'Package / Billing Enquiry', workflowDay:4, kind:'approved-reply', approvedUse:'Cross-sell PRHB info; send booklet on reply', prohibitedUse:'—', placeholders:['{{contactName}}'], sourceKbId:'KB-WF-P8B-D4', version:'2026.07', active:true},
+  {id:'TPL-P8-D5', name:'Promotion 8 Day 5 — Final Encouragement', category:'Promotion / Campaign', workflowDay:5, kind:'workflow-reminder', approvedUse:'Final-day testimonial / encouragement', prohibitedUse:'—', placeholders:['{{contactName}}'], sourceKbId:'KB-WF-P8B-D5', version:'2026.07', active:true},
+  {id:'TPL-SC-D6', name:'SC Trial Promo Day 6 — Ending Soon', category:'Promotion / Campaign', workflowDay:6, kind:'deprecated', approvedUse:'—', prohibitedUse:'Superseded by active 5-day Respond.io build — do not send', placeholders:[], sourceKbId:'KB-010', version:'2025', active:false},
+  {id:'TPL-SC-D7', name:'SC Trial Promo Day 7 — Final Reminder', category:'Promotion / Campaign', workflowDay:7, kind:'deprecated', approvedUse:'—', prohibitedUse:'Superseded by active 5-day Respond.io build — do not send', placeholders:[], sourceKbId:'KB-010', version:'2025', active:false},
+  {id:'TPL-HOLD-MED', name:'Medical Holding Reply', category:'Medical / Treatment Suitability', workflowDay:null, kind:'internal-holding', approvedUse:'Neutral holding reply while Centre Manager reviews', prohibitedUse:'Never use as final medical clearance', placeholders:['{{contactName}}'], sourceKbId:'KB-Policy', version:'v4', active:true},
+  {id:'TPL-HOLD-REFUND', name:'Refund Holding Reply', category:'Refund / Cancellation / Package Dispute', workflowDay:null, kind:'internal-holding', approvedUse:'Neutral holding reply while Management reviews', prohibitedUse:'Never state a refund amount or timeline', placeholders:['{{contactName}}'], sourceKbId:'KB-002', version:'v4', active:true},
+].map(t => ({...t, statusLabel: t.kind==='deprecated' ? 'Deprecated' : (t.active ? 'Active' : 'Inactive')}));
+function suggestTemplatesForCategory(category){ return TEMPLATE_REGISTRY.filter(t => t.active && t.kind!=='deprecated' && (t.category===category || t.kind==='internal-holding')); }
+
+const MOCK_RESPONDIO_EVENTS = [
+  {eventId:'evt-1001', eventType:'message.received', channel:'WhatsApp', contactId:'contact-9001', contactName:'Alicia Tan', contactNumber:'PHONE_REDACTED', conversationId:'conv-9001', conversationUrl:'https://app.respond.io/conversation/9001', messageId:'msg-9001', messageText:'Hi, do you have any slots this weekend for a body assessment?', receivedAt:'Today, 4:00 PM'},
+  {eventId:'evt-1002', eventType:'message.received', channel:'WhatsApp', conversationId:'conv-9001', contactNumber:'PHONE_REDACTED', messageId:'msg-9002', messageText:'Also, is parking available nearby?', receivedAt:'Today, 4:05 PM'},
+  {eventId:'evt-1003', eventType:'message.received', channel:'WhatsApp', contactId:'contact-9555', contactName:'Devi Rajan', messageId:'msg-9003', messageText:'Hi, I was referred by a friend — how does the trial package work?', receivedAt:'Today, 4:10 PM'},
+  {eventId:'evt-1004', eventType:'message.received', channel:'WhatsApp', contactNumber:'PHONE_REDACTED', messageId:'msg-9004', messageText:'Following up — did you find my package under a different number?', receivedAt:'Today, 4:15 PM'},
+  {eventId:'evt-1005', eventType:'message.received', channel:'WhatsApp', contactNumber:'PHONE_REDACTED', messageId:'msg-9005', messageText:'Hi, can someone call me back about my last message?', receivedAt:'Today, 4:20 PM'},
+  {eventId:'evt-1001', eventType:'message.received', channel:'WhatsApp', contactNumber:'PHONE_REDACTED', messageId:'msg-9006', messageText:'Duplicate event ID test.', receivedAt:'Today, 4:22 PM'},
+  {eventId:'evt-1007', eventType:'message.received', channel:'WhatsApp', contactNumber:'PHONE_REDACTED', messageId:'msg-9001', messageText:'Duplicate message ID test.', receivedAt:'Today, 4:24 PM'},
+  {eventId:'evt-1008', eventType:'message.received', channel:'WhatsApp', receivedAt:'Today, 4:26 PM'},
+  {eventId:'evt-1009', eventType:'message.received', channel:'WhatsApp', contactNumber:'PHONE_REDACTED', messageId:'msg-9009', messageText:'What are your opening hours?', conversationUrl:'https://evil-example.com/chat/1', receivedAt:'Today, 4:28 PM'},
+  {eventId:'evt-1010', eventType:'message.received', channel:'Telegram', contactNumber:'PHONE_REDACTED', messageId:'msg-9010', messageText:'Do you accept Telegram messages?', receivedAt:'Today, 4:30 PM'},
+];
+
+class Component extends DCLogic {
+  state = {
+    view: 'inbox', selectedCaseId: null, isMobile: (typeof window!=='undefined' && window.innerWidth < 920),
+    searchQuery: '', activeTab: 'All', priorityFilter: 'All',
+    cases: RAW_CASES.map(c=>({...c})),
+    draftOverrides: {}, categoryOverrides: {}, priorityOverrides: {},
+    holdOverrides: Object.fromEntries(RAW_CASES.map(c=>[c.id, !!c.onHold])),
+    holdFieldOverrides: {}, statusOverrides: {}, historyAppends: {}, approvalMeta: {},
+    editingDraft: {}, toast: null,
+    sheetSync: { lastMockImport: null, lastMockExport: null },
+    validationReport: { errors: [], warnings: [], autoCorrected: [] },
+    auditLog: [], unsyncedChangeIds: {}, exportPreviewRows: [], mappingPreview: null,
+    showMappingPreview: false, showUnsyncedPanel: false,
+    respondIoSync: { lastMockEvent: null }, respondIoValidation: { errors: [], warnings: [] }, respondIoAmbiguous: [],
+    respondIoSeenEventIds: [], respondIoSeenMessageIds: [], sentOverrides: {}, copiedAtOverrides: {}, showRespondIoTemplates: false,
+  };
+
+  componentDidMount(){
+    this._onResize = () => this.setState({ isMobile: window.innerWidth < 920 });
+    window.addEventListener('resize', this._onResize);
+  }
+  componentWillUnmount(){ window.removeEventListener('resize', this._onResize); }
+
+  showToast(msg){
+    this.setState({ toast: msg });
+    clearTimeout(this._toastTimer);
+    this._toastTimer = setTimeout(()=> this.setState({toast:null}), 3600);
+  }
+
+  logChange(entry){
+    this.setState(prev => ({ auditLog: [{ timestamp:'Just now', changedBy:'Brenda', source:'UI', ...entry }, ...prev.auditLog].slice(0,60) }));
+  }
+  markUnsynced(caseId){
+    this.setState(prev => ({ unsyncedChangeIds: { ...prev.unsyncedChangeIds, [caseId]: true } }));
+  }
+
+  renderVals(){
+    const s = this.state;
+    const isMobile = s.isMobile;
+    const rootStyle = `background:${IVORY};min-height:100vh;color:${INK};padding-bottom:80px;`;
+    const pagePadding = isMobile ? '20px 16px' : '32px 24px';
+
+    const navBtnBase = 'padding:9px 16px;border-radius:8px;font-size:13.5px;font-weight:600;border:none;cursor:pointer;';
+    const navBtnStyleInbox = navBtnBase + (s.view==='inbox'||s.view==='detail' ? `background:${SAGE_BG};color:${SAGE_DARK};` : `background:none;color:${INK_MUTED};`);
+    const navBtnStyleDash = navBtnBase + (s.view==='dashboard' ? `background:${SAGE_BG};color:${SAGE_DARK};` : `background:none;color:${INK_MUTED};`);
+    const navBtnStyleIntegration = navBtnBase + (s.view==='integration' ? `background:${SAGE_BG};color:${SAGE_DARK};` : `background:none;color:${INK_MUTED};`);
+    const goToInbox = () => this.setState({ view:'inbox' });
+    const goToDashboard = () => this.setState({ view:'dashboard' });
+    const goToIntegration = () => this.setState({ view:'integration' });
+
+    const rawCases = Array.isArray(s.cases) && s.cases.length ? s.cases : RAW_CASES.map(c=>({...c}));
+    const cases = rawCases.filter(Boolean).map(c => {
+      const d = deriveCase(c, s.categoryOverrides[c.id], s.priorityOverrides[c.id]);
+      const onHold = s.holdOverrides[c.id] ?? c.onHold ?? false;
+      const underlyingStatus = s.statusOverrides[c.id] || c.status || 'New';
+      const displayStatus = onHold ? 'On Hold' : underlyingStatus;
+      const history = Array.isArray(c.history) ? c.history : [];
+      return { ...c, ...d, onHold, status: underlyingStatus, displayStatus, history: [...history, ...(s.historyAppends[c.id]||[])] };
+    });
+
+    const statusTabsDef = ['All','New','AI Drafted','Pending Approval','Escalated','On Hold','Approved','Closed'];
+    const q = s.searchQuery.trim().toLowerCase();
+    const searchFiltered = cases.filter(c => !q || c.customer.toLowerCase().includes(q) || c.id.toLowerCase().includes(q) || c.category.toLowerCase().includes(q));
+    const priFiltered = searchFiltered.filter(c => s.priorityFilter==='All' || c.priority===s.priorityFilter);
+    const tabFiltered = priFiltered.filter(c => s.activeTab==='All' || c.displayStatus===s.activeTab);
+
+    const statusTabs = statusTabsDef.map(t => {
+      const count = t==='All' ? priFiltered.length : priFiltered.filter(c=>c.displayStatus===t).length;
+      const active = s.activeTab===t;
+      return { label:t, count, onClick: () => this.setState({activeTab:t}),
+        style:`padding:10px 14px;background:none;border:none;border-bottom:2px solid ${active?SAGE:'transparent'};color:${active?INK:INK_MUTED};font-weight:${active?700:500};font-size:13.5px;cursor:pointer;white-space:nowrap;`,
+        countStyle:`margin-left:6px;color:${active?SAGE_DARK:'#A8A192'};font-size:11.5px;` };
+    });
+
+    const priorityFilters = ['All','High','Medium','Low'].map(p=>{
+      const active = s.priorityFilter===p;
+      return { label: p==='All'?'All priorities':p, onClick: ()=>this.setState({priorityFilter:p}),
+        style:`padding:10px 14px;border-radius:100px;font-size:13px;cursor:pointer;border:1px solid ${active?SAGE:BORDER};background:${active?SAGE_BG:'#fff'};color:${active?SAGE_DARK:INK_MUTED};font-weight:${active?600:500};` };
+    });
+
+    const filteredCases = tabFiltered.map(c=>{
+      const ri = riskInfo(c.riskLevel, c.safety);
+      return { id:c.id, customer:c.customer, category:c.category, priority:c.priority, owner:c.owner, source:c.source, updatedTime:c.updatedTime,
+        status:c.displayStatus, statusStyle: statusStyle(c.displayStatus)+'margin-top:4px;', priorityStyle: priorityStyle(c.priority), riskStyle: ri.style, riskLabel: ri.label,
+        overdue: c.overdue, onClick: () => this.setState({ view:'detail', selectedCaseId: c.id }) };
+    });
+
+    const EMPTY_CASE = { id:'', refNo:'', customer:'', customerType:'', phone:'', email:'', package:'', packageBalance:'',
+      lastTreatmentDate:'', respondIoLink:'', category:'General Enquiry', priority:'Low', owner:'', source:'', status:'New',
+      displayStatus:'New', updatedTime:'', receivedTime:'', overdue:false, followUpDeadline:'', originalMessage:'',
+      conversationContext:'', aiDraft:'', internalAssessment:'', missingInfo:[], customerDataUsed:[], citations:[],
+      onHold:false, approvedBy:'', approvedTime:'', respondIoSent:false, finalCustomerReply:'', history:[],
+      riskLevel:'Low', safety:false, escalationRequired:false, escalateTo:'', reviewerRole:'', sensitive:false, nextAction:'', holdingReply:'' };
+
+    const selId = s.selectedCaseId;
+    const selRaw = cases.find(c => c && c.id === selId) || cases[0] || EMPTY_CASE;
+    const noCaseSelected = !cases.length;
+    const draftText = s.draftOverrides[selRaw.id] ?? selRaw.aiDraft ?? '';
+    const editing = !!s.editingDraft[selRaw.id];
+    const ri = riskInfo(selRaw.riskLevel, selRaw.safety);
+    const flags = detectFlags(selRaw);
+    const meta = s.approvalMeta[selRaw.id] || {};
+    const selMissingInfo = Array.isArray(selRaw.missingInfo) ? selRaw.missingInfo : [];
+    const selCitations = Array.isArray(selRaw.citations) ? selRaw.citations : [];
+    const selCustomerDataUsed = Array.isArray(selRaw.customerDataUsed) ? selRaw.customerDataUsed : [];
+
+    const blockReasons = [];
+    if(noCaseSelected) blockReasons.push('No case selected');
+    if(selRaw.escalationRequired) blockReasons.push('Escalation required before approval');
+    if(selRaw.sensitive) blockReasons.push('Category requires Management/Centre Manager review');
+    if(selMissingInfo.length) blockReasons.push('Required information is missing');
+    if(flags.conflicting) blockReasons.push('Approved sources conflict — requires verification');
+    if(!draftText.trim()) blockReasons.push('Draft is empty');
+    if(selRaw.onHold) blockReasons.push('Case is on hold');
+
+    const holdFields = s.holdFieldOverrides[selRaw.id] || { reason: selRaw.holdReason||'Awaiting Management Decision', until: selRaw.holdUntil||'', owner: selRaw.holdOwner||'Brenda', validityApproved: selRaw.holdValidityApproved||'No', approvedBy: selRaw.holdApprovedBy||'' };
+    const sentInfo = s.sentOverrides[selRaw.id];
+    const suggestedTemplates = suggestTemplatesForCategory(selRaw.category).map(t => t.name);
+
+    const selectedCase = {
+      ...selRaw,
+      statusStyle: statusStyle(selRaw.displayStatus), priorityStyle: priorityStyle(selRaw.priority), riskStyle: ri.style, riskLabel: ri.label,
+      escBorder: selRaw.escalationRequired ? '#E9CBCB' : BORDER,
+      escRequiredLabel: selRaw.escalationRequired ? 'Yes' : 'No',
+      escRequiredStyle: selRaw.escalationRequired ? pillStyle(RED_BG,RED) : pillStyle(SAGE_BG,SAGE_DARK),
+      hasMissingInfo: selMissingInfo.length>0, noMissingInfo: selMissingInfo.length===0,
+      citations: selCitations.map(ct=>({ label: ct.label, style: pillStyle(ct.tier===5?AMBER_BG:SAGE_BG, ct.tier===5?AMBER:SAGE_DARK) })),
+      messageLabel: labelForSource(selRaw.source),
+      isFinalized: selRaw.displayStatus==='Approved' || selRaw.displayStatus==='Closed',
+      approvedBy: meta.approvedBy ?? selRaw.approvedBy, approvedTime: meta.approvedTime ?? selRaw.approvedTime,
+      finalCustomerReply: meta.finalCustomerReply ?? selRaw.finalCustomerReply,
+      respondIoSent: !!sentInfo, respondIoSentLabel: sentInfo ? `Yes — confirmed by ${sentInfo.confirmedBy} at ${sentInfo.confirmedAt}` : 'No — manual copy required',
+      copiedAt: s.copiedAtOverrides[selRaw.id] || 'Not yet copied',
+      canConfirmSent: selRaw.displayStatus==='Approved' && !sentInfo,
+      suggestedTemplates,
+      hasBlockReasons: blockReasons.length>0, blockReasonsText: 'Cannot approve: ' + blockReasons.join('; '),
+      onHoldBtnVisible: !selRaw.onHold,
+      holdReason: holdFields.reason, holdUntil: holdFields.until, holdOwner: holdFields.owner,
+      holdValidityApproved: holdFields.validityApproved, holdApprovedBy: holdFields.approvedBy,
+      hasImportOverrideNotice: !!selRaw.importedApprovalStatus && selRaw.effectiveApprovalStatus==='Blocked',
+      importOverrideNoticeText: `Imported approval status was "${selRaw.importedApprovalStatus}", but mandatory safety/escalation controls take precedence — effective status is Blocked. Imported value preserved for audit.`,
+    };
+
+    const TIMELINE_VISIBILITY = (status) => {
+      const s2 = String(status||'').toLowerCase();
+      if(s2.includes('new message')) return {label:'Customer', style: pillStyle(SAGE_BG,SAGE_DARK)};
+      if(s2.includes('escalat') || s2.includes('hold') || s2.includes('resum') || s2.includes('approv') || s2.includes('drafted') || s2.includes('pending')) return {label:'Internal', style: pillStyle(AMBER_BG,AMBER)};
+      return {label:'System', style: pillStyle(GRAY_BG,INK_MUTED)};
+    };
+    const timelineDisplay = (selRaw.history||[]).map(h => ({ ...h, visibility: TIMELINE_VISIBILITY(h.status).label, visibilityStyle: TIMELINE_VISIBILITY(h.status).style }));
+
+    const riskFlagsAll = RISK_FLAG_DEFS.map(rf=>{
+      const on = flags[rf.key];
+      return { label: rf.label, icon: on?'●':'○',
+        style:`display:flex;align-items:center;gap:8px;font-size:13px;padding:7px 10px;border-radius:8px;background:${on?RED_BG:GRAY_BG};color:${on?RED:'#A8A192'};font-weight:${on?600:400};` };
+    });
+
+    const customerDataSources = [
+      {name:'Respond.io', note:'Primary customer messaging channel'},
+      {name:'Google Sheets case records', note:'Main case database'},
+      {name:'Aoikumo', note:'Conditional — only when package/appointment/sales/balance info is required'},
+      {name:'Sequoia for historical records', note:'Pre-2026-02 entitlement data only'},
+    ].map(({name,note})=>{
+      const used = selCustomerDataUsed.includes(name);
+      return { name, note, color: used?INK:'#A8A192', tag: used?'Used in this case':'Available', style: used? pillStyle(SAGE_BG,SAGE_DARK) : pillStyle(GRAY_BG,'#A8A192') };
+    });
+
+    const knowledgeHierarchy = [
+      {name:'CHANGELOG / Decisions Register', tier:'KB-000', tierNum:1, version:'Overrides all other sources when in conflict'},
+      {name:'Internal Policies — Medical & Contraindication', tier:'KB-Policy', tierNum:1, version:'09_Internal_Policies'},
+      {name:'Current approved SOP (SC Appointment / CSE SOP)', tier:'KB-002', tierNum:2, version:'04_SOP'},
+      {name:'FAQ (SC-FAQ-01–05, PRHB FAQ)', tier:'KB-003 / KB-004', tierNum:3, version:'05_FAQ — Mun-approved'},
+      {name:'Active Promotions Reference', tier:'KB-Promo', tierNum:3, version:'03_Promotions'},
+      {name:'Respond.io workflow reference', tier:'KB-010', tierNum:4, version:'06_Respondio — latest active workflow JSON'},
+      {name:'WhatsApp reply templates', tier:'KB-Templates', tierNum:4, version:'10_Templates'},
+    ].map(k => ({...k, style: pillStyle(k.tierNum===5?AMBER_BG:SAGE_BG, k.tierNum===5?AMBER:SAGE_DARK)}));
+
+    const integrationStatus = [
+      {name:'Google Sheets (case database)', state:'Design only', detail:'This prototype reads/writes to local state, not the live Sheet.'},
+      {name:'Respond.io (customer messaging)', state:'Design only', detail:'Approve unlocks copy-to-clipboard; no message is sent automatically.'},
+      {name:'Aoikumo (customer/package/sales lookup)', state:'Design only', detail:'Referenced conditionally per case; no live API call.'},
+    ].map(x=>({...x, style: pillStyle(AMBER_BG, AMBER)}));
+
+    const detailGridStyle = isMobile ? 'display:grid;grid-template-columns:1fr;gap:16px;' : 'display:grid;grid-template-columns:1fr 380px;gap:20px;align-items:start;';
+    const infoCols = isMobile ? '1fr 1fr' : 'repeat(4, 1fr)';
+
+    const setDraft = (id, text) => this.setState({ draftOverrides: {...s.draftOverrides, [id]: text} });
+    const updateStatus = (id, newStatus, actor) => {
+      this.setState({ statusOverrides: {...s.statusOverrides, [id]: newStatus},
+        historyAppends: {...s.historyAppends, [id]: [...(s.historyAppends[id]||[]), {status:newStatus, timestamp:'Just now', actor}]} });
+    };
+
+    const approveCase = () => {
+      if(blockReasons.length>0){ this.showToast('Cannot approve: ' + blockReasons.join('; ')); return; }
+      this.setState({ approvalMeta: {...s.approvalMeta, [selRaw.id]: { approvedBy:'Brenda', approvedTime:'Just now', finalCustomerReply: draftText } } });
+      updateStatus(selRaw.id, 'Approved', 'Brenda');
+      this.logChange({ field:'approvalStatus', previousValue: selRaw.displayStatus, newValue:'Approved', caseRef: selRaw.refNo, source:'Approval' });
+      this.markUnsynced(selRaw.id);
+      this.showToast('Approved — ready to copy into Respond.io. Nothing was sent automatically.');
+    };
+    const requestRevision = () => { updateStatus(selRaw.id, 'AI Drafted', 'Brenda'); this.logChange({field:'status',previousValue:selRaw.displayStatus,newValue:'AI Drafted',caseRef:selRaw.refNo,source:'UI'}); this.markUnsynced(selRaw.id); this.showToast('Revision requested — sent back for redrafting.'); };
+    const escalateCase = () => { updateStatus(selRaw.id, 'Escalated', 'Brenda'); this.logChange({field:'status',previousValue:selRaw.displayStatus,newValue:'Escalated',caseRef:selRaw.refNo,source:'UI'}); this.markUnsynced(selRaw.id); this.showToast(`Escalated to ${selRaw.escalateTo || selRaw.reviewerRole}.`); };
+    const holdCase = () => {
+      this.setState({ holdOverrides: {...s.holdOverrides, [selRaw.id]: true},
+        historyAppends: {...s.historyAppends, [selRaw.id]: [...(s.historyAppends[selRaw.id]||[]), {status:'On Hold', timestamp:'Just now', actor:'Brenda'}]} });
+      this.logChange({field:'onHold',previousValue:'false',newValue:'true',caseRef:selRaw.refNo,source:'Hold'});
+      this.markUnsynced(selRaw.id);
+      this.showToast('Case placed on hold.');
+    };
+    const resumeCase = () => {
+      this.setState({ holdOverrides: {...s.holdOverrides, [selRaw.id]: false},
+        historyAppends: {...s.historyAppends, [selRaw.id]: [...(s.historyAppends[selRaw.id]||[]), {status:'Resumed', timestamp:'Just now', actor:'Brenda'}]} });
+      this.logChange({field:'onHold',previousValue:'true',newValue:'false',caseRef:selRaw.refNo,source:'Resume'});
+      this.markUnsynced(selRaw.id);
+      this.showToast('Case resumed from hold.');
+    };
+    const onHoldFieldChange = (field) => (e) => {
+      const cur = s.holdFieldOverrides[selRaw.id] || holdFields;
+      this.setState({ holdFieldOverrides: {...s.holdFieldOverrides, [selRaw.id]: {...cur, [field]: e.target.value } } });
+    };
+
+    const toggleEditDraft = () => this.setState({ editingDraft: {...s.editingDraft, [selRaw.id]: !editing} });
+    const copyDraft = () => {
+      if(typeof navigator!=='undefined' && navigator.clipboard) navigator.clipboard.writeText(draftText).catch(()=>{});
+      this.setState({ copiedAtOverrides: {...s.copiedAtOverrides, [selRaw.id]: 'Just now'} });
+      this.logChange({ field:'copiedAt', previousValue:'—', newValue:'Just now', caseRef: selRaw.refNo, source:'UI' });
+      this.showToast('Draft copied — paste into Respond.io to send. This does not mark the case as sent.');
+    };
+    const confirmReplySentManually = () => {
+      if(selRaw.displayStatus !== 'Approved'){ this.showToast('Cannot confirm sent — case is not yet Approved.'); this.logChange({field:'respondIoSent',previousValue:'false',newValue:'rejected — not approved',caseRef:selRaw.refNo,source:'Validation'}); return; }
+      if(!(selRaw.finalCustomerReply || draftText).trim()){ this.showToast('Cannot confirm sent — no final reply on record.'); return; }
+      this.setState({ sentOverrides: {...s.sentOverrides, [selRaw.id]: { confirmedBy:'Brenda', confirmedAt:'Just now' }} });
+      this.logChange({ field:'respondIoSent', previousValue:'false', newValue:'true (manually confirmed by Brenda)', caseRef: selRaw.refNo, source:'UI' });
+      this.showToast('Marked as sent — confirmed manually.');
+    };
+
+    const kpis = [
+      { label:'New cases today', value: cases.filter(c=>c.receivedTime.startsWith('Today')).length, color: INK },
+      { label:'Pending approval', value: cases.filter(c=>c.displayStatus==='Pending Approval').length, color: AMBER },
+      { label:'High-risk cases', value: cases.filter(c=>c.riskLevel==='High').length, color: RED },
+      { label:'Escalated cases', value: cases.filter(c=>c.displayStatus==='Escalated').length, color: RED },
+      { label:'On hold', value: cases.filter(c=>c.onHold).length, color: '#7A5C24' },
+      { label:'Avg handling time', value: '2h 40m', color: INK },
+      { label:'Knowledge gaps flagged', value: 2, color: AMBER },
+    ];
+    const kpiCols = isMobile ? 'repeat(2,1fr)' : 'repeat(7,1fr)';
+    const dashCols = isMobile ? '1fr' : '1fr 1fr';
+
+    const repeatedQuestions = [
+      {text:'How many sessions are left in my package?', count:5},
+      {text:'What time slots are available this week?', count:4},
+      {text:'Is it safe to start treatment at X weeks postpartum?', count:3},
+    ];
+    const knowledgeGaps = [
+      'Abdominal binding guidance for C-section clients is not documented in the current SOP.',
+      'Refund/cancellation policy has no documented exception path for Management to reference quickly.',
+    ];
+    const csoNames = ['Brenda','Joe','Faizan'];
+    const csoVolume = csoNames.map(n=>{
+      const count = cases.filter(c=>c.owner===n).length;
+      return { name:n, count, pct: Math.round(count/Math.max(...csoNames.map(x=>cases.filter(c=>c.owner===x).length),1)*100)+'%' };
+    });
+    const cats = [...new Set(cases.map(c=>c.category))];
+    const categoryDist = cats.map(cat=>{
+      const count = cases.filter(c=>c.category===cat).length;
+      return { name:cat, count, pct: Math.round(count/Math.max(...cats.map(x=>cases.filter(c=>c.category===x).length),1)*100)+'%' };
+    });
+
+    // ---- Phase 2A: Google Sheets integration layer (mock, local-only) ----
+    const schemaRows = CASE_FIELD_SCHEMA.map(sc => ({
+      col: sc.col, field: sc.f, type: sc.t, required: sc.req ? 'Required' : 'Optional',
+      integration: sc.iw ? 'Writable' : '—', integrationStyle: sc.iw ? pillStyle(SAGE_BG,SAGE_DARK) : pillStyle(GRAY_BG,'#A8A192'),
+      cso: sc.ue ? 'Editable' : '—', csoStyle: sc.ue ? pillStyle(SAGE_BG,SAGE_DARK) : pillStyle(GRAY_BG,'#A8A192'),
+      engine: sc.comp ? 'Computed' : '—', engineStyle: sc.comp ? pillStyle(AMBER_BG,AMBER) : pillStyle(GRAY_BG,'#A8A192'),
+      def: Array.isArray(sc.def) ? '[]' : String(sc.def), val: sc.val || '—',
+    }));
+    const existingRefNos = new Set(cases.map(c=>c.refNo).filter(Boolean));
+    const vr = s.validationReport;
+    const unsyncedCount = Object.keys(s.unsyncedChangeIds).filter(k=>s.unsyncedChangeIds[k]).length;
+    const syncCards = [
+      { label:'Case Data Source', value:'Local Prototype Data', style: pillStyle(SAGE_BG,SAGE_DARK) },
+      { label:'Google Sheets Read', value:'Not Connected', style: pillStyle(AMBER_BG,AMBER) },
+      { label:'Google Sheets Write', value:'Not Connected', style: pillStyle(AMBER_BG,AMBER) },
+      { label:'Last Mock Import', value: s.sheetSync.lastMockImport || 'Never', style: pillStyle(GRAY_BG,INK_MUTED) },
+      { label:'Last Mock Export', value: s.sheetSync.lastMockExport || 'Never', style: pillStyle(GRAY_BG,INK_MUTED) },
+      { label:'Unsynced Changes', value: String(unsyncedCount), style: unsyncedCount ? pillStyle(AMBER_BG,AMBER) : pillStyle(SAGE_BG,SAGE_DARK) },
+      { label:'Validation Errors', value: String(vr.errors.length), style: vr.errors.length ? pillStyle(RED_BG,RED) : pillStyle(SAGE_BG,SAGE_DARK) },
+    ];
+
+    const importMockRows = () => {
+      const seen = new Set(existingRefNos);
+      const allErrors=[], allWarnings=[], allAutoCorrected=[], newInternalCases=[];
+      MOCK_SHEET_ROWS.forEach((row, idx) => {
+        let canonical = normalizeCase(sheetRowToCase(row));
+        const { errors, warnings, autoCorrected } = validateCase(canonical, seen, row);
+        const tag = `Row ${idx+1}${canonical.refNo ? ' ('+canonical.refNo+')' : ''}`;
+        if(errors.some(e=>e==='Missing Ref No.') || errors.some(e=>e==='Duplicate Ref No.')){
+          allErrors.push(...errors.map(e=>`${tag}: ${e}`)); allWarnings.push(...warnings.map(w=>`${tag}: ${w}`)); return;
+        }
+        seen.add(canonical.refNo);
+        if(!CATEGORY_RULES[canonical.category]) canonical = {...canonical, category:'General Enquiry'};
+        if(!['Low','Medium','High'].includes(canonical.priority)) canonical = {...canonical, priority:'Low'};
+        const internal = canonicalToInternal(canonical, idx);
+        const derived = deriveCase(internal);
+        const flags = detectFlags({...internal, ...derived});
+        const importBlocks = computeImportBlockReasons(internal, derived, flags);
+        if(derived.escalationRequired && !derived.escalateTo) allErrors.push(`${tag}: Missing escalation owner for mandatory escalation`);
+        internal.importedApprovalStatus = canonical.approvalStatus || 'Not Approved';
+        if(canonical.approvalStatus==='Approved' && importBlocks.length){
+          internal.effectiveApprovalStatus = 'Blocked';
+          internal.approvalBlockedReason = importBlocks.join('; ');
+          internal.status = 'Pending Approval';
+          allErrors.push(`${tag}: imported approval status "Approved" could not be honoured — mandatory safety/escalation controls take precedence (${importBlocks.join('; ')}). Effective status: Blocked. Imported value preserved for audit.`);
+        } else if(VALID_STATUSES.includes(canonical.status)){
+          internal.effectiveApprovalStatus = canonical.approvalStatus || 'Not Approved';
+          internal.status = canonical.status;
+        }
+        allWarnings.push(...warnings.map(w=>`${tag}: ${w}`));
+        allAutoCorrected.push(...autoCorrected.map(a=>`${tag}: ${a}`));
+        newInternalCases.push(internal);
+      });
+      this.setState({
+        cases: [...s.cases, ...newInternalCases],
+        validationReport: { errors: allErrors, warnings: allWarnings, autoCorrected: allAutoCorrected },
+        sheetSync: { ...s.sheetSync, lastMockImport: 'Just now' },
+      });
+      this.logChange({ field:'import', previousValue:'—', newValue:`Imported ${newInternalCases.length} of ${MOCK_SHEET_ROWS.length} mock rows`, caseRef:'Batch', source:'Mock Sheet Import' });
+      this.showToast(`Imported ${newInternalCases.length} of ${MOCK_SHEET_ROWS.length} mock rows — ${allErrors.length} error(s), ${allWarnings.length} warning(s).`);
+    };
+    const exportMockRows = () => {
+      const rows = cases.map(c => caseToSheetRow(internalToCanonical(c)));
+      this.setState({ sheetSync: { ...s.sheetSync, lastMockExport: 'Just now' }, exportPreviewRows: rows, unsyncedChangeIds: {} });
+      this.logChange({ field:'export', previousValue:'—', newValue:`Exported ${rows.length} case(s) as sheet rows`, caseRef:'Batch', source:'UI' });
+      this.showToast(`Exported ${rows.length} case(s) as mock sheet rows (local only — nothing sent to Google Sheets).`);
+    };
+    const previewMapping = () => this.setState({ mappingPreview: sheetRowToCase(MOCK_SHEET_ROWS[0]), showMappingPreview: !s.showMappingPreview });
+    const toggleUnsyncedPanel = () => this.setState({ showUnsyncedPanel: !s.showUnsyncedPanel });
+
+    const validationSection = {
+      hasErrors: vr.errors.length>0, hasWarnings: vr.warnings.length>0, hasAutoCorrected: vr.autoCorrected.length>0,
+      errors: vr.errors, warnings: vr.warnings, autoCorrected: vr.autoCorrected,
+      hasReport: vr.errors.length+vr.warnings.length+vr.autoCorrected.length>0,
+    };
+    const auditLogDisplay = s.auditLog.map(a => ({ text: `${a.caseRef || 'Case'} · ${a.field}: "${a.previousValue}" → "${a.newValue}"`, meta: `${a.timestamp} · ${a.changedBy || 'Brenda'} · ${a.source}` }));
+    const unsyncedList = cases.filter(c => s.unsyncedChangeIds[c.id]).map(c => ({ id:c.id, refNo:c.refNo, customer:c.customer, status:c.displayStatus }));
+    const mappingPreviewRows = s.mappingPreview ? Object.entries(s.mappingPreview).filter(([k])=>k!=='extraFields').slice(0,14).map(([k,v])=>({k, v: Array.isArray(v)?(v.length?v.join(', '):'—'): (v===''||v===false?'—':String(v))})) : [];
+    const exportPreviewDisplay = s.exportPreviewRows.slice(0,5).map(row => ({ refNo: row['Ref No.'], customer: row['Customer Name'], category: row['Category'], status: row['Status'], approvalStatus: row['Approval Status'] }));
+
+    // ---- Phase 2B: Respond.io mock event workflow ----
+    const rioVr = s.respondIoValidation;
+    const respondIoSyncCards = [
+      { label:'Respond.io Webhook', value:'Not Connected', style: pillStyle(AMBER_BG,AMBER) },
+      { label:'Incoming Message Sync', value:'Simulated', style: pillStyle(AMBER_BG,AMBER) },
+      { label:'Conversation Lookup', value:'Not Connected', style: pillStyle(AMBER_BG,AMBER) },
+      { label:'Template Sync', value:'Local Registry Only', style: pillStyle(AMBER_BG,AMBER) },
+      { label:'Automatic Send', value:'Disabled', style: pillStyle(RED_BG,RED) },
+      { label:'Manual Copy and Send', value:'Available', style: pillStyle(SAGE_BG,SAGE_DARK) },
+      { label:'Last Mock Event', value: s.respondIoSync.lastMockEvent || 'Never', style: pillStyle(GRAY_BG,INK_MUTED) },
+      { label:'Ambiguous Case Matches', value: String(s.respondIoAmbiguous.length), style: s.respondIoAmbiguous.length ? pillStyle(AMBER_BG,AMBER) : pillStyle(SAGE_BG,SAGE_DARK) },
+      { label:'Respond.io Validation Errors', value: String(rioVr.errors.length), style: rioVr.errors.length ? pillStyle(RED_BG,RED) : pillStyle(SAGE_BG,SAGE_DARK) },
+    ];
+
+    const importMockRespondIoEvents = () => {
+      let workingCases = [...cases];
+      const seenEventIds = new Set(s.respondIoSeenEventIds);
+      const seenMessageIds = new Set(s.respondIoSeenMessageIds);
+      const errors=[], warnings=[], ambiguous=[], newAudit=[];
+      MOCK_RESPONDIO_EVENTS.forEach((raw, idx) => {
+        const event = normalizeRespondIoEvent(raw);
+        const tag = `Event ${idx+1} (${event.eventId||'no id'})`;
+        const v = validateRespondIoEvent(event, seenEventIds, seenMessageIds);
+        if(v.errors.length){ errors.push(...v.errors.map(e=>`${tag}: ${e}`)); warnings.push(...v.warnings.map(w=>`${tag}: ${w}`)); return; }
+        warnings.push(...v.warnings.map(w=>`${tag}: ${w}`));
+        seenEventIds.add(event.eventId); if(event.messageId) seenMessageIds.add(event.messageId);
+        const match = matchEventToCase(event, workingCases);
+        if(match.status==='ambiguous'){
+          ambiguous.push({ event, candidates: match.matches.map(c=>({id:c.id, refNo:c.refNo, customer:c.customer})) });
+          errors.push(`${tag}: Ambiguous Case Match — ${match.matches.map(c=>c.refNo).join(', ')} — human selection required.`);
+          return;
+        }
+        if(match.status==='matched'){
+          const mi = workingCases.findIndex(c=>c.id===match.case.id);
+          workingCases[mi] = mergeRespondIoUpdate(workingCases[mi], event);
+          newAudit.push({ field:'timeline', previousValue:'—', newValue:`Incoming message linked to ${match.case.refNo}`, caseRef: match.case.refNo, source:'Mock Respond.io Event' });
+        } else {
+          const proposed = respondIoEventToCase(event, idx);
+          workingCases.push(proposed);
+          newAudit.push({ field:'case', previousValue:'—', newValue:`Proposed case ${proposed.refNo} created`, caseRef: proposed.refNo, source:'Mock Respond.io Event' });
+        }
+      });
+      this.setState(prev => ({
+        cases: workingCases, respondIoValidation: { errors, warnings }, respondIoAmbiguous: ambiguous,
+        respondIoSeenEventIds: [...seenEventIds], respondIoSeenMessageIds: [...seenMessageIds],
+        respondIoSync: { ...prev.respondIoSync, lastMockEvent: 'Just now' }, auditLog: [...newAudit, ...prev.auditLog].slice(0,60),
+      }));
+      this.showToast(`Processed ${MOCK_RESPONDIO_EVENTS.length} mock event(s) — ${errors.length} error(s), ${warnings.length} warning(s), ${ambiguous.length} ambiguous.`);
+    };
+    const resolveAmbiguousMatch = (eventId, caseId) => () => {
+      const entry = s.respondIoAmbiguous.find(a=>a.event.eventId===eventId);
+      if(!entry) return;
+      const mi = cases.findIndex(c=>c.id===caseId);
+      if(mi<0) return;
+      const updated = [...cases]; updated[mi] = mergeRespondIoUpdate(updated[mi], entry.event);
+      this.setState(prev => ({ cases: updated, respondIoAmbiguous: prev.respondIoAmbiguous.filter(a=>a.event.eventId!==eventId) }));
+      this.logChange({ field:'timeline', previousValue:'—', newValue:`Ambiguous event manually attached to ${updated[mi].refNo}`, caseRef: updated[mi].refNo, source:'UI' });
+      this.showToast(`Event attached to ${updated[mi].refNo}.`);
+    };
+    const toggleRespondIoTemplates = () => this.setState({ showRespondIoTemplates: !s.showRespondIoTemplates });
+
+    const respondIoValidationSection = { hasErrors: rioVr.errors.length>0, hasWarnings: rioVr.warnings.length>0, errors: rioVr.errors, warnings: rioVr.warnings, hasReport: rioVr.errors.length+rioVr.warnings.length>0 };
+    const ambiguousDisplay = s.respondIoAmbiguous.map(a => ({ eventId: a.event.eventId, contactNumber: a.event.contactNumber, candidates: a.candidates.map(c => ({ ...c, onClick: resolveAmbiguousMatch(a.event.eventId, c.id) })) }));
+    const templateRegistryDisplay = TEMPLATE_REGISTRY.map(t => ({ ...t, statusStyle: t.kind==='deprecated' ? pillStyle(RED_BG,RED) : pillStyle(SAGE_BG,SAGE_DARK), kindLabel: ({'approved-reply':'Approved Customer Reply','internal-holding':'Internal Holding Reply','workflow-reminder':'Workflow Reminder','deprecated':'Deprecated'})[t.kind] }));
+
+    const editDraftBtnStyle = `background:${editing?SAGE:'none'};border:1px solid ${SAGE};color:${editing?'#fff':SAGE_DARK};font-size:12.5px;padding:6px 12px;border-radius:8px;cursor:pointer;font-weight:600;`;
+    const approveDisabled = blockReasons.length>0;
+    const approveBtnStyle = approveDisabled
+      ? `background:${GRAY_BG};color:#A8A192;border:none;padding:11px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:not-allowed;`
+      : `background:${SAGE};color:#fff;border:none;padding:11px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;`;
+
+    return {
+      rootStyle, pagePadding, isMobile, navBtnStyleInbox, navBtnStyleDash, navBtnStyleIntegration, goToInbox, goToDashboard, goToIntegration,
+      toast: s.toast, isInbox: s.view==='inbox', isDashboard: s.view==='dashboard', isDetail: s.view==='detail', isIntegration: s.view==='integration',
+      schemaRows, syncCards, importMockRows, exportMockRows, previewMapping, toggleUnsyncedPanel,
+      validationSection, auditLogDisplay, hasAuditLog: auditLogDisplay.length>0,
+      showMappingPreview: s.showMappingPreview, mappingPreviewRows, hasMappingPreview: mappingPreviewRows.length>0,
+      showUnsyncedPanel: s.showUnsyncedPanel, unsyncedList, hasUnsyncedList: unsyncedList.length>0, noUnsyncedList: unsyncedList.length===0, unsyncedCount,
+      exportPreviewDisplay, hasExportPreview: exportPreviewDisplay.length>0,
+      respondIoSyncCards, importMockRespondIoEvents, respondIoValidationSection, ambiguousDisplay, hasAmbiguous: ambiguousDisplay.length>0,
+      templateRegistryDisplay, toggleRespondIoTemplates, showRespondIoTemplates: s.showRespondIoTemplates,
+      showTemplatesLabel: s.showRespondIoTemplates ? 'Hide Template Registry' : 'View Template Registry',
+      timelineDisplay, hasTimeline: timelineDisplay.length>0,
+      copyDraft, confirmReplySentManually,
+      searchQuery: s.searchQuery, onSearchChange: (e)=>this.setState({searchQuery:e.target.value}),
+      priorityFilters, statusTabs, filteredCases, showDesktopTable: !isMobile,
+      kpis, kpiCols, dashCols, repeatedQuestions, knowledgeGaps, csoVolume, categoryDist,
+      selectedCase, noCaseSelected, riskFlagsAll, customerDataSources, knowledgeHierarchy, integrationStatus, detailGridStyle, infoCols,
+      draftText, draftReadOnly: !editing,
+      draftAreaStyle: `width:100%;min-height:140px;padding:14px 16px;border-radius:10px;border:1px solid ${editing?SAGE:BORDER};background:${editing?'#fff':'#FBFAF7'};font-size:14px;color:${INK};line-height:1.55;resize:vertical;outline:none;`,
+      draftCharCount: draftText.length, onDraftChange: (e)=>setDraft(selRaw.id, e.target.value),
+      toggleEditDraft, editDraftLabel: editing?'Done Editing':'Edit Draft', editDraftBtnStyle, copyDraft,
+      onCategoryChange: (e)=>{ this.setState({categoryOverrides:{...s.categoryOverrides,[selRaw.id]:e.target.value}}); this.logChange({field:'category',previousValue:selRaw.category,newValue:e.target.value,caseRef:selRaw.refNo,source:'Dynamic Rule'}); this.markUnsynced(selRaw.id); },
+      onPriorityChange: (e)=>{ this.setState({priorityOverrides:{...s.priorityOverrides,[selRaw.id]:e.target.value}}); this.logChange({field:'priority',previousValue:selRaw.priority,newValue:e.target.value,caseRef:selRaw.refNo,source:'Dynamic Rule'}); this.markUnsynced(selRaw.id); },
+      approveCase, requestRevision, escalateCase, holdCase, resumeCase, onHoldFieldChange,
+      approveBtnStyle,
+      revisionBtnStyle: `background:none;color:${INK};border:1px solid ${BORDER};padding:11px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;`,
+      escalateBtnStyle: `background:${RED_BG};color:${RED};border:none;padding:11px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;`,
+      holdBtnStyle: `background:none;color:${INK_MUTED};border:1px solid ${BORDER};padding:11px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;`,
+    };
+  }
+}
+
+</script>
+</body>
+</html>
