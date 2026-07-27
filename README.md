@@ -1,12 +1,12 @@
 # Mumsrelle CSO AI Help Desk
 
-Interactive prototype for the Mumsrelle CSO team to review customer-service cases, draft safe replies, flag escalation cases, and prepare Respond.io / Google Sheets integration requirements.
+Single internal workspace for the Mumsrelle CSO team to prepare safe customer replies, review live cases, use approved templates, consult SOP references, and monitor daily KPI responsibilities.
 
 ## Current Status
 
 This is a local prototype. It does not connect to live Respond.io, Google Sheets, Aoikumo, or Sequoia APIs yet.
 
-The app is intended for workflow review, team alignment, and future implementation planning. The GitHub version uses anonymised sample customer data only.
+The merged app uses the existing GitHub Pages site as the main entry point. The GitHub version uses anonymised sample customer data only.
 
 ## Files
 
@@ -17,15 +17,16 @@ The app is intended for workflow review, team alignment, and future implementati
 
 Internal SOPs, AI instructions, source-priority rules, and detailed knowledge-base files are intentionally excluded from this public repository.
 
-## Main Workflow Covered
+## Main Sections
 
-- Case Inbox for customer enquiries
+- Ask AI draft assistant with mandatory human review
+- Live Cases for customer enquiries
+- Approved Templates with customer-facing campaign names removed
+- SOP & Knowledge Base directory
+- Daily KPI view for CSO responsibilities
 - Risk and escalation classification
-- Draft customer replies
 - Human approval before any external sending
-- Google Sheets field mapping design
-- Respond.io event mapping design
-- Knowledge-source hierarchy and source registry
+- Admin-only Google Sheets and Respond.io integration setup
 
 ## Safety Rules
 
