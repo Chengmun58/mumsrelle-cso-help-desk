@@ -6,7 +6,7 @@ Interactive prototype for the Mumsrelle CSO team to review customer-service case
 
 This is a local prototype. It does not connect to live Respond.io, Google Sheets, Aoikumo, or Sequoia APIs yet.
 
-The app is intended for workflow review, team alignment, and future implementation planning.
+The app is intended for workflow review, team alignment, and future implementation planning. The GitHub version uses anonymised sample customer data only.
 
 ## Files
 
@@ -14,8 +14,8 @@ The app is intended for workflow review, team alignment, and future implementati
 | --- | --- |
 | `index.html` | Main standalone app. Open this file in a browser or publish it through GitHub Pages. |
 | `support.js` | Runtime support script required by the app. |
-| `mumsrelle-cso-help-desk.dc.html` | Source-style DC export kept for reference. |
-| `knowledge_base/` | Mumsrelle AI knowledge base, SOPs, promotion references, templates, workflow notes, and source registry. |
+
+Internal SOPs, AI instructions, source-priority rules, and detailed knowledge-base files are intentionally excluded from this public repository.
 
 ## Main Workflow Covered
 
@@ -44,4 +44,4 @@ The app is intended for workflow review, team alignment, and future implementati
 
 - Replace local mock data with Google Sheets or backend API reads only after approval rules are finalised.
 - Keep Respond.io sending manual unless management approves a controlled automation flow.
-- Maintain `knowledge_base/14_Source_Registry/` as the source-of-truth audit trail for imported SOPs and workflow JSON.
+- Keep internal SOPs, source registries, medical-safety guidance, and workflow JSON in a private repository or internal document store.
