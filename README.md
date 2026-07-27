@@ -19,7 +19,7 @@ Internal SOPs, AI instructions, source-priority rules, and detailed knowledge-ba
 
 ## Main Sections
 
-- Ask AI draft assistant with mandatory human review
+- Approved Answer Search that returns only reviewed Q&A entries
 - Live Cases for customer enquiries
 - Approved Templates with customer-facing campaign names removed
 - SOP & Knowledge Base directory
