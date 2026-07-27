@@ -31,7 +31,7 @@
         </div>
       </div>
       <div style="display:flex;gap:4px;margin-left:12px;overflow-x:auto;">
-        <button style="{{ navBtnStyleAsk }}" onClick="{{ goToAsk }}">Ask AI</button>
+        <button style="{{ navBtnStyleAsk }}" onClick="{{ goToAsk }}">Approved Answer Search</button>
         <button style="{{ navBtnStyleInbox }}" onClick="{{ goToInbox }}">Live Cases</button>
         <button style="{{ navBtnStyleTemplates }}" onClick="{{ goToTemplates }}">Approved Templates</button>
         <button style="{{ navBtnStyleKnowledge }}" onClick="{{ goToKnowledge }}">SOP &amp; Knowledge Base</button>
@@ -63,32 +63,47 @@
   <sc-if value="{{ isAsk }}" hint-placeholder-val="{{ false }}">
     <div style="max-width:1100px;margin:0 auto;padding:{{ pagePadding }};">
       <div style="margin-bottom:22px;">
-        <h1 style="font-family:'Lora',serif;font-weight:600;font-size:26px;color:#2E2B26;margin:0 0 4px;">Ask AI</h1>
-        <p style="font-size:14px;color:#6E6759;margin:0;">Paste the customer’s exact question. The assistant prepares an internal draft for review — it does not send anything.</p>
+        <h1 style="font-family:'Lora',serif;font-weight:600;font-size:26px;color:#2E2B26;margin:0 0 4px;">Search Approved Answer</h1>
+        <p style="font-size:14px;color:#6E6759;margin:0;">Search the approved Q&amp;A library. This page does not generate new answers.</p>
       </div>
-      <div style="display:grid;grid-template-columns:{{ askCols }};gap:18px;align-items:start;">
-        <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;">
-          <label style="display:block;font-size:12px;font-weight:700;color:#6E6759;margin-bottom:8px;">CUSTOMER QUESTION</label>
-          <textarea placeholder="Paste the customer's exact message here…" value="{{ askQuestion }}" onChange="{{ onAskQuestionChange }}" style="width:100%;min-height:180px;padding:14px;border:1px solid #E6E0D4;border-radius:10px;background:#FBFAF7;font-size:14px;line-height:1.55;color:#2E2B26;resize:vertical;outline:none;"></textarea>
-          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
-            <button style="background:#6F8C74;color:#fff;border:none;padding:11px 18px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;" onClick="{{ generateAskDraft }}">Prepare Draft</button>
-            <button style="background:none;color:#6E6759;border:1px solid #E6E0D4;padding:11px 18px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;" onClick="{{ clearAsk }}">Clear</button>
-          </div>
-          <div style="margin-top:14px;padding:11px 13px;border-radius:9px;background:#F5EBD8;color:#7A5C24;font-size:12px;line-height:1.5;">Medical, refund, complaint, safety and unclear cases must be escalated. Never promise suitability, refunds or outcomes.</div>
+      <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;margin-bottom:18px;">
+        <label style="display:block;font-size:12px;font-weight:700;color:#6E6759;margin-bottom:8px;">CUSTOMER QUESTION OR KEYWORDS</label>
+        <textarea placeholder="Example: price range for slimming trial and subsequent sessions" value="{{ approvedSearchQuery }}" onChange="{{ onApprovedSearchChange }}" style="width:100%;min-height:110px;padding:14px;border:1px solid #E6E0D4;border-radius:10px;background:#FBFAF7;font-size:14px;line-height:1.55;color:#2E2B26;resize:vertical;outline:none;"></textarea>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
+          <button style="background:#6F8C74;color:#fff;border:none;padding:11px 18px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;" onClick="{{ searchApprovedAnswers }}">Search Approved Answers</button>
+          <button style="background:none;color:#6E6759;border:1px solid #E6E0D4;padding:11px 18px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;" onClick="{{ clearApprovedSearch }}">Clear</button>
         </div>
-        <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;">
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;">
-            <div>
-              <div style="font-size:12px;font-weight:700;color:#6E6759;">CUSTOMER REPLY DRAFT</div>
-              <div style="font-size:11.5px;color:#8A8272;margin-top:3px;">Review before copying to Respond.io</div>
-            </div>
-            <span style="{{ askStatusStyle }}">{{ askStatus }}</span>
-          </div>
-          <textarea value="{{ askDraft }}" onChange="{{ onAskDraftChange }}" placeholder="Your reviewed draft will appear here." style="width:100%;min-height:260px;padding:14px;border:1px solid #E6E0D4;border-radius:10px;background:#FBFAF7;font-size:14px;line-height:1.6;color:#2E2B26;resize:vertical;outline:none;"></textarea>
-          <div style="font-size:12px;color:#8A8272;margin:10px 0;">{{ askAssessment }}</div>
-          <button style="background:none;color:#4F6B54;border:1px solid #6F8C74;padding:10px 16px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;" onClick="{{ copyAskDraft }}">Copy Reviewed Draft</button>
-        </div>
+        <div style="margin-top:14px;padding:11px 13px;border-radius:9px;background:#EAF0E7;color:#4F6B54;font-size:12px;line-height:1.5;">Only answers marked Approved are shown. New or unclear questions must be reviewed before they are added to this library.</div>
       </div>
+
+      <sc-if value="{{ approvedSearchHasRun }}" hint-placeholder-val="{{ false }}">
+        <sc-if value="{{ hasApprovedMatches }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <sc-for list="{{ approvedAnswerMatches }}" as="a" hint-placeholder-count="2">
+              <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;">
+                <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:12px;">
+                  <div>
+                    <div style="font-size:11px;color:#8A8272;font-weight:700;letter-spacing:0.04em;">{{ a.id }} · {{ a.category }}</div>
+                    <div style="font-weight:600;color:#2E2B26;font-size:15px;margin-top:4px;">{{ a.question }}</div>
+                  </div>
+                  <span style="{{ a.statusStyle }}">Approved</span>
+                </div>
+                <div style="font-size:12px;font-weight:700;color:#6E6759;margin-bottom:7px;">CUSTOMER REPLY</div>
+                <div style="white-space:pre-wrap;background:#FBFAF7;border:1px solid #EFEBE1;border-radius:10px;padding:14px;font-size:14px;color:#2E2B26;line-height:1.65;margin-bottom:12px;">{{ a.answer }}</div>
+                <div style="font-size:12px;color:#8A8272;line-height:1.5;margin-bottom:12px;"><strong>Internal note:</strong> {{ a.internalNote }}<br><strong>Source:</strong> {{ a.source }}</div>
+                <button style="background:none;color:#4F6B54;border:1px solid #6F8C74;padding:9px 14px;border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;" onClick="{{ a.onCopy }}">Copy Approved Reply</button>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ noApprovedMatches }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#fff;border:1px solid #E3CFA0;border-radius:14px;padding:22px;">
+            <div style="font-weight:600;color:#7A5C24;margin-bottom:6px;">No approved answer found</div>
+            <div style="font-size:13.5px;color:#6E6759;line-height:1.6;">Do not create or send an answer from this page. Add the customer’s exact question to Live Cases for review by Mun or the correct escalation owner.</div>
+            <button style="background:#6F8C74;color:#fff;border:none;padding:10px 16px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;margin-top:14px;" onClick="{{ goToInbox }}">Open Live Cases</button>
+          </div>
+        </sc-if>
+      </sc-if>
     </div>
   </sc-if>
 
@@ -1312,6 +1327,39 @@ const TEMPLATE_REGISTRY = [
 ].map(t => ({...t, statusLabel: t.kind==='deprecated' ? 'Deprecated' : (t.active ? 'Active' : 'Inactive')}));
 function suggestTemplatesForCategory(category){ return TEMPLATE_REGISTRY.filter(t => t.active && t.kind!=='deprecated' && (t.category===category || t.kind==='internal-holding')); }
 
+const APPROVED_QA = [
+  {
+    id:'QA-001',
+    category:'Slimming Pricing',
+    question:'What is the price range for slimming treatment, including trial prices and subsequent sessions?',
+    keywords:['price','pricing','cost','how much','slimming','trial','subsequent','session','indiba','arm'],
+    answer:"Part 1\n\nHi dear 😊\n\nFor first-time clients, our slimming trial prices currently start from $38 for a Centre-Based Slimming & Wellness Trial.\n\nFor the 60-minute INDIBA Arm Slimming Trial shown in the advertisement you clicked, the promotional trial price is $119, with a usual price of $379.\n\nPart 2\n\nFor subsequent sessions, the price will depend on the treatment recommended, treatment area and number of sessions required. For this INDIBA Arm Slimming treatment, the listed usual price is $379 per session before any suitable package arrangement.\n\nOur therapist can assess your concern first and explain the available options and exact pricing before you decide. Is your main concern your arms, or would you also like to focus on another area?",
+    internalNote:'Confirm which advertisement the customer clicked. Keep the reply in two parts. Do not quote an unverified package price.',
+    source:'Approved CSO Q&A — Slimming trial and subsequent-session pricing',
+    status:'Approved'
+  },
+  {
+    id:'QA-002',
+    category:'Trial Redemption Options',
+    question:'Can I choose home-based treatment, centre-based treatment, or redeem both benefits?',
+    keywords:['home','home-based','homebased','centre','center','both','redeem','free trial','pelvic','slimming','wellness'],
+    answer:"Hi dear, just to clarify, you may choose:\n\n• $89 Home-Based Pelvic Restoration Trial\n• Complimentary Centre-Based Slimming & Wellness Treatment — 1 session, valued at $279\n• Or redeem both benefits at our centre in one visit\n\nIf you prefer the home-based option, may I have your postal code and preferred date and timing? We’ll check the therapist and appointment availability for you.",
+    internalNote:'The campaign name is internal only and must not be shown to the customer. Both benefits may be redeemed at the centre during the same visit, subject to suitability and availability.',
+    source:'Approved CSO Q&A — Home-based and centre-based redemption rules',
+    status:'Approved'
+  },
+  {
+    id:'QA-003',
+    category:'Home-Based Trial Setup',
+    question:'Will the therapist bring a massage or treatment bed for the home-based trial?',
+    keywords:['bed','massage bed','treatment bed','bring bed','home visit','home-based','homebased'],
+    answer:"Hi dear, the treatment bed is not included in the home-based trial, so our therapist will not be bringing one. The session can be carried out using your own bed or a suitable firm surface at home.",
+    internalNote:'Do not tell the customer that a treatment bed is included. Confirm any special setup requirement with the treatment team when unclear.',
+    source:'Approved CSO Q&A — Home-based Pelvic Restoration trial setup',
+    status:'Approved'
+  }
+];
+
 const CSO_NAMES = ['Mun','Rebecca','Yihui','Fiverr'];
 function getSavedCsoName(){
   if(typeof window==='undefined') return 'Mun';
@@ -1340,7 +1388,7 @@ class Component extends DCLogic {
   state = {
     view: 'ask', selectedCaseId: null, isMobile: (typeof window!=='undefined' && window.innerWidth < 920),
     currentCso: getSavedCsoName(),
-    askQuestion: '', askDraft: '', askAssessment: 'No draft prepared yet.', askStatus: 'Awaiting question',
+    approvedSearchQuery: '', approvedSearchHasRun: false, approvedMatchIds: [],
     templateSearch: '',
     searchQuery: '', activeTab: 'All', priorityFilter: 'All',
     cases: RAW_CASES.map(c=>({...c})),
@@ -1413,48 +1461,31 @@ class Component extends DCLogic {
       return { ...c, ...d, onHold, status: underlyingStatus, displayStatus, history: [...history, ...(s.historyAppends[c.id]||[])] };
     });
 
-    const askText = (s.askQuestion || '').trim();
-    const generateAskDraft = () => {
-      if(!askText){
-        this.setState({ askDraft:'', askAssessment:'Paste the customer’s exact question before preparing a draft.', askStatus:'Awaiting question' });
-        this.showToast('Please paste the customer question first.');
+    const approvedSearchText = (s.approvedSearchQuery || '').trim().toLowerCase();
+    const searchApprovedAnswers = () => {
+      if(!approvedSearchText){
+        this.setState({ approvedSearchHasRun:false, approvedMatchIds:[] });
+        this.showToast('Please enter the customer question or keywords first.');
         return;
       }
-      const qLower = askText.toLowerCase();
-      const isMedical = /(pain|painful|c-section|c section|postpartum|pregnant|pregnancy|medical|surgery|wound|sore|diabetic|breastfeed)/.test(qLower);
-      const isRefund = /(refund|cancel.*package|money back|chargeback)/.test(qLower);
-      const isComplaint = /(complaint|unhappy|disappointed|bad service|angry)/.test(qLower);
-      const isPrice = /(price|pricing|cost|how much|trial)/.test(qLower);
-      let draft = "Hi dear, thank you for checking with us. May we know a little more about your main concern so we can confirm the most suitable option and current details for you?";
-      let assessment = 'Routine enquiry. Verify the latest approved details before sending.';
-      let status = 'Review required';
-      if(isMedical){
-        draft = "Hi dear, thank you for sharing this with us. As treatment suitability depends on your recovery and condition, we’d like our Centre Manager and treatment team to review the details before confirming what would be suitable for you. We’ll check and get back to you shortly.";
-        assessment = 'Medical or treatment-suitability wording detected. Escalate to Hazelle / Centre Manager. Do not confirm suitability.';
-        status = 'Escalation required';
-      } else if(isRefund){
-        draft = "Hi dear, thank you for letting us know. We’ve noted your request and will check it with our Management team before advising you further. We’ll follow up once the review is completed.";
-        assessment = 'Refund or cancellation wording detected. Escalate to Sharon or Suzen. Do not promise a refund, amount or timeline.';
-        status = 'Escalation required';
-      } else if(isComplaint){
-        draft = "Hi dear, thank you for bringing this to our attention. We’ve noted your concern and will have our Management team review it properly before we follow up with you.";
-        assessment = 'Complaint wording detected. Escalate to Management and preserve the customer’s exact message.';
-        status = 'Escalation required';
-      } else if(isPrice){
-        draft = "Hi dear, thank you for checking with us. Our first-time trial price depends on the treatment and current promotion you enquired about. Subsequent-session pricing will depend on the recommended treatment, treatment area and number of sessions required.\n\nMay we know which advertisement or treatment you are referring to, and which area you would like to focus on? We’ll confirm the exact current price for you before booking.";
-        assessment = 'Pricing enquiry. Confirm the exact advertisement, approved trial price and current package terms before sending.';
-        status = 'Review required';
-      }
-      this.setState({ askDraft:draft, askAssessment:assessment, askStatus:status });
+      const tokens = approvedSearchText.split(/[^a-z0-9$-]+/).filter(t=>t.length>1);
+      const ranked = APPROVED_QA.map(item => {
+        const questionText = `${item.question} ${item.category}`.toLowerCase();
+        const keywordScore = item.keywords.reduce((score, keyword)=>score+(approvedSearchText.includes(keyword.toLowerCase())?3:0),0);
+        const tokenScore = tokens.reduce((score, token)=>score+(questionText.includes(token)?1:0),0);
+        return { id:item.id, score:keywordScore+tokenScore };
+      }).filter(x=>x.score>0).sort((a,b)=>b.score-a.score);
+      const topScore = ranked[0]?.score || 0;
+      const ids = ranked.filter(x=>x.score>=Math.max(2, topScore-3)).slice(0,3).map(x=>x.id);
+      this.setState({ approvedSearchHasRun:true, approvedMatchIds:ids });
+      if(!ids.length) this.showToast('No approved answer found. Please add this question to Live Cases.');
     };
-    const clearAsk = () => this.setState({ askQuestion:'', askDraft:'', askAssessment:'No draft prepared yet.', askStatus:'Awaiting question' });
-    const copyAskDraft = () => {
-      if(!String(s.askDraft||'').trim()){ this.showToast('There is no draft to copy yet.'); return; }
-      if(typeof navigator!=='undefined' && navigator.clipboard) navigator.clipboard.writeText(s.askDraft).catch(()=>{});
-      this.showToast('Draft copied. Review it once more before sending manually.');
-    };
-    const askStatusStyle = s.askStatus==='Escalation required' ? pillStyle(RED_BG,RED) : (s.askStatus==='Review required' ? pillStyle(AMBER_BG,AMBER) : pillStyle(GRAY_BG,INK_MUTED));
-    const askCols = isMobile ? '1fr' : '1fr 1fr';
+    const clearApprovedSearch = () => this.setState({ approvedSearchQuery:'', approvedSearchHasRun:false, approvedMatchIds:[] });
+    const approvedAnswerMatches = s.approvedMatchIds.map(id=>APPROVED_QA.find(a=>a.id===id)).filter(Boolean).map(a=>({
+      ...a,
+      statusStyle:pillStyle(SAGE_BG,SAGE_DARK),
+      onCopy:()=>{ if(typeof navigator!=='undefined' && navigator.clipboard) navigator.clipboard.writeText(a.answer).catch(()=>{}); this.showToast('Approved reply copied. Review the customer name and details before sending.'); }
+    }));
 
     const statusTabsDef = ['All','New','AI Drafted','Pending Approval','Escalated','On Hold','Approved','Closed'];
     const q = s.searchQuery.trim().toLowerCase();
@@ -1851,9 +1882,9 @@ class Component extends DCLogic {
       goToAsk, goToInbox, goToTemplates, goToKnowledge, goToDashboard, goToIntegration,
       toast: s.toast, isAsk: s.view==='ask', isInbox: s.view==='inbox', isTemplates: s.view==='templates',
       isKnowledge: s.view==='knowledge', isDashboard: s.view==='dashboard', isDetail: s.view==='detail', isIntegration: s.view==='integration',
-      askCols, askQuestion:s.askQuestion, askDraft:s.askDraft, askAssessment:s.askAssessment, askStatus:s.askStatus, askStatusStyle,
-      onAskQuestionChange:(e)=>this.setState({askQuestion:e.target.value}), onAskDraftChange:(e)=>this.setState({askDraft:e.target.value}),
-      generateAskDraft, clearAsk, copyAskDraft,
+      approvedSearchQuery:s.approvedSearchQuery, onApprovedSearchChange:(e)=>this.setState({approvedSearchQuery:e.target.value}),
+      searchApprovedAnswers, clearApprovedSearch, approvedSearchHasRun:s.approvedSearchHasRun,
+      approvedAnswerMatches, hasApprovedMatches:approvedAnswerMatches.length>0, noApprovedMatches:s.approvedSearchHasRun&&approvedAnswerMatches.length===0,
       templateSearch:s.templateSearch, onTemplateSearchChange:(e)=>this.setState({templateSearch:e.target.value}),
       approvedTemplates, approvedTemplateCount, templateCols, knowledgeCols, knowledgeSections, dailyKpiRows,
       schemaRows, syncCards, importMockRows, exportMockRows, previewMapping, toggleUnsyncedPanel,
