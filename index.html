@@ -67,6 +67,13 @@
         <p style="font-size:14px;color:#6E6759;margin:0;">Search the approved Q&amp;A library. This page does not generate new answers.</p>
       </div>
       <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;margin-bottom:18px;">
+        <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid #EFEBE1;">
+          <div>
+            <span style="{{ backendStatusStyle }}">{{ backendStatusLabel }}</span>
+            <span style="font-size:11.5px;color:#8A8272;margin-left:8px;">{{ backendLastSyncedLabel }}</span>
+          </div>
+          <button style="background:none;color:#4F6B54;border:1px solid #6F8C74;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;" onClick="{{ refreshBackendAnswers }}">Refresh Answers</button>
+        </div>
         <label style="display:block;font-size:12px;font-weight:700;color:#6E6759;margin-bottom:8px;">CUSTOMER QUESTION OR KEYWORDS</label>
         <textarea placeholder="Example: price range for slimming trial and subsequent sessions" value="{{ approvedSearchQuery }}" onChange="{{ onApprovedSearchChange }}" style="width:100%;min-height:110px;padding:14px;border:1px solid #E6E0D4;border-radius:10px;background:#FBFAF7;font-size:14px;line-height:1.55;color:#2E2B26;resize:vertical;outline:none;"></textarea>
         <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
@@ -113,6 +120,24 @@
       <div style="margin-bottom:22px;">
         <h1 style="font-family:'Lora',serif;font-weight:600;font-size:26px;color:#2E2B26;margin:0 0 4px;">Live Cases — Sample Data</h1>
         <p style="font-size:14px;color:#6E6759;margin:0;">Anonymised workflow examples only. The live Google Sheet and Respond.io are not connected to this public test build.</p>
+      </div>
+
+      <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:18px;margin-bottom:18px;">
+        <div style="display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap;">
+          <div style="max-width:760px;">
+            <div style="font-weight:600;color:#2E2B26;margin-bottom:5px;">How to use Live Cases</div>
+            <div style="font-size:12.5px;color:#6E6759;line-height:1.6;">Click any sample case below to review its question, draft, safety flags and approval controls. For real customer questions, use the live Google Sheet; do not enter personal data in this public test build.</div>
+          </div>
+          <button style="background:#6F8C74;color:#fff;border:none;padding:10px 15px;border-radius:9px;font-size:12.5px;font-weight:600;cursor:pointer;" onClick="{{ openLiveCasesSheet }}">Open Live Cases Sheet</button>
+        </div>
+        <div style="display:grid;grid-template-columns:{{ liveGuideCols }};gap:10px;margin-top:15px;">
+          <sc-for list="{{ liveCaseGuide }}" as="g" hint-placeholder-count="3">
+            <div style="background:#FBFAF7;border:1px solid #EFEBE1;border-radius:10px;padding:12px;">
+              <div style="font-size:11px;font-weight:700;color:#4F6B54;margin-bottom:4px;">{{ g.step }}</div>
+              <div style="font-size:12px;color:#6E6759;line-height:1.5;">{{ g.text }}</div>
+            </div>
+          </sc-for>
+        </div>
       </div>
 
       <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:16px;">
@@ -221,14 +246,59 @@
       </div>
       <div style="display:grid;grid-template-columns:{{ knowledgeCols }};gap:14px;margin-bottom:22px;">
         <sc-for list="{{ knowledgeSections }}" as="k" hint-placeholder-count="6">
-          <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:18px;">
+          <button style="{{ k.cardStyle }}" onClick="{{ k.onClick }}">
             <div style="font-size:20px;margin-bottom:8px;">{{ k.icon }}</div>
             <div style="font-weight:600;color:#2E2B26;margin-bottom:6px;">{{ k.title }}</div>
             <div style="font-size:12.5px;color:#6E6759;line-height:1.5;margin-bottom:10px;">{{ k.description }}</div>
-            <div style="font-size:11.5px;color:#8A8272;">{{ k.source }}</div>
-          </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+              <span style="font-size:11.5px;color:#8A8272;">{{ k.source }}</span>
+              <span style="font-size:11.5px;font-weight:700;color:#4F6B54;">View guide →</span>
+            </div>
+          </button>
         </sc-for>
       </div>
+
+      <div style="background:#fff;border:1px solid #D8E2D5;border-radius:14px;padding:20px;margin-bottom:18px;">
+        <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-bottom:13px;">
+          <div>
+            <div style="font-size:11px;color:#4F6B54;font-weight:700;letter-spacing:0.05em;margin-bottom:4px;">SELECTED INTERNAL GUIDE</div>
+            <div style="font-family:'Lora',serif;font-weight:600;color:#2E2B26;font-size:19px;">{{ selectedKnowledgeTitle }}</div>
+          </div>
+          <span style="{{ selectedKnowledgeStatusStyle }}">Approved operating guide</span>
+        </div>
+        <div style="font-size:13px;color:#6E6759;line-height:1.6;margin-bottom:12px;">{{ selectedKnowledgeIntro }}</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <sc-for list="{{ selectedKnowledgePoints }}" as="p" hint-placeholder-count="5">
+            <div style="display:flex;gap:9px;align-items:flex-start;background:#FBFAF7;border-radius:9px;padding:10px 12px;">
+              <span style="color:#4F6B54;font-weight:700;">✓</span>
+              <span style="font-size:12.5px;color:#2E2B26;line-height:1.55;">{{ p.text }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="font-size:11.5px;color:#8A8272;margin-top:12px;">Source: {{ selectedKnowledgeSource }}</div>
+      </div>
+
+      <div style="background:#EAF0E7;border:1px solid #CBD9C7;border-radius:14px;padding:20px;margin-bottom:18px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;">
+          <div style="max-width:720px;">
+            <div style="font-weight:700;color:#35523B;margin-bottom:5px;">Editable Backend</div>
+            <div style="font-size:12.5px;color:#4F6B54;line-height:1.6;">Edit answers in Supabase at any time. Only rows marked <strong>Approved</strong> and <strong>Active</strong> appear on the website. Every insert, update and delete is automatically recorded in Change History.</div>
+          </div>
+          <div style="display:flex;gap:9px;flex-wrap:wrap;">
+            <button style="background:#6F8C74;color:#fff;border:none;padding:10px 15px;border-radius:9px;font-size:12.5px;font-weight:600;cursor:pointer;" onClick="{{ openBackendEditor }}">Open Backend Editor</button>
+            <button style="background:#fff;color:#4F6B54;border:1px solid #6F8C74;padding:10px 15px;border-radius:9px;font-size:12.5px;font-weight:600;cursor:pointer;" onClick="{{ refreshBackendAnswers }}">Refresh Website Answers</button>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:{{ backendGuideCols }};gap:9px;margin-top:14px;">
+          <sc-for list="{{ backendGuide }}" as="b" hint-placeholder-count="4">
+            <div style="background:rgba(255,255,255,0.72);border-radius:9px;padding:10px 11px;">
+              <div style="font-size:10.5px;font-weight:700;color:#4F6B54;margin-bottom:3px;">{{ b.step }}</div>
+              <div style="font-size:11.5px;color:#526356;line-height:1.45;">{{ b.text }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
       <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;">
         <div>
           <div style="font-weight:600;color:#2E2B26;margin-bottom:4px;">System &amp; Integration Settings</div>
@@ -1530,6 +1600,10 @@ const APPROVED_QA = [
 
 const CSO_NAMES = ['Mun','Rebecca','Yihui','Fiverr'];
 const WORKSPACE_HISTORY_KEY = 'mumsrelle-cso-helpdesk-device-history-v1';
+const SUPABASE_URL = 'https://hfaxmrfcuwdexgygyqrf.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_n6p1UM4vKdCfvKFlsuzW-g_LC0ei6zW';
+const BACKEND_EDITOR_URL = 'https://supabase.com/dashboard/project/hfaxmrfcuwdexgygyqrf/editor';
+const LIVE_CASES_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1myqoouVncw5PA4Osbe3l24JIU81diAq29RinFyX0GLg/edit?gid=1444867584#gid=1444867584';
 function getSavedCsoName(){
   if(typeof window==='undefined') return 'Mun';
   try {
@@ -1581,7 +1655,9 @@ class Component extends DCLogic {
     view: 'ask', selectedCaseId: null, isMobile: (typeof window!=='undefined' && window.innerWidth < 920),
     currentCso: getSavedCsoName(),
     approvedSearchQuery: '', approvedSearchHasRun: false, approvedMatchIds: [],
+    backendAnswers: null, backendStatus: 'loading', backendLastSynced: null, backendError: '',
     templateSearch: '',
+    selectedKnowledgeKey: 'reply',
     searchQuery: '', activeTab: 'All', priorityFilter: 'All',
     cases: RAW_CASES.map(c=>({...c})),
     draftOverrides: {}, categoryOverrides: {}, priorityOverrides: {},
@@ -1600,6 +1676,7 @@ class Component extends DCLogic {
   componentDidMount(){
     this._onResize = () => this.setState({ isMobile: window.innerWidth < 920 });
     window.addEventListener('resize', this._onResize);
+    this.loadBackendAnswers(false);
   }
   componentWillUnmount(){ window.removeEventListener('resize', this._onResize); }
   componentDidUpdate(){
@@ -1628,6 +1705,48 @@ class Component extends DCLogic {
     this.setState(prev => ({ unsyncedChangeIds: { ...prev.unsyncedChangeIds, [caseId]: true } }));
   }
 
+  async loadBackendAnswers(showSuccessToast = true){
+    this.setState({ backendStatus:'loading', backendError:'' });
+    try {
+      const fields = 'id,category,question,keywords,answer,internal_note,source,source_case_id,reviewed_by,approved_at,status,sensitive,active,version,updated_at';
+      const endpoint = `${SUPABASE_URL}/rest/v1/cso_helpdesk_approved_answers?select=${fields}&status=eq.Approved&active=eq.true&order=id.asc`;
+      const response = await fetch(endpoint, {
+        headers: { apikey: SUPABASE_PUBLISHABLE_KEY }
+      });
+      if(!response.ok) throw new Error(`Backend returned ${response.status}`);
+      const rows = await response.json();
+      if(!Array.isArray(rows)) throw new Error('Backend response was not a list');
+      const answers = rows.map(row => {
+        const approvedAt = row.approved_at
+          ? new Date(`${row.approved_at}T00:00:00Z`).toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric', timeZone:'UTC'})
+          : 'Not recorded';
+        return {
+          id:row.id, category:row.category, question:row.question,
+          keywords:Array.isArray(row.keywords) ? row.keywords : [],
+          answer:row.answer, internalNote:row.internal_note || '',
+          source:row.source || '', sourceCaseId:row.source_case_id || '',
+          reviewedBy:row.reviewed_by || '', approvedAt,
+          sensitive:!!row.sensitive, status:row.status, version:row.version || 1
+        };
+      });
+      this.setState({
+        backendAnswers:answers,
+        backendStatus:'live',
+        backendLastSynced:new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
+        backendError:''
+      });
+      if(showSuccessToast) this.showToast(`Backend refreshed — ${answers.length} Approved answer(s) loaded.`);
+    } catch (error) {
+      this.setState({
+        backendAnswers:null,
+        backendStatus:'fallback',
+        backendLastSynced:new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
+        backendError:error && error.message ? error.message : 'Unable to reach backend'
+      });
+      if(showSuccessToast) this.showToast('Backend unavailable. Using the verified static fallback.');
+    }
+  }
+
   renderVals(){
     const s = this.state;
     const isMobile = s.isMobile;
@@ -1654,6 +1773,23 @@ class Component extends DCLogic {
     const goToKnowledge = () => this.setState({ view:'knowledge' });
     const goToDashboard = () => this.setState({ view:'dashboard' });
     const goToIntegration = () => this.setState({ view:'integration' });
+    const openBackendEditor = () => window.open(BACKEND_EDITOR_URL, '_blank', 'noopener,noreferrer');
+    const openLiveCasesSheet = () => window.open(LIVE_CASES_SHEET_URL, '_blank', 'noopener,noreferrer');
+    const refreshBackendAnswers = () => this.loadBackendAnswers(true);
+    const approvedQa = Array.isArray(s.backendAnswers) ? s.backendAnswers : APPROVED_QA;
+    const backendStatusLabel = s.backendStatus==='live'
+      ? `Backend Live · ${approvedQa.length} Approved`
+      : s.backendStatus==='loading'
+        ? 'Connecting to Backend…'
+        : `Static Fallback · ${approvedQa.length} Approved`;
+    const backendStatusStyle = s.backendStatus==='live'
+      ? pillStyle(SAGE_BG,SAGE_DARK)
+      : s.backendStatus==='loading'
+        ? pillStyle(AMBER_BG,AMBER)
+        : pillStyle(RED_BG,RED);
+    const backendLastSyncedLabel = s.backendLastSynced
+      ? `Last checked ${s.backendLastSynced}${s.backendError ? ` · ${s.backendError}` : ''}`
+      : 'Checking the Approved Answers backend';
 
     const rawCases = Array.isArray(s.cases) && s.cases.length ? s.cases : RAW_CASES.map(c=>({...c}));
     const cases = rawCases.filter(Boolean).map(c => {
@@ -1674,7 +1810,7 @@ class Component extends DCLogic {
       }
       const tokens = approvedSearchText.split(/[^a-z0-9$-]+/).filter(t=>t.length>1);
       const sensitiveQuery = /(hysteroscopy|surgery|pain|painful|numb|wound|bleed|breastfeed|pregnan|c-section|c section|doctor|implant|medical|diabetic|cancer|heart|refund|cancel.*package|complaint|bad service|pressed to buy)/.test(approvedSearchText);
-      const eligibleAnswers = sensitiveQuery ? APPROVED_QA.filter(item=>item.sensitive===true) : APPROVED_QA;
+      const eligibleAnswers = sensitiveQuery ? approvedQa.filter(item=>item.sensitive===true) : approvedQa;
       const ranked = eligibleAnswers.map(item => {
         const questionText = `${item.question} ${item.category}`.toLowerCase();
         const keywordScore = item.keywords.reduce((score, keyword)=>score+(approvedSearchText.includes(keyword.toLowerCase())?3:0),0);
@@ -1687,8 +1823,8 @@ class Component extends DCLogic {
       if(!ids.length) this.showToast('No approved answer found. Please add this question to Live Cases.');
     };
     const clearApprovedSearch = () => this.setState({ approvedSearchQuery:'', approvedSearchHasRun:false, approvedMatchIds:[] });
-    const browseAllApproved = () => this.setState({ approvedSearchQuery:'', approvedSearchHasRun:true, approvedMatchIds:APPROVED_QA.map(a=>a.id) });
-    const approvedAnswerMatches = s.approvedMatchIds.map(id=>APPROVED_QA.find(a=>a.id===id)).filter(Boolean).map(a=>({
+    const browseAllApproved = () => this.setState({ approvedSearchQuery:'', approvedSearchHasRun:true, approvedMatchIds:approvedQa.map(a=>a.id) });
+    const approvedAnswerMatches = s.approvedMatchIds.map(id=>approvedQa.find(a=>a.id===id)).filter(Boolean).map(a=>({
       ...a,
       statusStyle:pillStyle(SAGE_BG,SAGE_DARK),
       onCopy:()=>{ if(typeof navigator!=='undefined' && navigator.clipboard) navigator.clipboard.writeText(a.answer).catch(()=>{}); this.showToast('Approved reply copied. Review the customer name and details before sending.'); }
@@ -1909,22 +2045,94 @@ class Component extends DCLogic {
     ];
 
     const tq = (s.templateSearch || '').trim().toLowerCase();
-    const approvedTemplates = APPROVED_QA
+    const approvedTemplates = approvedQa
       .filter(t=>!tq || `${t.question} ${t.category} ${t.answer} ${t.source}`.toLowerCase().includes(tq))
       .map(t => ({ ...t, displayName:t.question, name:t.question, version:t.approvedAt,
         approvedUse:t.source, prohibitedUse:t.internalNote, statusStyle:pillStyle(SAGE_BG,SAGE_DARK), statusLabel:'Approved',
         onCopy:()=>{ if(typeof navigator!=='undefined' && navigator.clipboard) navigator.clipboard.writeText(t.answer).catch(()=>{}); this.showToast('Approved reply copied. Review the customer details before sending.'); } }));
-    const approvedTemplateCount = APPROVED_QA.length;
+    const approvedTemplateCount = approvedQa.length;
     const templateCols = isMobile ? '1fr' : 'repeat(2,1fr)';
     const knowledgeCols = isMobile ? '1fr' : 'repeat(3,1fr)';
-    const knowledgeSections = [
-      { icon:'💬', title:'Customer Reply Guidelines', description:'Tone, message structure, approved wording and customer-facing terminology.', source:'Templates & CSE SOP' },
-      { icon:'📅', title:'Appointment & BA SOP', description:'Booking, BA arrangements, reminders, KIVs and follow-up responsibilities.', source:'SC Appointment SOP' },
-      { icon:'🏠', title:'Trials & Campaigns', description:'Current trial options, redemption rules and internal campaign references.', source:'Active Promotions Reference' },
-      { icon:'🩺', title:'Medical & Contraindications', description:'Safety flags, treatment suitability limits and mandatory escalation rules.', source:'Medical Policy — escalate when unclear' },
-      { icon:'🧾', title:'Packages, Billing & Refunds', description:'Balance checks, billing questions and Management-only refund decisions.', source:'Internal Policies' },
-      { icon:'⚙️', title:'Respond.io Workflows', description:'Approved workflow sequence, reminders and manual-send requirements.', source:'Respond.io Workflow Reference' },
+    const knowledgeSectionDefs = [
+      { key:'reply', icon:'💬', title:'Customer Reply Guidelines', description:'Tone, message structure, approved wording and customer-facing terminology.', source:'Templates & CSE SOP',
+        intro:'Use the approved answer as a controlled starting point, then personalise only the customer name and confirmed appointment details.',
+        points:[
+          'Answer the customer’s question directly in the first paragraph, then give the next action or one focused follow-up question.',
+          'Use short WhatsApp-friendly paragraphs and normally no more than one or two emojis.',
+          'Never show internal terms such as “Promotion 8” to customers. Describe the actual benefits instead.',
+          'Explain INDIBA briefly only when it helps the customer understand the option; do not overload a simple reply.',
+          'If a reply becomes long, split it into Part 1 and Part 2 before sending.'
+        ] },
+      { key:'appointment', icon:'📅', title:'Appointment & BA SOP', description:'Booking, BA arrangements, reminders, KIVs and follow-up responsibilities.', source:'SC Appointment SOP',
+        intro:'Move every suitable conversation toward a clear BA or a scheduled follow-up without overpromising availability.',
+        points:[
+          'Rebecca is the primary full-time CSO and owns KIVs, blast messages and existing-client follow-ups.',
+          'Daily target: at least 4 BAs. Existing clients are a priority because they contribute around 70% of overall sales.',
+          'Yihui and Fiverr cover weekends, public holidays or Rebecca’s leave; unclear cases must be escalated.',
+          'Offer confirmed slots only. Ask for the required date, timing, postal code or outlet before finalising.',
+          'For a KIV, record the concern and next follow-up date instead of ending the conversation without an action.'
+        ] },
+      { key:'trials', icon:'🏠', title:'Trials & Campaigns', description:'Current trial options, redemption rules and internal campaign references.', source:'Active Promotions Reference',
+        intro:'Keep each client to the promotion linked to their enquiry unless an approved exception applies.',
+        points:[
+          'The internal Promotion 8 rule allows: $89 home-based Pelvic Restoration, one complimentary centre Slimming & Wellness session valued at $279, or both benefits.',
+          'Both benefits may be redeemed at the centre in one visit, subject to treatment suitability and availability.',
+          'The centre and home-based sessions may also be arranged on separate dates.',
+          'A portable treatment bed is not included in the $89 home-based trial; the treatment can be performed on the client’s own bed.',
+          'Never call it “Promotion 8” in the customer reply.'
+        ] },
+      { key:'medical', icon:'🩺', title:'Medical & Contraindications', description:'Safety flags, treatment suitability limits and mandatory escalation rules.', source:'Medical Policy — escalate when unclear',
+        intro:'CSO may gather relevant information but must not diagnose, guarantee safety or confirm treatment suitability for unclear medical cases.',
+        points:[
+          'Use an approved holding reply and collect the condition, procedure date, affected area, current symptoms and doctor clearance.',
+          'Do not book or recommend a treatment until the designated Treatment Team or Management reviewer confirms suitability.',
+          'Postpartum timing, surgery, implants, pain, numbness, bleeding and other medical flags require the relevant approved rule or escalation.',
+          'If no approved answer matches, place the case in Live Cases as Need Clarification.',
+          'Record who reviewed the case and preserve the final approved wording for future reuse.'
+        ] },
+      { key:'billing', icon:'🧾', title:'Packages, Billing & Refunds', description:'Balance checks, billing questions and Management-only refund decisions.', source:'Internal Policies',
+        intro:'Quote only verified offer terms and avoid extending one campaign’s conditions to another campaign.',
+        points:[
+          'Confirm the exact advertisement or package before quoting price, GST, inclusions or minimum-purchase terms.',
+          'The approved Buy 1 Free 1 reply states no GST and no additional minimum purchase for that specific offer only.',
+          'Atome may be mentioned only where the interest-free instalment option is applicable and approved.',
+          'Do not promise a refund, waiver, package change or exception; escalate these decisions to Management.',
+          'Record the source and approval date whenever a pricing or billing answer is added to the backend.'
+        ] },
+      { key:'respondio', icon:'⚙️', title:'Respond.io Workflows', description:'Approved workflow sequence, reminders and manual-send requirements.', source:'Respond.io Workflow Reference',
+        intro:'The Help Desk supports decisions and approved wording; CSO remains responsible for checking and manually sending the final reply.',
+        points:[
+          'Match the correct customer and conversation before copying any reply.',
+          'Review the internal note, replace placeholders and verify dates, prices and treatment names.',
+          'Nothing is sent automatically from this Help Desk. Paste and send manually in Respond.io.',
+          'Mark a case as sent only after confirming the message was actually sent.',
+          'Keep ambiguous or unapproved questions in Live Cases for human review.'
+        ] },
     ];
+    const knowledgeSections = knowledgeSectionDefs.map(k => {
+      const active = s.selectedKnowledgeKey===k.key;
+      return {
+        ...k,
+        cardStyle:`background:${active?'#F2F7F0':'#fff'};border:1px solid ${active?'#8DA78F':BORDER};border-radius:14px;padding:18px;text-align:left;width:100%;cursor:pointer;font-family:inherit;box-shadow:${active?'0 5px 16px rgba(79,107,84,0.08)':'none'};`,
+        onClick:()=>this.setState({selectedKnowledgeKey:k.key})
+      };
+    });
+    const selectedKnowledge = knowledgeSectionDefs.find(k=>k.key===s.selectedKnowledgeKey) || knowledgeSectionDefs[0];
+    const selectedKnowledgePoints = selectedKnowledge.points.map(text=>({text}));
+    const selectedKnowledgeStatusStyle = pillStyle(SAGE_BG,SAGE_DARK);
+    const liveCaseGuide = [
+      { step:'STEP 1 · CAPTURE', text:'Add the exact customer question and assign the correct owner in the live Sheet.' },
+      { step:'STEP 2 · REVIEW', text:'Use Approved wording only; medical, refund and unclear cases require the correct reviewer.' },
+      { step:'STEP 3 · CLOSE THE LOOP', text:'Copy the final reply to Respond.io, record the outcome and schedule any KIV follow-up.' },
+    ];
+    const liveGuideCols = isMobile ? '1fr' : 'repeat(3,1fr)';
+    const backendGuide = [
+      { step:'1 · EDIT', text:'Open cso_helpdesk_approved_answers in Supabase.' },
+      { step:'2 · CONTROL', text:'Set Status = Approved and Active = true only after review.' },
+      { step:'3 · PUBLISH', text:'Return here and press Refresh Answers.' },
+      { step:'4 · AUDIT', text:'Use cso_helpdesk_change_history to review every change.' },
+    ];
+    const backendGuideCols = isMobile ? '1fr' : 'repeat(4,1fr)';
 
     // ---- Phase 2A: Google Sheets integration layer (mock, local-only) ----
     const schemaRows = CASE_FIELD_SCHEMA.map(sc => ({
@@ -2081,13 +2289,18 @@ class Component extends DCLogic {
       rootStyle, pagePadding, isMobile, currentCso, currentCsoInitials, onCsoChange,
       navBtnStyleAsk, navBtnStyleInbox, navBtnStyleTemplates, navBtnStyleKnowledge, navBtnStyleDash,
       goToAsk, goToInbox, goToTemplates, goToKnowledge, goToDashboard, goToIntegration,
+      openBackendEditor, openLiveCasesSheet, refreshBackendAnswers,
       toast: s.toast, isAsk: s.view==='ask', isInbox: s.view==='inbox', isTemplates: s.view==='templates',
       isKnowledge: s.view==='knowledge', isDashboard: s.view==='dashboard', isDetail: s.view==='detail', isIntegration: s.view==='integration',
       approvedSearchQuery:s.approvedSearchQuery, onApprovedSearchChange:(e)=>this.setState({approvedSearchQuery:e.target.value}),
-      searchApprovedAnswers, clearApprovedSearch, browseAllApproved, approvedAnswerCount:APPROVED_QA.length, approvedSearchHasRun:s.approvedSearchHasRun,
+      searchApprovedAnswers, clearApprovedSearch, browseAllApproved, approvedAnswerCount:approvedQa.length, approvedSearchHasRun:s.approvedSearchHasRun,
+      backendStatusLabel, backendStatusStyle, backendLastSyncedLabel,
       approvedAnswerMatches, hasApprovedMatches:approvedAnswerMatches.length>0, noApprovedMatches:s.approvedSearchHasRun&&approvedAnswerMatches.length===0,
       templateSearch:s.templateSearch, onTemplateSearchChange:(e)=>this.setState({templateSearch:e.target.value}),
-      approvedTemplates, approvedTemplateCount, templateCols, knowledgeCols, knowledgeSections, dailyKpiRows,
+      approvedTemplates, approvedTemplateCount, templateCols, knowledgeCols, knowledgeSections,
+      selectedKnowledgeTitle:selectedKnowledge.title, selectedKnowledgeIntro:selectedKnowledge.intro,
+      selectedKnowledgePoints, selectedKnowledgeSource:selectedKnowledge.source, selectedKnowledgeStatusStyle,
+      liveCaseGuide, liveGuideCols, backendGuide, backendGuideCols, dailyKpiRows,
       schemaRows, syncCards, importMockRows, exportMockRows, previewMapping, toggleUnsyncedPanel,
       validationSection, auditLogDisplay, hasAuditLog: auditLogDisplay.length>0,
       showMappingPreview: s.showMappingPreview, mappingPreviewRows, hasMappingPreview: mappingPreviewRows.length>0,
