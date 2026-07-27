@@ -36,10 +36,15 @@
       </div>
       <div style="margin-left:auto;display:flex;align-items:center;gap:10px;">
         <div style="text-align:right;">
-          <div style="font-size:13px;font-weight:600;color:#2E2B26;">Brenda</div>
+          <select aria-label="Current CSO" value="{{ currentCso }}" onChange="{{ onCsoChange }}" style="font-size:13px;font-weight:600;color:#2E2B26;border:1px solid #E6E0D4;border-radius:7px;background:#fff;padding:5px 28px 5px 9px;outline:none;cursor:pointer;">
+            <option>Mun</option>
+            <option>Rebecca</option>
+            <option>Yihui</option>
+            <option>Fiverr</option>
+          </select>
           <div style="font-size:11px;color:#8A8272;">CSO Team</div>
         </div>
-        <div style="width:34px;height:34px;border-radius:50%;background:#F5E7E7;color:#8C4B54;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px;">BR</div>
+        <div style="width:34px;height:34px;border-radius:50%;background:#F5E7E7;color:#8C4B54;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px;">{{ currentCsoInitials }}</div>
       </div>
     </div>
     <div style="background:#F5EBD8;border-top:1px solid #E3CFA0;padding:7px 24px;display:flex;gap:8px;align-items:center;justify-content:center;">
@@ -620,7 +625,7 @@
                 <div>
                   <div style="font-size:11px;color:#7A5C24;margin-bottom:4px;">Follow-up Owner</div>
                   <select value="{{ selectedCase.holdOwner }}" onChange="{{ onHoldFieldChange('owner') }}" style="width:100%;padding:8px 10px;border-radius:8px;border:1px solid #E3CFA0;font-size:13px;background:#fff;color:#2E2B26;">
-                    <option>Brenda</option><option>Joe</option><option>Faizan</option><option>Hazelle</option><option>Operations Manager</option>
+                    <option>Mun</option><option>Rebecca</option><option>Yihui</option><option>Fiverr</option><option>Hazelle</option><option>Operations Manager</option>
                   </select>
                 </div>
                 <div>
@@ -727,7 +732,7 @@ const CATEGORY_RULES = {
 const RAW_CASES = [
   { id:'CASE-1042', refNo:'REF-2026-1042', customer:'Customer A', customerType:'Returning', phone:'PHONE_REDACTED', email:'EMAIL_REDACTED',
     package:'Postnatal Recovery (6 sessions)', packageBalance:'4 of 6 sessions remaining', lastTreatmentDate:'18 Jul 2026',
-    respondIoLink:'Not connected in this prototype', category:'Appointment Enquiry', priority:'Low', owner:'Brenda', source:'Respond.io',
+    respondIoLink:'Not connected in this prototype', category:'Appointment Enquiry', priority:'Low', owner:'Mun', source:'Respond.io',
     status:'Approved', updatedTime:'2h ago', receivedTime:'Today, 9:14 AM', overdue:false, followUpDeadline:'None',
     originalMessage:"Hi, just wanted to check what time slots are available next week for my confinement massage? Also can I bring my baby along?",
     conversationContext:'Customer confirmed package purchase 3 days ago; no prior issues on file.',
@@ -735,13 +740,13 @@ const RAW_CASES = [
     internalAssessment:'Routine scheduling enquiry with no medical or financial risk. Package balance confirmed via Google Sheets.',
     missingInfo:[], customerDataUsed:['Respond.io','Google Sheets case records'],
     citations:[{label:'Official Mumsrelle website — Service Hours',tier:1},{label:'Current approved CSE SOP — Booking Policy',tier:2}],
-    onHold:false, approvedBy:'Brenda', approvedTime:'Today, 10:02 AM', respondIoSent:false, finalCustomerReply:"Hi Customer A! Thank you for reaching out. We currently have slots available next Tuesday and Thursday between 10am-4pm for your confinement massage. Babies are welcome to accompany you during the session.",
+    onHold:false, approvedBy:'Mun', approvedTime:'Today, 10:02 AM', respondIoSent:false, finalCustomerReply:"Hi Customer A! Thank you for reaching out. We currently have slots available next Tuesday and Thursday between 10am-4pm for your confinement massage. Babies are welcome to accompany you during the session.",
     history:[{status:'New',timestamp:'Today, 9:14 AM',actor:'Respond.io'},{status:'AI Drafted',timestamp:'Today, 9:16 AM',actor:'AI Assistant'},
-      {status:'Pending Approval',timestamp:'Today, 9:20 AM',actor:'Brenda'},{status:'Approved',timestamp:'Today, 10:02 AM',actor:'Brenda'}] },
+      {status:'Pending Approval',timestamp:'Today, 9:20 AM',actor:'Mun'},{status:'Approved',timestamp:'Today, 10:02 AM',actor:'Mun'}] },
 
   { id:'CASE-1043', refNo:'REF-2026-1043', customer:'Customer B', customerType:'Returning', phone:'PHONE_REDACTED', email:'EMAIL_REDACTED',
     package:'Postnatal Recovery (8 sessions)', packageBalance:'7 of 8 sessions remaining', lastTreatmentDate:'2 weeks ago (initial consult)',
-    respondIoLink:'Not connected in this prototype', category:'Medical / Treatment Suitability', priority:'Medium', owner:'Joe', source:'Respond.io',
+    respondIoLink:'Not connected in this prototype', category:'Medical / Treatment Suitability', priority:'Medium', owner:'Rebecca', source:'Respond.io',
     status:'Escalated', updatedTime:'25m ago', receivedTime:'Today, 11:02 AM', overdue:true, followUpDeadline:'Today, 5:00 PM',
     originalMessage:"Hi, I gave birth 7 weeks ago via C-section. Is it safe for me to start the abdominal binding and deep tissue massage now? I still have some soreness near the scar.",
     conversationContext:'Customer asked about general postnatal package inclusions 2 weeks ago.',
@@ -751,11 +756,11 @@ const RAW_CASES = [
     citations:[{label:'Current approved CSE SOP — Postpartum Treatment Timelines',tier:2},{label:'Requires Verification — Abdominal Binding Guidance',tier:5}],
     onHold:false, approvedBy:'', approvedTime:'', respondIoSent:false, finalCustomerReply:'',
     history:[{status:'New',timestamp:'Today, 11:02 AM',actor:'Respond.io'},{status:'AI Drafted',timestamp:'Today, 11:05 AM',actor:'AI Assistant'},
-      {status:'Escalated → Hazelle / Centre Manager',timestamp:'Today, 11:18 AM',actor:'Joe'}] },
+      {status:'Escalated → Hazelle / Centre Manager',timestamp:'Today, 11:18 AM',actor:'Rebecca'}] },
 
   { id:'CASE-1044', refNo:'REF-2026-1044', customer:'Customer C', customerType:'Existing', phone:'PHONE_REDACTED', email:'EMAIL_REDACTED',
     package:'Confinement Care (6 sessions)', packageBalance:'3 of 6 sessions remaining', lastTreatmentDate:'20 Jun 2026',
-    respondIoLink:'Not connected in this prototype', category:'Refund / Cancellation / Package Dispute', priority:'High', owner:'Faizan', source:'Google Sheets',
+    respondIoLink:'Not connected in this prototype', category:'Refund / Cancellation / Package Dispute', priority:'High', owner:'Yihui', source:'Google Sheets',
     status:'Pending Approval', updatedTime:'1h ago', receivedTime:'Today, 8:40 AM', overdue:false, followUpDeadline:'28 Jul 2026',
     originalMessage:"I'd like to cancel my remaining sessions and get money back for the sessions I haven't used. Can you refund me this week?",
     conversationContext:'Package purchased 5 weeks ago; 3 of 6 sessions used, no prior dispute history.',
@@ -763,14 +768,14 @@ const RAW_CASES = [
     internalAssessment:'Packages are non-refundable per policy; this request must go to Management for exception review. Accounts may assist with transaction calculation only after Management approves.',
     missingInfo:['Reason for request (documented)','Confirmation of any prior exception granted'], customerDataUsed:['Google Sheets case records'],
     citations:[{label:'Current approved CSE SOP — Refund & Cancellation Policy',tier:2},{label:'Management-approved instructions — Package Dispute Handling',tier:3}],
-    onHold:true, holdReason:'Awaiting Management Decision', holdUntil:'2026-07-28', holdOwner:'Faizan', holdValidityApproved:'No', holdApprovedBy:'',
+    onHold:true, holdReason:'Awaiting Management Decision', holdUntil:'2026-07-28', holdOwner:'Yihui', holdValidityApproved:'No', holdApprovedBy:'',
     approvedBy:'', approvedTime:'', respondIoSent:false, finalCustomerReply:'',
     history:[{status:'New',timestamp:'Today, 8:40 AM',actor:'Google Sheets Import'},{status:'AI Drafted',timestamp:'Today, 8:44 AM',actor:'AI Assistant'},
-      {status:'Pending Approval',timestamp:'Today, 8:50 AM',actor:'Faizan'},{status:'On Hold — Awaiting Management Decision',timestamp:'Today, 9:00 AM',actor:'Faizan'}] },
+      {status:'Pending Approval',timestamp:'Today, 8:50 AM',actor:'Yihui'},{status:'On Hold — Awaiting Management Decision',timestamp:'Today, 9:00 AM',actor:'Yihui'}] },
 
   { id:'CASE-1045', refNo:'REF-2026-1045', customer:'Customer D', customerType:'New', phone:'PHONE_REDACTED', email:'EMAIL_REDACTED',
     package:'Postnatal Recovery (6 sessions)', packageBalance:'5 of 6 sessions remaining', lastTreatmentDate:'Yesterday',
-    respondIoLink:'Not connected in this prototype', category:'Post-Treatment Concern', priority:'High', owner:'Brenda', source:'Respond.io',
+    respondIoLink:'Not connected in this prototype', category:'Post-Treatment Concern', priority:'High', owner:'Mun', source:'Respond.io',
     status:'Escalated', updatedTime:'10m ago', receivedTime:'Today, 12:30 PM', overdue:true, followUpDeadline:'Today, 3:00 PM',
     originalMessage:"I had my postnatal massage yesterday and today I'm having quite bad abdominal pain, worse than before the session. Is this normal? Should I be worried?",
     conversationContext:'First session of package completed yesterday per booking sheet.',
@@ -780,11 +785,11 @@ const RAW_CASES = [
     citations:[{label:'Current approved CSE SOP — Post-Treatment Incident Protocol',tier:2}],
     onHold:false, approvedBy:'', approvedTime:'', respondIoSent:false, finalCustomerReply:'',
     history:[{status:'New',timestamp:'Today, 12:30 PM',actor:'Respond.io'},{status:'AI Drafted',timestamp:'Today, 12:32 PM',actor:'AI Assistant'},
-      {status:'Pending Approval',timestamp:'Today, 12:33 PM',actor:'Brenda'},{status:'Escalated → Hazelle / Centre Manager',timestamp:'Today, 12:40 PM',actor:'Brenda'}] },
+      {status:'Pending Approval',timestamp:'Today, 12:33 PM',actor:'Mun'},{status:'Escalated → Hazelle / Centre Manager',timestamp:'Today, 12:40 PM',actor:'Mun'}] },
 
   { id:'CASE-1046', refNo:'REF-2026-1046', customer:'Customer E', customerType:'Unknown / Unverified', phone:'PHONE_REDACTED', email:'EMAIL_REDACTED',
     package:'Unidentified', packageBalance:'Unable to verify', lastTreatmentDate:'Unknown',
-    respondIoLink:'Not connected in this prototype', category:'Package / Billing Enquiry', priority:'Low', owner:'Joe', source:'Respond.io',
+    respondIoLink:'Not connected in this prototype', category:'Package / Billing Enquiry', priority:'Low', owner:'Rebecca', source:'Respond.io',
     status:'AI Drafted', updatedTime:'40m ago', receivedTime:'Today, 1:15 PM', overdue:false, followUpDeadline:'Pending customer reply',
     originalMessage:"Hi, how many sessions do I have left in my package? I can't remember what I signed up for.",
     conversationContext:'No prior record found matching this phone number; possible name mismatch in Google Sheets.',
@@ -807,18 +812,18 @@ const RAW_CASES = [
 
   { id:'CASE-1048', refNo:'REF-2026-1048', customer:'Customer G', customerType:'Returning', phone:'PHONE_REDACTED', email:'EMAIL_REDACTED',
     package:'Postnatal Recovery (4 sessions)', packageBalance:'0 of 4 remaining (completed)', lastTreatmentDate:'This week',
-    respondIoLink:'Not connected in this prototype', category:'Package / Billing Enquiry', priority:'Low', owner:'Faizan', source:'Manual',
+    respondIoLink:'Not connected in this prototype', category:'Package / Billing Enquiry', priority:'Low', owner:'Yihui', source:'Manual',
     status:'Closed', updatedTime:'Yesterday', receivedTime:'Yesterday, 3:40 PM', overdue:false, followUpDeadline:'None',
     originalMessage:"Just checking the price for a top-up package of 4 more sessions?",
     conversationContext:'Completed full 4-session package this week; logged manually after a phone call.',
     aiDraft:"Hi Customer G, thanks for checking in! A 4-session top-up is available at our current published rate — let us know if you'd like us to help set this up.",
     internalAssessment:'Simple pricing enquiry, answered from published rate card.', missingInfo:[], customerDataUsed:['Manual Case Entry'],
     citations:[{label:'Official Mumsrelle website — Pricing',tier:1}],
-    onHold:false, approvedBy:'Faizan', approvedTime:'Yesterday, 4:00 PM', respondIoSent:false,
+    onHold:false, approvedBy:'Yihui', approvedTime:'Yesterday, 4:00 PM', respondIoSent:false,
     finalCustomerReply:"Hi Customer G, thanks for checking in! A 4-session top-up is available at our current published rate — let us know if you'd like us to help set this up.",
     history:[{status:'New',timestamp:'Yesterday, 3:40 PM',actor:'Manual Entry'},{status:'AI Drafted',timestamp:'Yesterday, 3:42 PM',actor:'AI Assistant'},
-      {status:'Pending Approval',timestamp:'Yesterday, 3:50 PM',actor:'Faizan'},{status:'Approved',timestamp:'Yesterday, 4:00 PM',actor:'Faizan'},
-      {status:'Closed',timestamp:'Yesterday, 4:05 PM',actor:'Faizan'}] },
+      {status:'Pending Approval',timestamp:'Yesterday, 3:50 PM',actor:'Yihui'},{status:'Approved',timestamp:'Yesterday, 4:00 PM',actor:'Yihui'},
+      {status:'Closed',timestamp:'Yesterday, 4:05 PM',actor:'Yihui'}] },
 ];
 
 const RISK_FLAG_DEFS = [
@@ -928,7 +933,7 @@ const CASE_FIELD_SCHEMA = [
   {f:'onHold', col:'On Hold', t:'boolean', req:false, iw:true, ue:true, comp:false, def:false, audit:true},
   {f:'holdReason', col:'Hold Reason', t:'string', req:false, iw:true, ue:true, comp:false, def:'Awaiting Management Decision'},
   {f:'holdUntil', col:'Hold Until', t:'date', req:false, iw:true, ue:true, comp:false, def:''},
-  {f:'followUpOwner', col:'Follow-up Owner', t:'string', req:false, iw:true, ue:true, comp:false, def:'Brenda'},
+  {f:'followUpOwner', col:'Follow-up Owner', t:'string', req:false, iw:true, ue:true, comp:false, def:'Mun'},
   {f:'followUpDeadline', col:'Follow-up Deadline', t:'string', req:false, iw:true, ue:true, comp:false, def:'Pending CSO review'},
   {f:'validityProtectionApproved', col:'Validity Protection Approved', t:'boolean', req:false, iw:true, ue:true, comp:false, def:false},
   {f:'validityProtectionApprover', col:'Validity Protection Approver', t:'string', req:false, iw:true, ue:true, comp:false, def:''},
@@ -1037,7 +1042,7 @@ function canonicalToInternal(canonical, idx){
     aiDraft: canonical.draftReply || '', internalAssessment: canonical.internalAssessment || 'Imported via mock Google Sheets sync — pending CSO review.',
     missingInfo: canonical.missingInfo || [], customerDataUsed: canonical.customerDataUsed && canonical.customerDataUsed.length ? canonical.customerDataUsed : ['Google Sheets case records'],
     citations: canonical.citations || [], onHold: !!canonical.onHold, holdReason: canonical.holdReason || 'Awaiting Management Decision',
-    holdUntil: canonical.holdUntil || '', holdOwner: canonical.followUpOwner || 'Brenda', holdValidityApproved: canonical.validityProtectionApproved ? 'Yes' : 'No',
+    holdUntil: canonical.holdUntil || '', holdOwner: canonical.followUpOwner || 'Mun', holdValidityApproved: canonical.validityProtectionApproved ? 'Yes' : 'No',
     holdApprovedBy: canonical.validityProtectionApprover || '', approvedBy: '', approvedTime: '', respondIoSent: false, finalCustomerReply: canonical.finalReply || '',
     history: [{status:'New', timestamp:'Just now', actor:'Mock Sheet Import'}], __canonical: canonical,
     importedApprovalStatus: canonical.approvalStatus || '', effectiveApprovalStatus: 'Not Approved', approvalBlockedReason: '',
@@ -1204,6 +1209,17 @@ const TEMPLATE_REGISTRY = [
 ].map(t => ({...t, statusLabel: t.kind==='deprecated' ? 'Deprecated' : (t.active ? 'Active' : 'Inactive')}));
 function suggestTemplatesForCategory(category){ return TEMPLATE_REGISTRY.filter(t => t.active && t.kind!=='deprecated' && (t.category===category || t.kind==='internal-holding')); }
 
+const CSO_NAMES = ['Mun','Rebecca','Yihui','Fiverr'];
+function getSavedCsoName(){
+  if(typeof window==='undefined') return 'Mun';
+  try {
+    const saved = window.localStorage.getItem('mumsrelle-current-cso');
+    return CSO_NAMES.includes(saved) ? saved : 'Mun';
+  } catch (_) {
+    return 'Mun';
+  }
+}
+
 const MOCK_RESPONDIO_EVENTS = [
   {eventId:'evt-1001', eventType:'message.received', channel:'WhatsApp', contactId:'contact-9001', contactName:'Alicia Tan', contactNumber:'PHONE_REDACTED', conversationId:'conv-9001', conversationUrl:'https://app.respond.io/conversation/9001', messageId:'msg-9001', messageText:'Hi, do you have any slots this weekend for a body assessment?', receivedAt:'Today, 4:00 PM'},
   {eventId:'evt-1002', eventType:'message.received', channel:'WhatsApp', conversationId:'conv-9001', contactNumber:'PHONE_REDACTED', messageId:'msg-9002', messageText:'Also, is parking available nearby?', receivedAt:'Today, 4:05 PM'},
@@ -1220,6 +1236,7 @@ const MOCK_RESPONDIO_EVENTS = [
 class Component extends DCLogic {
   state = {
     view: 'inbox', selectedCaseId: null, isMobile: (typeof window!=='undefined' && window.innerWidth < 920),
+    currentCso: getSavedCsoName(),
     searchQuery: '', activeTab: 'All', priorityFilter: 'All',
     cases: RAW_CASES.map(c=>({...c})),
     draftOverrides: {}, categoryOverrides: {}, priorityOverrides: {},
@@ -1247,7 +1264,8 @@ class Component extends DCLogic {
   }
 
   logChange(entry){
-    this.setState(prev => ({ auditLog: [{ timestamp:'Just now', changedBy:'Brenda', source:'UI', ...entry }, ...prev.auditLog].slice(0,60) }));
+    const currentCso = this.state.currentCso || 'Unassigned';
+    this.setState(prev => ({ auditLog: [{ timestamp:'Just now', changedBy:currentCso, source:'UI', ...entry }, ...prev.auditLog].slice(0,60) }));
   }
   markUnsynced(caseId){
     this.setState(prev => ({ unsyncedChangeIds: { ...prev.unsyncedChangeIds, [caseId]: true } }));
@@ -1256,6 +1274,14 @@ class Component extends DCLogic {
   renderVals(){
     const s = this.state;
     const isMobile = s.isMobile;
+    const currentCso = CSO_NAMES.includes(s.currentCso) ? s.currentCso : 'Mun';
+    const currentCsoInitials = currentCso.split(/\s+/).map(part=>part[0]).join('').slice(0,2).toUpperCase();
+    const onCsoChange = (e) => {
+      const nextCso = CSO_NAMES.includes(e.target.value) ? e.target.value : 'Mun';
+      try { window.localStorage.setItem('mumsrelle-current-cso', nextCso); } catch (_) {}
+      this.setState({ currentCso: nextCso });
+      this.showToast(`Working as ${nextCso}.`);
+    };
     const rootStyle = `background:${IVORY};min-height:100vh;color:${INK};padding-bottom:80px;`;
     const pagePadding = isMobile ? '20px 16px' : '32px 24px';
 
@@ -1332,7 +1358,7 @@ class Component extends DCLogic {
     if(!draftText.trim()) blockReasons.push('Draft is empty');
     if(selRaw.onHold) blockReasons.push('Case is on hold');
 
-    const holdFields = s.holdFieldOverrides[selRaw.id] || { reason: selRaw.holdReason||'Awaiting Management Decision', until: selRaw.holdUntil||'', owner: selRaw.holdOwner||'Brenda', validityApproved: selRaw.holdValidityApproved||'No', approvedBy: selRaw.holdApprovedBy||'' };
+    const holdFields = s.holdFieldOverrides[selRaw.id] || { reason: selRaw.holdReason||'Awaiting Management Decision', until: selRaw.holdUntil||'', owner: selRaw.holdOwner||currentCso, validityApproved: selRaw.holdValidityApproved||'No', approvedBy: selRaw.holdApprovedBy||'' };
     const sentInfo = s.sentOverrides[selRaw.id];
     const suggestedTemplates = suggestTemplatesForCategory(selRaw.category).map(t => t.name);
 
@@ -1411,24 +1437,24 @@ class Component extends DCLogic {
 
     const approveCase = () => {
       if(blockReasons.length>0){ this.showToast('Cannot approve: ' + blockReasons.join('; ')); return; }
-      this.setState({ approvalMeta: {...s.approvalMeta, [selRaw.id]: { approvedBy:'Brenda', approvedTime:'Just now', finalCustomerReply: draftText } } });
-      updateStatus(selRaw.id, 'Approved', 'Brenda');
+      this.setState({ approvalMeta: {...s.approvalMeta, [selRaw.id]: { approvedBy:currentCso, approvedTime:'Just now', finalCustomerReply: draftText } } });
+      updateStatus(selRaw.id, 'Approved', currentCso);
       this.logChange({ field:'approvalStatus', previousValue: selRaw.displayStatus, newValue:'Approved', caseRef: selRaw.refNo, source:'Approval' });
       this.markUnsynced(selRaw.id);
       this.showToast('Approved — ready to copy into Respond.io. Nothing was sent automatically.');
     };
-    const requestRevision = () => { updateStatus(selRaw.id, 'AI Drafted', 'Brenda'); this.logChange({field:'status',previousValue:selRaw.displayStatus,newValue:'AI Drafted',caseRef:selRaw.refNo,source:'UI'}); this.markUnsynced(selRaw.id); this.showToast('Revision requested — sent back for redrafting.'); };
-    const escalateCase = () => { updateStatus(selRaw.id, 'Escalated', 'Brenda'); this.logChange({field:'status',previousValue:selRaw.displayStatus,newValue:'Escalated',caseRef:selRaw.refNo,source:'UI'}); this.markUnsynced(selRaw.id); this.showToast(`Escalated to ${selRaw.escalateTo || selRaw.reviewerRole}.`); };
+    const requestRevision = () => { updateStatus(selRaw.id, 'AI Drafted', currentCso); this.logChange({field:'status',previousValue:selRaw.displayStatus,newValue:'AI Drafted',caseRef:selRaw.refNo,source:'UI'}); this.markUnsynced(selRaw.id); this.showToast('Revision requested — sent back for redrafting.'); };
+    const escalateCase = () => { updateStatus(selRaw.id, 'Escalated', currentCso); this.logChange({field:'status',previousValue:selRaw.displayStatus,newValue:'Escalated',caseRef:selRaw.refNo,source:'UI'}); this.markUnsynced(selRaw.id); this.showToast(`Escalated to ${selRaw.escalateTo || selRaw.reviewerRole}.`); };
     const holdCase = () => {
       this.setState({ holdOverrides: {...s.holdOverrides, [selRaw.id]: true},
-        historyAppends: {...s.historyAppends, [selRaw.id]: [...(s.historyAppends[selRaw.id]||[]), {status:'On Hold', timestamp:'Just now', actor:'Brenda'}]} });
+        historyAppends: {...s.historyAppends, [selRaw.id]: [...(s.historyAppends[selRaw.id]||[]), {status:'On Hold', timestamp:'Just now', actor:currentCso}]} });
       this.logChange({field:'onHold',previousValue:'false',newValue:'true',caseRef:selRaw.refNo,source:'Hold'});
       this.markUnsynced(selRaw.id);
       this.showToast('Case placed on hold.');
     };
     const resumeCase = () => {
       this.setState({ holdOverrides: {...s.holdOverrides, [selRaw.id]: false},
-        historyAppends: {...s.historyAppends, [selRaw.id]: [...(s.historyAppends[selRaw.id]||[]), {status:'Resumed', timestamp:'Just now', actor:'Brenda'}]} });
+        historyAppends: {...s.historyAppends, [selRaw.id]: [...(s.historyAppends[selRaw.id]||[]), {status:'Resumed', timestamp:'Just now', actor:currentCso}]} });
       this.logChange({field:'onHold',previousValue:'true',newValue:'false',caseRef:selRaw.refNo,source:'Resume'});
       this.markUnsynced(selRaw.id);
       this.showToast('Case resumed from hold.');
@@ -1448,8 +1474,8 @@ class Component extends DCLogic {
     const confirmReplySentManually = () => {
       if(selRaw.displayStatus !== 'Approved'){ this.showToast('Cannot confirm sent — case is not yet Approved.'); this.logChange({field:'respondIoSent',previousValue:'false',newValue:'rejected — not approved',caseRef:selRaw.refNo,source:'Validation'}); return; }
       if(!(selRaw.finalCustomerReply || draftText).trim()){ this.showToast('Cannot confirm sent — no final reply on record.'); return; }
-      this.setState({ sentOverrides: {...s.sentOverrides, [selRaw.id]: { confirmedBy:'Brenda', confirmedAt:'Just now' }} });
-      this.logChange({ field:'respondIoSent', previousValue:'false', newValue:'true (manually confirmed by Brenda)', caseRef: selRaw.refNo, source:'UI' });
+      this.setState({ sentOverrides: {...s.sentOverrides, [selRaw.id]: { confirmedBy:currentCso, confirmedAt:'Just now' }} });
+      this.logChange({ field:'respondIoSent', previousValue:'false', newValue:`true (manually confirmed by ${currentCso})`, caseRef: selRaw.refNo, source:'UI' });
       this.showToast('Marked as sent — confirmed manually.');
     };
 
@@ -1474,7 +1500,7 @@ class Component extends DCLogic {
       'Abdominal binding guidance for C-section clients is not documented in the current SOP.',
       'Refund/cancellation policy has no documented exception path for Management to reference quickly.',
     ];
-    const csoNames = ['Brenda','Joe','Faizan'];
+    const csoNames = CSO_NAMES;
     const csoVolume = csoNames.map(n=>{
       const count = cases.filter(c=>c.owner===n).length;
       return { name:n, count, pct: Math.round(count/Math.max(...csoNames.map(x=>cases.filter(c=>c.owner===x).length),1)*100)+'%' };
@@ -1560,7 +1586,7 @@ class Component extends DCLogic {
       errors: vr.errors, warnings: vr.warnings, autoCorrected: vr.autoCorrected,
       hasReport: vr.errors.length+vr.warnings.length+vr.autoCorrected.length>0,
     };
-    const auditLogDisplay = s.auditLog.map(a => ({ text: `${a.caseRef || 'Case'} · ${a.field}: "${a.previousValue}" → "${a.newValue}"`, meta: `${a.timestamp} · ${a.changedBy || 'Brenda'} · ${a.source}` }));
+    const auditLogDisplay = s.auditLog.map(a => ({ text: `${a.caseRef || 'Case'} · ${a.field}: "${a.previousValue}" → "${a.newValue}"`, meta: `${a.timestamp} · ${a.changedBy || 'Unassigned'} · ${a.source}` }));
     const unsyncedList = cases.filter(c => s.unsyncedChangeIds[c.id]).map(c => ({ id:c.id, refNo:c.refNo, customer:c.customer, status:c.displayStatus }));
     const mappingPreviewRows = s.mappingPreview ? Object.entries(s.mappingPreview).filter(([k])=>k!=='extraFields').slice(0,14).map(([k,v])=>({k, v: Array.isArray(v)?(v.length?v.join(', '):'—'): (v===''||v===false?'—':String(v))})) : [];
     const exportPreviewDisplay = s.exportPreviewRows.slice(0,5).map(row => ({ refNo: row['Ref No.'], customer: row['Customer Name'], category: row['Category'], status: row['Status'], approvalStatus: row['Approval Status'] }));
@@ -1637,7 +1663,8 @@ class Component extends DCLogic {
       : `background:${SAGE};color:#fff;border:none;padding:11px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;`;
 
     return {
-      rootStyle, pagePadding, isMobile, navBtnStyleInbox, navBtnStyleDash, navBtnStyleIntegration, goToInbox, goToDashboard, goToIntegration,
+      rootStyle, pagePadding, isMobile, currentCso, currentCsoInitials, onCsoChange,
+      navBtnStyleInbox, navBtnStyleDash, navBtnStyleIntegration, goToInbox, goToDashboard, goToIntegration,
       toast: s.toast, isInbox: s.view==='inbox', isDashboard: s.view==='dashboard', isDetail: s.view==='detail', isIntegration: s.view==='integration',
       schemaRows, syncCards, importMockRows, exportMockRows, previewMapping, toggleUnsyncedPanel,
       validationSection, auditLogDisplay, hasAuditLog: auditLogDisplay.length>0,
