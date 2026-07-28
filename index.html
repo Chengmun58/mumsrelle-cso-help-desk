@@ -143,6 +143,26 @@
         </div>
       </div>
 
+      <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:17px;margin-bottom:18px;">
+        <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px;">
+          <div>
+            <div style="font-weight:600;color:#2E2B26;margin-bottom:3px;">Daily Management Snapshot</div>
+            <div style="font-size:11.5px;color:#8A8272;">Anonymous Supabase demo · {{ latestKpiDateLabel }} · Real KPI remains in the protected source.</div>
+          </div>
+          <span style="background:#F5EBD8;color:#7A5C24;font-size:10.5px;font-weight:700;padding:5px 8px;border-radius:6px;">DEMO ONLY</span>
+        </div>
+        <div style="display:grid;grid-template-columns:{{ liveManagementCols }};gap:9px;">
+          <sc-for list="{{ liveManagementSnapshot }}" as="m" hint-placeholder-count="4">
+            <div style="background:#FBFAF7;border:1px solid #EFEBE1;border-radius:10px;padding:12px;">
+              <div style="font-size:10px;font-weight:700;color:#8A8272;letter-spacing:0.04em;margin-bottom:4px;">{{ m.label }}</div>
+              <div style="font-family:'Lora',serif;font-size:20px;font-weight:600;color:{{ m.color }};">{{ m.value }}</div>
+              <div style="font-size:10.5px;color:#8A8272;margin-top:3px;">{{ m.sub }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="margin-top:11px;background:#F5EBD8;border-radius:9px;padding:9px 11px;font-size:11.5px;color:#7A5C24;line-height:1.45;"><strong>Next action:</strong> {{ livePrimaryAction }}</div>
+      </div>
+
       <sc-if value="{{ noWorkflowDemo }}" hint-placeholder-val="{{ true }}">
         <div style="background:#fff;border:1px dashed #CFC7B8;border-radius:14px;padding:30px;text-align:center;">
           <div style="width:42px;height:42px;border-radius:12px;background:#EAF0E7;color:#4F6B54;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-weight:700;">✓</div>
@@ -327,72 +347,107 @@
 
   <sc-if value="{{ isDashboard }}" hint-placeholder-val="{{ false }}">
     <div style="max-width:1400px;margin:0 auto;padding:{{ pagePadding }};">
-      <div style="margin-bottom:22px;">
-        <h1 style="font-family:'Lora',serif;font-weight:600;font-size:26px;color:#2E2B26;margin:0 0 4px;">Daily KPI</h1>
-        <p style="font-size:14px;color:#6E6759;margin:0;">Simple daily view for BAs, KIVs, existing-client follow-ups and lead activity.</p>
-      </div>
-
-      <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;margin-bottom:18px;overflow-x:auto;">
-        <div style="font-weight:600;color:#2E2B26;margin-bottom:12px;">Today’s CSO Responsibilities</div>
-        <div style="min-width:680px;">
-          <div style="display:grid;grid-template-columns:1fr 1.2fr 0.8fr 0.8fr 1.4fr;padding:9px 0;font-size:11px;font-weight:700;color:#8A8272;text-transform:uppercase;">
-            <div>CSO</div><div>Coverage</div><div>BA Target</div><div>BA Done</div><div>Main Focus</div>
-          </div>
-          <sc-for list="{{ dailyKpiRows }}" as="r" hint-placeholder-count="4">
-            <div style="display:grid;grid-template-columns:1fr 1.2fr 0.8fr 0.8fr 1.4fr;padding:12px 0;border-top:1px solid #EFEBE1;font-size:13px;color:#2E2B26;align-items:center;">
-              <div style="font-weight:600;">{{ r.name }}</div><div style="color:#6E6759;">{{ r.coverage }}</div><div>{{ r.target }}</div><div><span style="{{ r.doneStyle }}">{{ r.done }}</span></div><div style="color:#6E6759;">{{ r.focus }}</div>
-            </div>
-          </sc-for>
+      <div style="display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap;margin-bottom:20px;">
+        <div>
+          <h1 style="font-family:'Lora',serif;font-weight:600;font-size:26px;color:#2E2B26;margin:0 0 4px;">Daily CSO KPI</h1>
+          <p style="font-size:14px;color:#6E6759;margin:0;">Target → Actual → Gap → Action, with separate Team and individual BA ownership.</p>
         </div>
-        <div style="font-size:11.5px;color:#8A8272;margin-top:12px;">Live Google Sheets connection is not enabled yet. Update figures from the CSO Daily Update sheet after verification.</div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <span style="background:#F5EBD8;color:#7A5C24;font-size:10.5px;font-weight:700;padding:5px 9px;border-radius:6px;">ANONYMISED DEMO DATA · {{ latestKpiDateLabel }}</span>
+          <button style="background:none;color:#4F6B54;border:1px solid #6F8C74;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;" onClick="{{ refreshDashboardData }}">Refresh KPI</button>
+        </div>
       </div>
 
-      <div style="display:grid;grid-template-columns:{{ kpiCols }};gap:14px;margin-bottom:24px;">
-        <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="7">
-          <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:18px;">
-            <div style="font-size:12px;color:#8A8272;margin-bottom:8px;">{{ k.label }}</div>
-            <div style="font-family:'Lora',serif;font-size:28px;font-weight:600;color:{{ k.color }};">{{ k.value }}</div>
+      <div style="background:#fff;border:1px solid #E6E0D4;border-radius:12px;padding:12px 14px;margin-bottom:15px;display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;">
+        <span style="{{ kpiBackendStatusStyle }}">{{ kpiBackendStatusLabel }}</span>
+        <span style="font-size:11.5px;color:#8A8272;">{{ kpiLastSyncedLabel }} · No customer-identifying data is stored here.</span>
+      </div>
+
+      <div style="display:grid;grid-template-columns:{{ dailySummaryCols }};gap:12px;margin-bottom:18px;">
+        <sc-for list="{{ dailySummaryCards }}" as="k" hint-placeholder-count="4">
+          <div style="{{ k.style }}">
+            <div style="font-size:10.5px;color:#8A8272;font-weight:700;letter-spacing:0.04em;margin-bottom:7px;">{{ k.label }}</div>
+            <div style="font-family:'Lora',serif;font-size:26px;font-weight:600;color:{{ k.color }};">{{ k.value }}</div>
+            <div style="font-size:11.5px;color:#6E6759;margin-top:4px;">{{ k.sub }}</div>
           </div>
         </sc-for>
       </div>
 
-      <div style="display:grid;grid-template-columns:{{ dashCols }};gap:16px;margin-bottom:16px;">
-        <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;">
-          <div style="font-weight:600;color:#2E2B26;margin-bottom:12px;">Repeated Customer Questions</div>
-          <sc-for list="{{ repeatedQuestions }}" as="q" hint-placeholder-count="3">
-            <div style="display:flex;justify-content:space-between;padding:10px 0;border-top:1px solid #EFEBE1;font-size:13.5px;color:#2E2B26;">
-              <span>{{ q.text }}</span>
-              <span style="color:#8A8272;font-size:12.5px;">{{ q.count }} this week</span>
+      <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;margin-bottom:18px;overflow-x:auto;">
+        <div style="font-weight:600;color:#2E2B26;margin-bottom:4px;">Team and Individual BA Ownership</div>
+        <div style="font-size:11.5px;color:#8A8272;margin-bottom:12px;">Team achievement never replaces Rebecca’s personal 4-BA target.</div>
+        <div style="min-width:920px;">
+          <div style="display:grid;grid-template-columns:0.8fr 1.25fr 0.65fr 0.65fr 0.65fr 0.9fr 2fr;padding:9px 0;font-size:10.5px;font-weight:700;color:#8A8272;text-transform:uppercase;">
+            <div>Owner</div><div>Coverage</div><div>Target</div><div>Actual</div><div>Gap</div><div>Status</div><div>Action</div>
+          </div>
+          <sc-for list="{{ dailyKpiRows }}" as="r" hint-placeholder-count="4">
+            <div style="{{ r.rowStyle }}">
+              <div style="font-weight:700;">{{ r.name }}</div>
+              <div style="color:#6E6759;">{{ r.coverage }}</div>
+              <div>{{ r.target }}</div><div>{{ r.actual }}</div><div>{{ r.gap }}</div>
+              <div><span style="{{ r.statusStyle }}">{{ r.status }}</span></div>
+              <div style="color:#6E6759;line-height:1.45;">{{ r.action }}</div>
             </div>
           </sc-for>
         </div>
-        <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;">
-          <div style="font-weight:600;color:#2E2B26;margin-bottom:12px;">Knowledge Gaps Identified</div>
-          <sc-for list="{{ knowledgeGaps }}" as="g" hint-placeholder-count="2">
-            <div style="padding:10px 0;border-top:1px solid #EFEBE1;font-size:13.5px;color:#2E2B26;">{{ g }}</div>
+      </div>
+
+      <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;margin-bottom:18px;">
+        <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px;">
+          <div>
+            <div style="font-weight:600;color:#2E2B26;margin-bottom:4px;">Existing Client Funnel</div>
+            <div style="font-size:11.5px;color:#8A8272;">Track conversion instead of counting approaches alone.</div>
+          </div>
+          <span style="background:#EAF0E7;color:#4F6B54;font-size:11px;font-weight:700;padding:5px 9px;border-radius:100px;">Existing clients are a priority revenue segment</span>
+        </div>
+        <div style="display:grid;grid-template-columns:{{ funnelCols }};gap:9px;">
+          <sc-for list="{{ existingFunnelStages }}" as="f" hint-placeholder-count="6">
+            <div style="background:#FBFAF7;border:1px solid #EFEBE1;border-radius:11px;padding:13px;min-width:0;">
+              <div style="font-size:10.5px;color:#8A8272;font-weight:700;text-transform:uppercase;margin-bottom:5px;">{{ f.label }}</div>
+              <div style="font-family:'Lora',serif;font-size:22px;font-weight:600;color:#2E2B26;">{{ f.value }}</div>
+              <div style="font-size:10.5px;color:#8A8272;margin-top:4px;line-height:1.35;">{{ f.rate }}</div>
+            </div>
           </sc-for>
         </div>
       </div>
 
       <div style="display:grid;grid-template-columns:{{ dashCols }};gap:16px;">
         <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;">
-          <div style="font-weight:600;color:#2E2B26;margin-bottom:14px;">Case Volume by CSO</div>
-          <sc-for list="{{ csoVolume }}" as="v" hint-placeholder-count="4">
-            <div style="margin-bottom:12px;">
-              <div style="display:flex;justify-content:space-between;font-size:12.5px;color:#6E6759;margin-bottom:4px;"><span>{{ v.name }}</span><span>{{ v.count }}</span></div>
-              <div style="background:#F1EFE9;border-radius:100px;height:8px;overflow:hidden;"><div style="height:100%;background:#6F8C74;border-radius:100px;width:{{ v.pct }};"></div></div>
+          <div style="font-weight:600;color:#2E2B26;margin-bottom:12px;">Management Actions</div>
+          <sc-for list="{{ managementActions }}" as="a" hint-placeholder-count="4">
+            <div style="display:grid;grid-template-columns:100px 1fr;gap:10px;padding:10px 0;border-top:1px solid #EFEBE1;align-items:start;">
+              <div><span style="{{ a.style }}">{{ a.owner }}</span></div>
+              <div style="font-size:12.5px;color:#2E2B26;line-height:1.5;">{{ a.action }}</div>
             </div>
           </sc-for>
         </div>
         <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;">
-          <div style="font-weight:600;color:#2E2B26;margin-bottom:14px;">Category Distribution</div>
-          <sc-for list="{{ categoryDist }}" as="d" hint-placeholder-count="5">
-            <div style="margin-bottom:12px;">
-              <div style="display:flex;justify-content:space-between;font-size:12.5px;color:#6E6759;margin-bottom:4px;"><span>{{ d.name }}</span><span>{{ d.count }}</span></div>
-              <div style="background:#F1EFE9;border-radius:100px;height:8px;overflow:hidden;"><div style="height:100%;background:#BD7F88;border-radius:100px;width:{{ d.pct }};"></div></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:12px;">
+            <div>
+              <div style="font-weight:600;color:#2E2B26;">Approved Answer Usage</div>
+              <div style="font-size:11.5px;color:#8A8272;margin-top:3px;">Copy events only; no customer data or message text is recorded.</div>
             </div>
-          </sc-for>
+            <span style="background:#EAF0E7;color:#4F6B54;font-size:10.5px;font-weight:700;padding:5px 8px;border-radius:6px;">TRACKING ACTIVE</span>
+          </div>
+          <sc-if value="{{ hasAnswerUsage }}" hint-placeholder-val="{{ false }}">
+            <sc-for list="{{ answerUsageRows }}" as="u" hint-placeholder-count="3">
+              <div style="display:grid;grid-template-columns:70px 1fr 48px 60px;gap:8px;padding:9px 0;border-top:1px solid #EFEBE1;align-items:center;">
+                <div style="font-size:10.5px;font-weight:700;color:#8A8272;">{{ u.id }}</div>
+                <div style="font-size:12px;color:#2E2B26;line-height:1.35;">{{ u.question }}</div>
+                <div style="font-size:12px;font-weight:700;color:#4F6B54;">{{ u.copies }}×</div>
+                <div style="font-size:10.5px;color:#8A8272;">{{ u.lastUsed }}</div>
+              </div>
+            </sc-for>
+          </sc-if>
+          <sc-if value="{{ noAnswerUsage }}" hint-placeholder-val="{{ true }}">
+            <div style="background:#FBFAF7;border:1px dashed #CFC7B8;border-radius:10px;padding:14px;font-size:12px;color:#6E6759;line-height:1.5;">No copy events recorded for this demo date yet. Copy an Approved Answer or Approved Template to test the anonymous backend record.</div>
+          </sc-if>
         </div>
+      </div>
+
+      <div style="margin-top:16px;background:#EAF0E7;border:1px solid #CBD9C7;border-radius:12px;padding:13px 15px;display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;">
+        <div style="font-size:11.5px;color:#4F6B54;line-height:1.5;">KPI inserts, updates and deletes are stored in <strong>cso_helpdesk_kpi_change_history</strong>. Approved Answer changes remain in <strong>cso_helpdesk_change_history</strong>.</div>
+        <button style="background:#fff;color:#4F6B54;border:1px solid #6F8C74;padding:8px 12px;border-radius:8px;font-size:11.5px;font-weight:600;cursor:pointer;" onClick="{{ openBackendEditor }}">Open Supabase Backend</button>
       </div>
     </div>
   </sc-if>
@@ -1672,6 +1727,8 @@ class Component extends DCLogic {
     currentCso: getSavedCsoName(),
     approvedSearchQuery: '', approvedSearchHasRun: false, approvedMatchIds: [],
     backendAnswers: null, backendStatus: 'loading', backendLastSynced: null, backendError: '',
+    backendKpiRows: null, kpiBackendStatus: 'loading', kpiLastSynced: null, kpiBackendError: '',
+    answerUsageDaily: [], usageRecordedCount: 0,
     templateSearch: '',
     selectedKnowledgeKey: 'reply',
     searchQuery: '', activeTab: 'All', priorityFilter: 'All',
@@ -1694,6 +1751,7 @@ class Component extends DCLogic {
     this._onResize = () => this.setState({ isMobile: window.innerWidth < 920 });
     window.addEventListener('resize', this._onResize);
     this.loadBackendAnswers(false);
+    this.loadDashboardData(false);
   }
   componentWillUnmount(){ window.removeEventListener('resize', this._onResize); }
   componentDidUpdate(){
@@ -1764,6 +1822,86 @@ class Component extends DCLogic {
     }
   }
 
+  async loadDashboardData(showSuccessToast = true){
+    this.setState({ kpiBackendStatus:'loading', kpiBackendError:'' });
+    try {
+      const kpiFields = 'id,kpi_date,owner,coverage,ba_target,ba_actual,followup_due,followup_completed,followup_target_pct,existing_contacted,existing_replied,existing_interested,existing_ba,existing_attended,existing_sales,approved_answer_uses,action,notes,is_demo,version,updated_at';
+      const usageFields = 'usage_date,answer_id,copy_count,last_used_at,is_demo';
+      const [kpiResponse, usageResponse] = await Promise.all([
+        fetch(`${SUPABASE_URL}/rest/v1/cso_helpdesk_daily_kpi?select=${kpiFields}&is_demo=eq.true&order=kpi_date.desc,owner.asc`, {
+          headers:{ apikey:SUPABASE_PUBLISHABLE_KEY }
+        }),
+        fetch(`${SUPABASE_URL}/rest/v1/cso_helpdesk_answer_usage_daily?select=${usageFields}&is_demo=eq.true&order=usage_date.desc,copy_count.desc`, {
+          headers:{ apikey:SUPABASE_PUBLISHABLE_KEY }
+        })
+      ]);
+      if(!kpiResponse.ok) throw new Error(`KPI backend returned ${kpiResponse.status}`);
+      if(!usageResponse.ok) throw new Error(`Usage backend returned ${usageResponse.status}`);
+      const kpiRows = await kpiResponse.json();
+      const usageRows = await usageResponse.json();
+      if(!Array.isArray(kpiRows) || !Array.isArray(usageRows)) throw new Error('Dashboard backend response was invalid');
+      this.setState({
+        backendKpiRows:kpiRows,
+        answerUsageDaily:usageRows,
+        kpiBackendStatus:'live',
+        kpiLastSynced:new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
+        kpiBackendError:''
+      });
+      if(showSuccessToast) this.showToast(`Anonymous KPI refreshed — ${kpiRows.length} row(s) loaded.`);
+    } catch (error) {
+      this.setState({
+        backendKpiRows:null,
+        answerUsageDaily:[],
+        kpiBackendStatus:'fallback',
+        kpiLastSynced:new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
+        kpiBackendError:error && error.message ? error.message : 'Unable to reach KPI backend'
+      });
+      if(showSuccessToast) this.showToast('KPI backend unavailable. Using the anonymous fallback snapshot.');
+    }
+  }
+
+  getAnonymousUsageSession(){
+    const key = 'mumsrelle-cso-helpdesk-anonymous-session-v1';
+    try {
+      const saved = window.localStorage.getItem(key);
+      if(saved && /^[a-f0-9-]{36}$/.test(saved)) return saved;
+      const generated = window.crypto?.randomUUID
+        ? window.crypto.randomUUID()
+        : '00000000-0000-4000-8000-000000000000';
+      window.localStorage.setItem(key, generated);
+      return generated;
+    } catch (_) {
+      return '00000000-0000-4000-8000-000000000000';
+    }
+  }
+
+  async recordApprovedAnswerUsage(answerId, surface){
+    if(!answerId || !['Approved Answer Search','Approved Templates'].includes(surface)) return;
+    try {
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/cso_helpdesk_answer_usage`, {
+        method:'POST',
+        headers:{
+          apikey:SUPABASE_PUBLISHABLE_KEY,
+          'Content-Type':'application/json',
+          Prefer:'return=minimal'
+        },
+        body:JSON.stringify({
+          answer_id:answerId,
+          event_type:'COPY',
+          surface,
+          cso_name:CSO_NAMES.includes(this.state.currentCso) ? this.state.currentCso : 'Mun',
+          session_id:this.getAnonymousUsageSession(),
+          is_demo:true
+        })
+      });
+      if(!response.ok) throw new Error(`Usage backend returned ${response.status}`);
+      this.setState(prev=>({usageRecordedCount:prev.usageRecordedCount+1}));
+      this.loadDashboardData(false);
+    } catch (error) {
+      console.warn('Anonymous Approved Answer usage could not be recorded.', error);
+    }
+  }
+
   renderVals(){
     const s = this.state;
     const isMobile = s.isMobile;
@@ -1793,6 +1931,7 @@ class Component extends DCLogic {
     const openBackendEditor = () => window.open(BACKEND_EDITOR_URL, '_blank', 'noopener,noreferrer');
     const openLiveCasesSheet = () => window.open(LIVE_CASES_SHEET_URL, '_blank', 'noopener,noreferrer');
     const refreshBackendAnswers = () => this.loadBackendAnswers(true);
+    const refreshDashboardData = () => this.loadDashboardData(true);
     const approvedQa = Array.isArray(s.backendAnswers) ? s.backendAnswers : APPROVED_QA;
     const backendStatusLabel = s.backendStatus==='live'
       ? `Backend Live · ${approvedQa.length} Approved`
@@ -1844,7 +1983,7 @@ class Component extends DCLogic {
     const approvedAnswerMatches = s.approvedMatchIds.map(id=>approvedQa.find(a=>a.id===id)).filter(Boolean).map(a=>({
       ...a,
       statusStyle:pillStyle(SAGE_BG,SAGE_DARK),
-      onCopy:()=>{ if(typeof navigator!=='undefined' && navigator.clipboard) navigator.clipboard.writeText(a.answer).catch(()=>{}); this.showToast('Approved reply copied. Review the customer name and details before sending.'); }
+      onCopy:()=>{ if(typeof navigator!=='undefined' && navigator.clipboard) navigator.clipboard.writeText(a.answer).catch(()=>{}); this.recordApprovedAnswerUsage(a.id,'Approved Answer Search'); this.showToast('Approved reply copied. Anonymous usage recorded; review customer details before sending.'); }
     }));
 
     const actionRequiredFor = (c) => {
@@ -2076,50 +2215,99 @@ class Component extends DCLogic {
       this.showToast('Marked as sent — confirmed manually.');
     };
 
-    const kpis = [
-      { label:'New cases today', value: cases.filter(c=>c.receivedTime.startsWith('Today')).length, color: INK },
-      { label:'Pending approval', value: cases.filter(c=>c.displayStatus==='Pending Approval').length, color: AMBER },
-      { label:'High-risk cases', value: cases.filter(c=>c.riskLevel==='High').length, color: RED },
-      { label:'Escalated cases', value: cases.filter(c=>c.displayStatus==='Escalated').length, color: RED },
-      { label:'On hold', value: cases.filter(c=>c.onHold).length, color: '#7A5C24' },
-      { label:'Avg handling time', value: '2h 40m', color: INK },
-      { label:'Knowledge gaps flagged', value: 2, color: AMBER },
+    const fallbackKpiRows = [
+      {kpi_date:'2026-07-28',owner:'Team',coverage:'Daily team total',ba_target:4,ba_actual:3,followup_due:20,followup_completed:17,followup_target_pct:95,existing_contacted:22,existing_replied:8,existing_interested:4,existing_ba:2,existing_attended:1,existing_sales:329,approved_answer_uses:0,action:'Close 1 more BA and complete 2 overdue follow-ups before end of day.',notes:'Fictional anonymous demonstration data only.',is_demo:true},
+      {kpi_date:'2026-07-28',owner:'Rebecca',coverage:'Full-time / Primary',ba_target:4,ba_actual:2,followup_due:16,followup_completed:13,followup_target_pct:95,existing_contacted:18,existing_replied:6,existing_interested:3,existing_ba:1,existing_attended:1,existing_sales:329,approved_answer_uses:0,action:'Secure 2 more BAs; prioritise KIVs and existing-client callbacks.',notes:'Fictional anonymous demonstration data only.',is_demo:true},
+      {kpi_date:'2026-07-28',owner:'Yihui',coverage:'Weekend / PH / Leave cover',ba_target:0,ba_actual:1,followup_due:4,followup_completed:4,followup_target_pct:95,existing_contacted:4,existing_replied:2,existing_interested:1,existing_ba:1,existing_attended:0,existing_sales:0,approved_answer_uses:0,action:'Cover assigned cases and escalate anything unclear.',notes:'Fictional anonymous demonstration data only.',is_demo:true},
+      {kpi_date:'2026-07-28',owner:'Fiverr',coverage:'Weekend / PH / Leave cover',ba_target:0,ba_actual:0,followup_due:0,followup_completed:0,followup_target_pct:95,existing_contacted:0,existing_replied:0,existing_interested:0,existing_ba:0,existing_attended:0,existing_sales:0,approved_answer_uses:0,action:'Stand by for weekend, public-holiday or leave coverage.',notes:'Fictional anonymous demonstration data only.',is_demo:true},
+      {kpi_date:'2026-07-28',owner:'Mun',coverage:'Review / Management',ba_target:0,ba_actual:0,followup_due:0,followup_completed:0,followup_target_pct:95,existing_contacted:0,existing_replied:0,existing_interested:0,existing_ba:0,existing_attended:0,existing_sales:0,approved_answer_uses:0,action:'Review approvals, escalations and SOP gaps.',notes:'Fictional anonymous demonstration data only.',is_demo:true},
     ];
-    const kpiCols = isMobile ? 'repeat(2,1fr)' : 'repeat(7,1fr)';
+    const allKpiRows = Array.isArray(s.backendKpiRows) && s.backendKpiRows.length ? s.backendKpiRows : fallbackKpiRows;
+    const latestKpiDate = allKpiRows.map(r=>r.kpi_date).sort().reverse()[0] || '2026-07-28';
+    const latestKpiRows = allKpiRows.filter(r=>r.kpi_date===latestKpiDate);
+    const ownerOrder = ['Team','Rebecca','Yihui','Fiverr','Mun'];
+    latestKpiRows.sort((a,b)=>ownerOrder.indexOf(a.owner)-ownerOrder.indexOf(b.owner));
+    const teamKpi = latestKpiRows.find(r=>r.owner==='Team') || fallbackKpiRows[0];
+    const rebeccaKpi = latestKpiRows.find(r=>r.owner==='Rebecca') || fallbackKpiRows[1];
+    const pct = (num,den) => den>0 ? Math.round((Number(num||0)/Number(den))*100) : 0;
+    const teamBaGap = Math.max(Number(teamKpi.ba_target||0)-Number(teamKpi.ba_actual||0),0);
+    const rebeccaBaGap = Math.max(Number(rebeccaKpi.ba_target||0)-Number(rebeccaKpi.ba_actual||0),0);
+    const followupPct = pct(teamKpi.followup_completed,teamKpi.followup_due);
+    const followupRequired = Math.ceil(Number(teamKpi.followup_due||0)*Number(teamKpi.followup_target_pct||95)/100);
+    const followupGap = Math.max(followupRequired-Number(teamKpi.followup_completed||0),0);
+    const latestUsageRows = (Array.isArray(s.answerUsageDaily)?s.answerUsageDaily:[]).filter(r=>r.usage_date===latestKpiDate);
+    const approvedAnswerCopyCount = latestUsageRows.reduce((sum,r)=>sum+Number(r.copy_count||0),0);
+    const kpiBackendStatusLabel = s.kpiBackendStatus==='live'
+      ? `Supabase Demo Live · ${latestKpiRows.length} KPI row(s)`
+      : s.kpiBackendStatus==='loading'
+        ? 'Connecting to anonymous KPI backend…'
+        : 'Anonymous fallback snapshot';
+    const kpiBackendStatusStyle = s.kpiBackendStatus==='live'
+      ? pillStyle(SAGE_BG,SAGE_DARK)
+      : s.kpiBackendStatus==='loading'
+        ? pillStyle(AMBER_BG,AMBER)
+        : pillStyle(RED_BG,RED);
+    const latestKpiDateLabel = new Date(`${latestKpiDate}T00:00:00Z`).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'});
+    const kpiLastSyncedLabel = s.kpiLastSynced
+      ? `Last checked ${s.kpiLastSynced}${s.kpiBackendError?` · ${s.kpiBackendError}`:''}`
+      : 'Checking anonymous KPI data';
+    const dailySummaryCards = [
+      {label:'Team BA',value:`${teamKpi.ba_actual} / ${teamKpi.ba_target}`,sub:teamBaGap?`Gap ${teamBaGap}`:'Target achieved',color:teamBaGap?AMBER:SAGE_DARK},
+      {label:'Rebecca BA',value:`${rebeccaKpi.ba_actual} / ${rebeccaKpi.ba_target}`,sub:rebeccaBaGap?`Personal gap ${rebeccaBaGap}`:'Personal target achieved',color:rebeccaBaGap?RED:SAGE_DARK},
+      {label:'Follow-up Completion',value:`${followupPct}%`,sub:`${teamKpi.followup_completed}/${teamKpi.followup_due} · ${followupGap?`Gap ${followupGap} task(s)`:'Target met'}`,color:followupPct>=Number(teamKpi.followup_target_pct||95)?SAGE_DARK:RED},
+      {label:'Approved Answer Copies',value:String(approvedAnswerCopyCount),sub:'Anonymous backend events today',color:SAGE_DARK},
+    ].map(x=>({...x,style:`background:#fff;border:1px solid ${BORDER};border-radius:14px;padding:17px;`}));
+    const dailySummaryCols = isMobile ? 'repeat(2,minmax(0,1fr))' : 'repeat(4,minmax(0,1fr))';
+    const kpiCols = isMobile ? 'repeat(2,minmax(0,1fr))' : 'repeat(4,minmax(0,1fr))';
+    const dailyKpiRows = latestKpiRows.map(r=>{
+      const target=Number(r.ba_target||0), actual=Number(r.ba_actual||0), gap=Math.max(target-actual,0);
+      const status = target>0 ? (gap===0?'Achieved':`Gap ${gap}`) : (actual>0?'Contributed':'Support');
+      return {
+        name:r.owner, coverage:r.coverage, target:target>0?String(target):'As assigned', actual:String(actual),
+        gap:target>0?String(gap):'—', action:r.action,
+        rowStyle:`display:grid;grid-template-columns:0.8fr 1.25fr 0.65fr 0.65fr 0.65fr 0.9fr 2fr;padding:12px 0;border-top:1px solid ${BORDER};font-size:12.5px;color:${INK};align-items:center;background:${r.owner==='Team'?'#FBFAF7':'transparent'};`,
+        status, statusStyle:status==='Achieved'?pillStyle(SAGE_BG,SAGE_DARK):status.startsWith('Gap')?pillStyle(RED_BG,RED):pillStyle(GRAY_BG,INK_MUTED)
+      };
+    });
+    const existingFunnelStages = [
+      {label:'Contacted',value:Number(teamKpi.existing_contacted||0),rate:'Starting pool'},
+      {label:'Replied',value:Number(teamKpi.existing_replied||0),rate:`${pct(teamKpi.existing_replied,teamKpi.existing_contacted)}% of contacted`},
+      {label:'Interested',value:Number(teamKpi.existing_interested||0),rate:`${pct(teamKpi.existing_interested,teamKpi.existing_replied)}% of replied`},
+      {label:'BA Arranged',value:Number(teamKpi.existing_ba||0),rate:`${pct(teamKpi.existing_ba,teamKpi.existing_interested)}% of interested`},
+      {label:'Attended',value:Number(teamKpi.existing_attended||0),rate:`${pct(teamKpi.existing_attended,teamKpi.existing_ba)}% of BA`},
+      {label:'Sales',value:`S$${Number(teamKpi.existing_sales||0).toLocaleString('en-SG',{minimumFractionDigits:0,maximumFractionDigits:2})}`,rate:'Demo attributed sales'},
+    ];
+    const funnelCols = isMobile ? 'repeat(2,minmax(0,1fr))' : 'repeat(6,minmax(0,1fr))';
+    const managementActions = [
+      {owner:'Team',action:teamKpi.action,style:pillStyle(AMBER_BG,AMBER)},
+      {owner:'Rebecca',action:rebeccaKpi.action,style:pillStyle(RED_BG,RED)},
+      {owner:'Follow-ups',action:followupGap?`Complete ${followupGap} more due follow-up task(s) to reach the ${teamKpi.followup_target_pct}% target.`:'Follow-up target achieved.',style:followupGap?pillStyle(RED_BG,RED):pillStyle(SAGE_BG,SAGE_DARK)},
+      {owner:'Existing Clients',action:`Move ${Math.max(Number(teamKpi.existing_interested||0)-Number(teamKpi.existing_ba||0),0)} interested client(s) without a BA to the next booking action.`,style:pillStyle(SAGE_BG,SAGE_DARK)},
+    ];
+    const answerUsageRows = latestUsageRows.slice(0,10).map(r=>{
+      const answer=approvedQa.find(a=>a.id===r.answer_id);
+      return {
+        id:r.answer_id,
+        question:answer?.question || 'Approved answer',
+        copies:Number(r.copy_count||0),
+        lastUsed:r.last_used_at ? new Date(r.last_used_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '—'
+      };
+    });
+    const liveManagementSnapshot = [
+      {label:'TEAM BA',value:`${teamKpi.ba_actual}/${teamKpi.ba_target}`,sub:teamBaGap?`Gap ${teamBaGap}`:'Achieved',color:teamBaGap?AMBER:SAGE_DARK},
+      {label:'REBECCA BA',value:`${rebeccaKpi.ba_actual}/${rebeccaKpi.ba_target}`,sub:rebeccaBaGap?`Gap ${rebeccaBaGap}`:'Achieved',color:rebeccaBaGap?RED:SAGE_DARK},
+      {label:'FOLLOW-UPS',value:`${followupPct}%`,sub:`Target ${teamKpi.followup_target_pct}%`,color:followupPct>=Number(teamKpi.followup_target_pct||95)?SAGE_DARK:RED},
+      {label:'EXISTING FUNNEL',value:`${teamKpi.existing_ba} BA`,sub:`${teamKpi.existing_attended} attended`,color:SAGE_DARK},
+    ];
+    const liveManagementCols = isMobile ? 'repeat(2,minmax(0,1fr))' : 'repeat(4,minmax(0,1fr))';
     const dashCols = isMobile ? '1fr' : '1fr 1fr';
-
-    const repeatedQuestions = [
-      {text:'How many sessions are left in my package?', count:5},
-      {text:'What time slots are available this week?', count:4},
-      {text:'Is it safe to start treatment at X weeks postpartum?', count:3},
-    ];
-    const knowledgeGaps = [
-      'Abdominal binding guidance for C-section clients is not documented in the current SOP.',
-      'Refund/cancellation policy has no documented exception path for Management to reference quickly.',
-    ];
-    const csoNames = CSO_NAMES;
-    const csoVolume = csoNames.map(n=>{
-      const count = cases.filter(c=>c.owner===n).length;
-      return { name:n, count, pct: Math.round(count/Math.max(...csoNames.map(x=>cases.filter(c=>c.owner===x).length),1)*100)+'%' };
-    });
-    const cats = [...new Set(cases.map(c=>c.category))];
-    const categoryDist = cats.map(cat=>{
-      const count = cases.filter(c=>c.category===cat).length;
-      return { name:cat, count, pct: Math.round(count/Math.max(...cats.map(x=>cases.filter(c=>c.category===x).length),1)*100)+'%' };
-    });
-    const dailyKpiRows = [
-      { name:'Rebecca', coverage:'Full-time / Primary', target:'4 BAs', done:'Update', focus:'KIVs, blast messages, existing clients', doneStyle:pillStyle(AMBER_BG,AMBER) },
-      { name:'Yihui', coverage:'Weekend / PH / Leave cover', target:'As assigned', done:'Update', focus:'Assigned KIVs and live cases', doneStyle:pillStyle(GRAY_BG,INK_MUTED) },
-      { name:'Fiverr', coverage:'Weekend / PH / Leave cover', target:'As assigned', done:'Update', focus:'Routine enquiries; escalate unclear cases', doneStyle:pillStyle(GRAY_BG,INK_MUTED) },
-      { name:'Mun', coverage:'Review / Management', target:'Review', done:'—', focus:'Approvals, escalations and SOP gaps', doneStyle:pillStyle(SAGE_BG,SAGE_DARK) },
-    ];
 
     const tq = (s.templateSearch || '').trim().toLowerCase();
     const approvedTemplates = approvedQa
       .filter(t=>!tq || `${t.question} ${t.category} ${t.answer} ${t.source}`.toLowerCase().includes(tq))
       .map(t => ({ ...t, displayName:t.question, name:t.question, version:t.approvedAt,
         approvedUse:t.source, prohibitedUse:t.internalNote, statusStyle:pillStyle(SAGE_BG,SAGE_DARK), statusLabel:'Approved',
-        onCopy:()=>{ if(typeof navigator!=='undefined' && navigator.clipboard) navigator.clipboard.writeText(t.answer).catch(()=>{}); this.showToast('Approved reply copied. Review the customer details before sending.'); } }));
+        onCopy:()=>{ if(typeof navigator!=='undefined' && navigator.clipboard) navigator.clipboard.writeText(t.answer).catch(()=>{}); this.recordApprovedAnswerUsage(t.id,'Approved Templates'); this.showToast('Approved reply copied. Anonymous usage recorded; review customer details before sending.'); } }));
     const approvedTemplateCount = approvedQa.length;
     const templateCols = isMobile ? '1fr' : 'repeat(2,1fr)';
     const knowledgeCols = isMobile ? '1fr' : 'repeat(3,1fr)';
@@ -2365,7 +2553,7 @@ class Component extends DCLogic {
       rootStyle, pagePadding, isMobile, currentCso, currentCsoInitials, onCsoChange,
       navBtnStyleAsk, navBtnStyleInbox, navBtnStyleTemplates, navBtnStyleKnowledge, navBtnStyleDash,
       goToAsk, goToInbox, goToTemplates, goToKnowledge, goToDashboard, goToIntegration,
-      openBackendEditor, openLiveCasesSheet, refreshBackendAnswers,
+      openBackendEditor, openLiveCasesSheet, refreshBackendAnswers, refreshDashboardData,
       toast: s.toast, isAsk: s.view==='ask', isInbox: s.view==='inbox', isTemplates: s.view==='templates',
       isKnowledge: s.view==='knowledge', isDashboard: s.view==='dashboard', isDetail: s.view==='detail', isIntegration: s.view==='integration',
       approvedSearchQuery:s.approvedSearchQuery, onApprovedSearchChange:(e)=>this.setState({approvedSearchQuery:e.target.value}),
@@ -2377,6 +2565,7 @@ class Component extends DCLogic {
       selectedKnowledgeTitle:selectedKnowledge.title, selectedKnowledgeIntro:selectedKnowledge.intro,
       selectedKnowledgePoints, selectedKnowledgeSource:selectedKnowledge.source, selectedKnowledgeStatusStyle,
       liveSourceStatus, liveStatusCols, backendGuide, backendGuideCols, dailyKpiRows,
+      liveManagementSnapshot, liveManagementCols, livePrimaryAction:teamKpi.action,
       toggleWorkflowDemo, workflowDemoButtonLabel:s.showWorkflowDemo?'Hide Workflow Demo':'View Anonymised Workflow Demo',
       showWorkflowDemo:s.showWorkflowDemo, noWorkflowDemo:!s.showWorkflowDemo,
       queueSummary, queueSummaryCols,
@@ -2395,7 +2584,9 @@ class Component extends DCLogic {
       sourceFilter:s.sourceFilter, onSourceFilterChange:(e)=>this.setState({sourceFilter:e.target.value,activeTab:'All'}),
       timingFilter:s.timingFilter, onTimingFilterChange:(e)=>this.setState({timingFilter:e.target.value,activeTab:'All'}),
       priorityFilters, statusTabs, filteredCases, showDesktopTable: !isMobile,
-      kpis, kpiCols, dashCols, repeatedQuestions, knowledgeGaps, csoVolume, categoryDist,
+      kpiBackendStatusLabel, kpiBackendStatusStyle, kpiLastSyncedLabel, latestKpiDateLabel,
+      dailySummaryCards, dailySummaryCols, kpiCols, existingFunnelStages, funnelCols, managementActions,
+      answerUsageRows, hasAnswerUsage:answerUsageRows.length>0, noAnswerUsage:answerUsageRows.length===0, dashCols,
       selectedCase, noCaseSelected, riskFlagsAll, customerDataSources, knowledgeHierarchy, integrationStatus, detailGridStyle, infoCols,
       draftText, draftReadOnly: !editing,
       draftAreaStyle: `width:100%;min-height:140px;padding:14px 16px;border-radius:10px;border:1px solid ${editing?SAGE:BORDER};background:${editing?'#fff':'#FBFAF7'};font-size:14px;color:${INK};line-height:1.55;resize:vertical;outline:none;`,
