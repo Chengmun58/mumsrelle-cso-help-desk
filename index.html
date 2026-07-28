@@ -118,95 +118,111 @@
   <sc-if value="{{ isInbox }}" hint-placeholder-val="{{ true }}">
     <div style="max-width:1400px;margin:0 auto;padding:{{ pagePadding }};">
       <div style="margin-bottom:22px;">
-        <h1 style="font-family:'Lora',serif;font-weight:600;font-size:26px;color:#2E2B26;margin:0 0 4px;">Live Cases — Sample Data</h1>
-        <p style="font-size:14px;color:#6E6759;margin:0;">Anonymised workflow examples only. The live Google Sheet and Respond.io are not connected to this public test build.</p>
+        <h1 style="font-family:'Lora',serif;font-weight:600;font-size:26px;color:#2E2B26;margin:0 0 4px;">Live Case Queue</h1>
+        <p style="font-size:14px;color:#6E6759;margin:0;">Real customer cases remain in the protected Google Sheet. This public build does not mirror customer-identifying information.</p>
       </div>
 
       <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:18px;margin-bottom:18px;">
         <div style="display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap;">
           <div style="max-width:760px;">
-            <div style="font-weight:600;color:#2E2B26;margin-bottom:5px;">How to use Live Cases</div>
-            <div style="font-size:12.5px;color:#6E6759;line-height:1.6;">Click any sample case below to review its question, draft, safety flags and approval controls. For real customer questions, use the live Google Sheet; do not enter personal data in this public test build.</div>
+            <div style="font-weight:600;color:#2E2B26;margin-bottom:5px;">Protected Live Source</div>
+            <div style="font-size:12.5px;color:#6E6759;line-height:1.6;">Open the live Sheet to review and update real cases. Prioritise Overdue, High Risk, Unassigned and New cases before Approved or Closed items.</div>
           </div>
-          <button style="background:#6F8C74;color:#fff;border:none;padding:10px 15px;border-radius:9px;font-size:12.5px;font-weight:600;cursor:pointer;" onClick="{{ openLiveCasesSheet }}">Open Live Cases Sheet</button>
+          <div style="display:flex;gap:9px;flex-wrap:wrap;">
+            <button style="background:#6F8C74;color:#fff;border:none;padding:10px 15px;border-radius:9px;font-size:12.5px;font-weight:600;cursor:pointer;" onClick="{{ openLiveCasesSheet }}">Open Protected Live Sheet</button>
+            <button style="background:#fff;color:#4F6B54;border:1px solid #6F8C74;padding:10px 15px;border-radius:9px;font-size:12.5px;font-weight:600;cursor:pointer;" onClick="{{ toggleWorkflowDemo }}">{{ workflowDemoButtonLabel }}</button>
+          </div>
         </div>
-        <div style="display:grid;grid-template-columns:{{ liveGuideCols }};gap:10px;margin-top:15px;">
-          <sc-for list="{{ liveCaseGuide }}" as="g" hint-placeholder-count="3">
+        <div style="display:grid;grid-template-columns:{{ liveStatusCols }};gap:10px;margin-top:15px;">
+          <sc-for list="{{ liveSourceStatus }}" as="g" hint-placeholder-count="4">
             <div style="background:#FBFAF7;border:1px solid #EFEBE1;border-radius:10px;padding:12px;">
-              <div style="font-size:11px;font-weight:700;color:#4F6B54;margin-bottom:4px;">{{ g.step }}</div>
-              <div style="font-size:12px;color:#6E6759;line-height:1.5;">{{ g.text }}</div>
+              <div style="font-size:10.5px;font-weight:700;color:#8A8272;letter-spacing:0.04em;margin-bottom:4px;">{{ g.label }}</div>
+              <div style="font-size:12.5px;color:#2E2B26;font-weight:600;line-height:1.45;">{{ g.value }}</div>
             </div>
           </sc-for>
         </div>
       </div>
 
-      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:16px;">
-        <input placeholder="Search by customer, case ID or category" value="{{ searchQuery }}" onChange="{{ onSearchChange }}" style="flex:1;min-width:220px;padding:11px 16px;border-radius:10px;border:1px solid #E6E0D4;background:#fff;font-size:14px;color:#2E2B26;outline:none;"></input>
-        <sc-for list="{{ priorityFilters }}" as="pf" hint-placeholder-count="4">
-          <button style="{{ pf.style }}" onClick="{{ pf.onClick }}">{{ pf.label }}</button>
-        </sc-for>
-      </div>
-
-      <div style="display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid #E6E0D4;margin-bottom:18px;overflow-x:auto;">
-        <sc-for list="{{ statusTabs }}" as="tab" hint-placeholder-count="8">
-          <button style="{{ tab.style }}" onClick="{{ tab.onClick }}">{{ tab.label }} <span style="{{ tab.countStyle }}">{{ tab.count }}</span></button>
-        </sc-for>
-      </div>
-
-      <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
-        <div style="display:flex;flex-direction:column;gap:12px;">
-          <sc-for list="{{ filteredCases }}" as="c" hint-placeholder-count="4">
-            <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:16px;cursor:pointer;" onClick="{{ c.onClick }}">
-              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
-                <div>
-                  <div style="font-size:11px;color:#8A8272;font-weight:600;letter-spacing:0.03em;">{{ c.id }}</div>
-                  <div style="font-size:15px;font-weight:600;color:#2E2B26;">{{ c.customer }}</div>
-                </div>
-                <span style="{{ c.statusStyle }}">{{ c.status }}</span>
-              </div>
-              <div style="font-size:13px;color:#6E6759;margin-bottom:10px;">{{ c.category }}</div>
-              <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
-                <span style="{{ c.priorityStyle }}">{{ c.priority }} priority</span>
-                <span style="{{ c.riskStyle }}">{{ c.riskLabel }}</span>
-                <sc-if value="{{ c.overdue }}" hint-placeholder-val="{{ false }}">
-                  <span style="background:#FBEAEA;color:#B3261E;font-size:11px;font-weight:600;padding:4px 9px;border-radius:100px;">Overdue</span>
-                </sc-if>
-              </div>
-              <div style="display:flex;justify-content:space-between;font-size:12px;color:#8A8272;">
-                <span>{{ c.owner }} · {{ c.source }}</span>
-                <span>{{ c.updatedTime }}</span>
-              </div>
-            </div>
-          </sc-for>
+      <sc-if value="{{ noWorkflowDemo }}" hint-placeholder-val="{{ true }}">
+        <div style="background:#fff;border:1px dashed #CFC7B8;border-radius:14px;padding:30px;text-align:center;">
+          <div style="width:42px;height:42px;border-radius:12px;background:#EAF0E7;color:#4F6B54;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-weight:700;">✓</div>
+          <div style="font-family:'Lora',serif;font-size:19px;font-weight:600;color:#2E2B26;margin-bottom:6px;">Real cases are protected</div>
+          <div style="font-size:13px;color:#6E6759;line-height:1.6;max-width:650px;margin:0 auto 16px;">Customer names, contact details and messages are not copied to this public website. Use the protected Google Sheet for live operations, or open the anonymised demo to test the workflow.</div>
+          <button style="background:#6F8C74;color:#fff;border:none;padding:10px 15px;border-radius:9px;font-size:12.5px;font-weight:600;cursor:pointer;" onClick="{{ openLiveCasesSheet }}">Go to Live Case Sheet</button>
         </div>
       </sc-if>
 
-      <sc-if value="{{ showDesktopTable }}" hint-placeholder-val="{{ true }}">
-        <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;overflow:hidden;">
-          <div style="display:grid;grid-template-columns:100px 1.3fr 1.3fr 0.9fr 1fr 1fr 0.9fr 1fr;padding:12px 20px;background:#F5F2EA;font-size:11px;font-weight:700;color:#8A8272;letter-spacing:0.04em;text-transform:uppercase;">
-            <div>Case ID</div><div>Customer</div><div>Category</div><div>Priority</div><div>Risk</div><div>Owner</div><div>Source</div><div>Updated</div>
-          </div>
-          <sc-for list="{{ filteredCases }}" as="c" hint-placeholder-count="6">
-            <div style="display:grid;grid-template-columns:100px 1.3fr 1.3fr 0.9fr 1fr 1fr 0.9fr 1fr;padding:16px 20px;border-top:1px solid #EFEBE1;align-items:center;cursor:pointer;font-size:13.5px;color:#2E2B26;" onClick="{{ c.onClick }}">
-              <div style="font-weight:600;color:#6E6759;font-size:12.5px;">{{ c.id }}</div>
-              <div>
-                <div style="font-weight:600;">{{ c.customer }}</div>
-                <span style="{{ c.statusStyle }}">{{ c.status }}</span>
-              </div>
-              <div style="color:#6E6759;">{{ c.category }}</div>
-              <div><span style="{{ c.priorityStyle }}">{{ c.priority }}</span></div>
-              <div><span style="{{ c.riskStyle }}">{{ c.riskLabel }}</span></div>
-              <div style="color:#6E6759;">{{ c.owner }}</div>
-              <div style="color:#6E6759;">{{ c.source }}</div>
-              <div>
-                <div style="color:#6E6759;">{{ c.updatedTime }}</div>
-                <sc-if value="{{ c.overdue }}" hint-placeholder-val="{{ false }}">
-                  <span style="color:#B3261E;font-size:11px;font-weight:600;">● Overdue</span>
-                </sc-if>
-              </div>
+      <sc-if value="{{ showWorkflowDemo }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#F5EBD8;border:1px solid #E3CFA0;border-radius:12px;padding:12px 15px;margin-bottom:15px;font-size:12.5px;color:#7A5C24;line-height:1.5;"><strong>ANONYMISED WORKFLOW DEMO</strong> — These are fictional examples for testing filters, case review and approval controls. They are not customer cases.</div>
+
+        <div style="display:grid;grid-template-columns:{{ queueSummaryCols }};gap:10px;margin-bottom:15px;">
+          <sc-for list="{{ queueSummary }}" as="q" hint-placeholder-count="5">
+            <div style="{{ q.style }}">
+              <div style="font-size:10.5px;color:#8A8272;font-weight:700;letter-spacing:0.04em;margin-bottom:4px;">{{ q.label }}</div>
+              <div style="font-size:20px;color:{{ q.color }};font-weight:700;">{{ q.value }}</div>
             </div>
           </sc-for>
         </div>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px;">
+          <input placeholder="Search demo case ID, category or action" value="{{ searchQuery }}" onChange="{{ onSearchChange }}" style="flex:1;min-width:250px;padding:11px 14px;border-radius:10px;border:1px solid #E6E0D4;background:#fff;font-size:13px;color:#2E2B26;outline:none;"></input>
+          <select aria-label="Owner filter" value="{{ ownerFilter }}" onChange="{{ onOwnerFilterChange }}" style="padding:10px 30px 10px 12px;border-radius:9px;border:1px solid #E6E0D4;background:#fff;color:#6E6759;font-size:12.5px;"><option value="All">All owners</option><option>Mun</option><option>Rebecca</option><option>Yihui</option><option>Unassigned</option></select>
+          <select aria-label="Source filter" value="{{ sourceFilter }}" onChange="{{ onSourceFilterChange }}" style="padding:10px 30px 10px 12px;border-radius:9px;border:1px solid #E6E0D4;background:#fff;color:#6E6759;font-size:12.5px;"><option value="All">All sources</option><option>Respond.io</option><option>Google Sheets</option><option>Manual</option></select>
+          <select aria-label="Timing filter" value="{{ timingFilter }}" onChange="{{ onTimingFilterChange }}" style="padding:10px 30px 10px 12px;border-radius:9px;border:1px solid #E6E0D4;background:#fff;color:#6E6759;font-size:12.5px;"><option value="All">All timing</option><option value="Overdue">Overdue</option><option value="Today">Today</option></select>
+          <sc-for list="{{ priorityFilters }}" as="pf" hint-placeholder-count="4">
+            <button style="{{ pf.style }}" onClick="{{ pf.onClick }}">{{ pf.label }}</button>
+          </sc-for>
+        </div>
+
+        <div style="display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid #E6E0D4;margin-bottom:18px;overflow-x:auto;">
+          <sc-for list="{{ statusTabs }}" as="tab" hint-placeholder-count="8">
+            <button style="{{ tab.style }}" onClick="{{ tab.onClick }}">{{ tab.label }} <span style="{{ tab.countStyle }}">{{ tab.count }}</span></button>
+          </sc-for>
+        </div>
+
+        <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <sc-for list="{{ filteredCases }}" as="c" hint-placeholder-count="4">
+              <div style="{{ c.mobileCardStyle }}" onClick="{{ c.onClick }}">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+                  <div>
+                    <div style="font-size:11px;color:#8A8272;font-weight:700;letter-spacing:0.03em;">{{ c.demoId }}</div>
+                    <div style="font-size:14px;font-weight:600;color:#2E2B26;margin-top:3px;">{{ c.category }}</div>
+                  </div>
+                  <span style="{{ c.statusStyle }}">{{ c.status }}</span>
+                </div>
+                <div style="background:#FBFAF7;border-radius:8px;padding:9px 10px;font-size:12.5px;color:#2E2B26;line-height:1.45;margin-bottom:10px;"><strong>Action:</strong> {{ c.actionRequired }}</div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+                  <span style="{{ c.priorityStyle }}">{{ c.priority }} priority</span>
+                  <span style="{{ c.riskStyle }}">{{ c.riskLabel }}</span>
+                  <sc-if value="{{ c.unassigned }}" hint-placeholder-val="{{ false }}"><span style="background:#FBEAEA;color:#B3261E;font-size:11px;font-weight:700;padding:4px 9px;border-radius:100px;">⚠ Unassigned</span></sc-if>
+                  <sc-if value="{{ c.overdue }}" hint-placeholder-val="{{ false }}"><span style="background:#FBEAEA;color:#B3261E;font-size:11px;font-weight:700;padding:4px 9px;border-radius:100px;">Overdue</span></sc-if>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:12px;color:#8A8272;"><span>{{ c.owner }} · {{ c.source }}</span><span>{{ c.updatedTime }}</span></div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ showDesktopTable }}" hint-placeholder-val="{{ true }}">
+          <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;overflow:hidden;">
+            <div style="display:grid;grid-template-columns:95px 1.2fr 1.45fr 0.75fr 0.9fr 0.9fr 0.8fr 0.8fr;padding:12px 18px;background:#F5F2EA;font-size:10.5px;font-weight:700;color:#8A8272;letter-spacing:0.04em;text-transform:uppercase;">
+              <div>Demo ID</div><div>Category / Status</div><div>Action Required</div><div>Priority</div><div>Risk</div><div>Owner</div><div>Source</div><div>Updated</div>
+            </div>
+            <sc-for list="{{ filteredCases }}" as="c" hint-placeholder-count="6">
+              <div style="{{ c.rowStyle }}" onClick="{{ c.onClick }}">
+                <div style="font-weight:700;color:#6E6759;font-size:12px;">{{ c.demoId }}</div>
+                <div><div style="font-weight:600;line-height:1.4;">{{ c.category }}</div><span style="{{ c.statusStyle }}">{{ c.status }}</span></div>
+                <div style="color:#2E2B26;font-weight:500;line-height:1.4;">{{ c.actionRequired }}</div>
+                <div><span style="{{ c.priorityStyle }}">{{ c.priority }}</span></div>
+                <div><span style="{{ c.riskStyle }}">{{ c.riskLabel }}</span></div>
+                <div><span style="{{ c.ownerStyle }}">{{ c.ownerLabel }}</span></div>
+                <div style="color:#6E6759;">{{ c.source }}</div>
+                <div><div style="color:#6E6759;">{{ c.updatedTime }}</div><sc-if value="{{ c.overdue }}" hint-placeholder-val="{{ false }}"><span style="color:#B3261E;font-size:11px;font-weight:700;">● Overdue</span></sc-if></div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
       </sc-if>
     </div>
   </sc-if>
@@ -920,27 +936,27 @@ const CATEGORY_RULES = {
 };
 
 const RAW_CASES = [
-  { id:'CASE-1042', refNo:'REF-2026-1042', customer:'Customer A', customerType:'Returning', phone:'PHONE_REDACTED', email:'EMAIL_REDACTED',
+  { id:'CASE-1042', refNo:'REF-2026-1042', customer:'Demo Client 1', customerType:'Returning', phone:'PHONE_REDACTED', email:'EMAIL_REDACTED',
     package:'Postnatal Recovery (6 sessions)', packageBalance:'4 of 6 sessions remaining', lastTreatmentDate:'18 Jul 2026',
     respondIoLink:'Not connected in this prototype', category:'Appointment Enquiry', priority:'Low', owner:'Mun', source:'Respond.io',
     status:'Approved', updatedTime:'2h ago', receivedTime:'Today, 9:14 AM', overdue:false, followUpDeadline:'None',
     originalMessage:"Hi, just wanted to check what time slots are available next week for my confinement massage? Also can I bring my baby along?",
     conversationContext:'Customer confirmed package purchase 3 days ago; no prior issues on file.',
-    aiDraft:"Hi Customer A 😊\n\nWe’ll be happy to check next week’s availability for your confinement massage. May I have two preferred dates and timings?\n\nIf you’ll be bringing your baby, please let us know whether another adult will accompany you to care for the baby during the session. We’ll confirm the baby arrangement with the team before finalising your booking.",
+    aiDraft:"Hi Demo Client 1 😊\n\nWe’ll be happy to check next week’s availability for your confinement massage. May I have two preferred dates and timings?\n\nIf you’ll be bringing your baby, please let us know whether another adult will accompany you to care for the baby during the session. We’ll confirm the baby arrangement with the team before finalising your booking.",
     internalAssessment:'Routine scheduling enquiry. Package balance is confirmed, but appointment availability and the baby arrangement must be checked before booking.',
     missingInfo:['Two preferred dates and timings','Whether another adult will care for the baby during the session'], customerDataUsed:['Respond.io','Google Sheets case records'],
     citations:[{label:'Official Mumsrelle website — Service Hours',tier:1},{label:'Current approved CSE SOP — Booking Policy',tier:2}],
-    onHold:false, approvedBy:'Mun', approvedTime:'Today, 10:02 AM', respondIoSent:false, finalCustomerReply:"Hi Customer A 😊\n\nWe’ll be happy to check next week’s availability for your confinement massage. May I have two preferred dates and timings?\n\nIf you’ll be bringing your baby, please let us know whether another adult will accompany you to care for the baby during the session. We’ll confirm the baby arrangement with the team before finalising your booking.",
+    onHold:false, approvedBy:'Mun', approvedTime:'Today, 10:02 AM', respondIoSent:false, finalCustomerReply:"Hi Demo Client 1 😊\n\nWe’ll be happy to check next week’s availability for your confinement massage. May I have two preferred dates and timings?\n\nIf you’ll be bringing your baby, please let us know whether another adult will accompany you to care for the baby during the session. We’ll confirm the baby arrangement with the team before finalising your booking.",
     history:[{status:'New',timestamp:'Today, 9:14 AM',actor:'Respond.io'},{status:'AI Drafted',timestamp:'Today, 9:16 AM',actor:'AI Assistant'},
       {status:'Pending Approval',timestamp:'Today, 9:20 AM',actor:'Mun'},{status:'Approved',timestamp:'Today, 10:02 AM',actor:'Mun'}] },
 
-  { id:'CASE-1043', refNo:'REF-2026-1043', customer:'Customer B', customerType:'Returning', phone:'PHONE_REDACTED', email:'EMAIL_REDACTED',
+  { id:'CASE-1043', refNo:'REF-2026-1043', customer:'Demo Client 2', customerType:'Returning', phone:'PHONE_REDACTED', email:'EMAIL_REDACTED',
     package:'Postnatal Recovery (8 sessions)', packageBalance:'7 of 8 sessions remaining', lastTreatmentDate:'2 weeks ago (initial consult)',
     respondIoLink:'Not connected in this prototype', category:'Medical / Treatment Suitability', priority:'Medium', owner:'Rebecca', source:'Respond.io',
     status:'Escalated', updatedTime:'25m ago', receivedTime:'Today, 11:02 AM', overdue:true, followUpDeadline:'Today, 5:00 PM',
     originalMessage:"Hi, I gave birth 7 weeks ago via C-section. Is it safe for me to start the abdominal binding and deep tissue massage now? I still have some soreness near the scar.",
     conversationContext:'Customer asked about general postnatal package inclusions 2 weeks ago.',
-    aiDraft:"Thank you for sharing this, Customer B. Since you mentioned a C-section and ongoing soreness near the scar, we'd like our Centre Manager to review your case before confirming which treatments are suitable at 7 weeks postpartum. We'll follow up shortly with guidance to support your recovery safely.",
+    aiDraft:"Thank you for sharing this, Demo Client 2. Since you mentioned a C-section and ongoing soreness near the scar, we'd like our Centre Manager to review your case before confirming which treatments are suitable at 7 weeks postpartum. We'll follow up shortly with guidance to support your recovery safely.",
     internalAssessment:'Post-surgical recovery timeline requires Centre Manager review (who may consult the treating therapist) before deep tissue work or abdominal binding. SOP flags C-section clients for individual assessment before week 8.',
     missingInfo:['C-section wound healing status','Doctor / medical clearance status'], customerDataUsed:['Respond.io','Sequoia for historical records'],
     citations:[{label:'Current approved CSE SOP — Postpartum Treatment Timelines',tier:2},{label:'Requires Verification — Abdominal Binding Guidance',tier:5}],
@@ -948,13 +964,13 @@ const RAW_CASES = [
     history:[{status:'New',timestamp:'Today, 11:02 AM',actor:'Respond.io'},{status:'AI Drafted',timestamp:'Today, 11:05 AM',actor:'AI Assistant'},
       {status:'Escalated → Hazelle / Centre Manager',timestamp:'Today, 11:18 AM',actor:'Rebecca'}] },
 
-  { id:'CASE-1044', refNo:'REF-2026-1044', customer:'Customer C', customerType:'Existing', phone:'PHONE_REDACTED', email:'EMAIL_REDACTED',
+  { id:'CASE-1044', refNo:'REF-2026-1044', customer:'Demo Client 3', customerType:'Existing', phone:'PHONE_REDACTED', email:'EMAIL_REDACTED',
     package:'Confinement Care (6 sessions)', packageBalance:'3 of 6 sessions remaining', lastTreatmentDate:'20 Jun 2026',
     respondIoLink:'Not connected in this prototype', category:'Refund / Cancellation / Package Dispute', priority:'High', owner:'Yihui', source:'Google Sheets',
     status:'Pending Approval', updatedTime:'1h ago', receivedTime:'Today, 8:40 AM', overdue:false, followUpDeadline:'28 Jul 2026',
     originalMessage:"I'd like to cancel my remaining sessions and get money back for the sessions I haven't used. Can you refund me this week?",
     conversationContext:'Package purchased 5 weeks ago; 3 of 6 sessions used, no prior dispute history.',
-    aiDraft:"Hi Customer C, thank you for letting us know. Treatment packages are generally non-refundable once purchased, and requests like this are reviewed individually by our Management team. We've forwarded this for review and will follow up once it's been assessed — we're not able to confirm a refund, amount or timeline at this stage.",
+    aiDraft:"Hi Demo Client 3, thank you for letting us know. Treatment packages are generally non-refundable once purchased, and requests like this are reviewed individually by our Management team. We've forwarded this for review and will follow up once it's been assessed — we're not able to confirm a refund, amount or timeline at this stage.",
     internalAssessment:'Packages are non-refundable per policy; this request must go to Management for exception review. Accounts may assist with transaction calculation only after Management approves.',
     missingInfo:['Reason for request (documented)','Confirmation of any prior exception granted'], customerDataUsed:['Google Sheets case records'],
     citations:[{label:'Current approved CSE SOP — Refund & Cancellation Policy',tier:2},{label:'Management-approved instructions — Package Dispute Handling',tier:3}],
@@ -963,13 +979,13 @@ const RAW_CASES = [
     history:[{status:'New',timestamp:'Today, 8:40 AM',actor:'Google Sheets Import'},{status:'AI Drafted',timestamp:'Today, 8:44 AM',actor:'AI Assistant'},
       {status:'Pending Approval',timestamp:'Today, 8:50 AM',actor:'Yihui'},{status:'On Hold — Awaiting Management Decision',timestamp:'Today, 9:00 AM',actor:'Yihui'}] },
 
-  { id:'CASE-1045', refNo:'REF-2026-1045', customer:'Customer D', customerType:'New', phone:'PHONE_REDACTED', email:'EMAIL_REDACTED',
+  { id:'CASE-1045', refNo:'REF-2026-1045', customer:'Demo Client 4', customerType:'New', phone:'PHONE_REDACTED', email:'EMAIL_REDACTED',
     package:'Postnatal Recovery (6 sessions)', packageBalance:'5 of 6 sessions remaining', lastTreatmentDate:'Yesterday',
     respondIoLink:'Not connected in this prototype', category:'Post-Treatment Concern', priority:'High', owner:'Mun', source:'Respond.io',
     status:'Escalated', updatedTime:'10m ago', receivedTime:'Today, 12:30 PM', overdue:true, followUpDeadline:'Today, 3:00 PM',
     originalMessage:"I had my postnatal massage yesterday and today I'm having quite bad abdominal pain, worse than before the session. Is this normal? Should I be worried?",
     conversationContext:'First session of package completed yesterday per booking sheet.',
-    aiDraft:"Thank you for letting us know, Customer D, and we're sorry to hear you're uncomfortable. We're escalating this to our Centre Manager right away, who may consult your treating therapist. If the pain is severe or worsening, please seek medical attention right away.",
+    aiDraft:"Thank you for letting us know, Demo Client 4, and we're sorry to hear you're uncomfortable. We're escalating this to our Centre Manager right away, who may consult your treating therapist. If the pain is severe or worsening, please seek medical attention right away.",
     internalAssessment:'Reported worsening abdominal pain post-treatment. Requires immediate Centre Manager review and possible therapist consultation per incident protocol.',
     missingInfo:['Pain severity and duration','Whether customer has sought medical care'], customerDataUsed:['Respond.io'],
     citations:[{label:'Current approved CSE SOP — Post-Treatment Incident Protocol',tier:2}],
@@ -977,20 +993,20 @@ const RAW_CASES = [
     history:[{status:'New',timestamp:'Today, 12:30 PM',actor:'Respond.io'},{status:'AI Drafted',timestamp:'Today, 12:32 PM',actor:'AI Assistant'},
       {status:'Pending Approval',timestamp:'Today, 12:33 PM',actor:'Mun'},{status:'Escalated → Hazelle / Centre Manager',timestamp:'Today, 12:40 PM',actor:'Mun'}] },
 
-  { id:'CASE-1046', refNo:'REF-2026-1046', customer:'Customer E', customerType:'Unknown / Unverified', phone:'PHONE_REDACTED', email:'EMAIL_REDACTED',
+  { id:'CASE-1046', refNo:'REF-2026-1046', customer:'Demo Client 5', customerType:'Unknown / Unverified', phone:'PHONE_REDACTED', email:'EMAIL_REDACTED',
     package:'Unidentified', packageBalance:'Unable to verify', lastTreatmentDate:'Unknown',
     respondIoLink:'Not connected in this prototype', category:'Package / Billing Enquiry', priority:'Low', owner:'Rebecca', source:'Respond.io',
     status:'AI Drafted', updatedTime:'40m ago', receivedTime:'Today, 1:15 PM', overdue:false, followUpDeadline:'Pending customer reply',
     originalMessage:"Hi, how many sessions do I have left in my package? I can't remember what I signed up for.",
     conversationContext:'No prior record found matching this phone number; possible name mismatch in Google Sheets.',
-    aiDraft:"Hi Customer E, thanks for reaching out! We couldn't immediately locate a package under this number in our system — could you kindly share your full name and order or receipt reference so we can confirm your remaining sessions accurately?",
+    aiDraft:"Hi Demo Client 5, thanks for reaching out! We couldn't immediately locate a package under this number in our system — could you kindly share your full name and order or receipt reference so we can confirm your remaining sessions accurately?",
     internalAssessment:'Customer record not found in Google Sheets tracker; likely booked under a different contact number or name. Needs manual lookup before any package detail is shared.',
     missingInfo:['Order / receipt reference number','Correct registered contact number'], customerDataUsed:['Respond.io','Aoikumo'],
     citations:[{label:'Approved customer reply templates — Package Balance Enquiry',tier:4},{label:'Requires Verification — Customer Record Match',tier:5}],
     onHold:false, approvedBy:'', approvedTime:'', respondIoSent:false, finalCustomerReply:'',
     history:[{status:'New',timestamp:'Today, 1:15 PM',actor:'Respond.io'},{status:'AI Drafted',timestamp:'Today, 1:17 PM',actor:'AI Assistant'}] },
 
-  { id:'CASE-1047', refNo:'REF-2026-1047', customer:'Customer F', customerType:'New / Prospective', phone:'PHONE_REDACTED', email:'EMAIL_REDACTED',
+  { id:'CASE-1047', refNo:'REF-2026-1047', customer:'Demo Client 6', customerType:'New / Prospective', phone:'PHONE_REDACTED', email:'EMAIL_REDACTED',
     package:'No package purchased', packageBalance:'—', lastTreatmentDate:'N/A',
     respondIoLink:'Not connected in this prototype', category:'Appointment Enquiry', priority:'Low', owner:'Unassigned', source:'Respond.io',
     status:'New', updatedTime:'3m ago', receivedTime:'Today, 2:05 PM', overdue:false, followUpDeadline:'Pending CSO review',
@@ -1000,17 +1016,17 @@ const RAW_CASES = [
     citations:[], onHold:false, approvedBy:'', approvedTime:'', respondIoSent:false, finalCustomerReply:'',
     history:[{status:'New',timestamp:'Today, 2:05 PM',actor:'Respond.io'}] },
 
-  { id:'CASE-1048', refNo:'REF-2026-1048', customer:'Customer G', customerType:'Returning', phone:'PHONE_REDACTED', email:'EMAIL_REDACTED',
+  { id:'CASE-1048', refNo:'REF-2026-1048', customer:'Demo Client 7', customerType:'Returning', phone:'PHONE_REDACTED', email:'EMAIL_REDACTED',
     package:'Postnatal Recovery (4 sessions)', packageBalance:'0 of 4 remaining (completed)', lastTreatmentDate:'This week',
     respondIoLink:'Not connected in this prototype', category:'Package / Billing Enquiry', priority:'Low', owner:'Yihui', source:'Manual',
     status:'Closed', updatedTime:'Yesterday', receivedTime:'Yesterday, 3:40 PM', overdue:false, followUpDeadline:'None',
     originalMessage:"Just checking the price for a top-up package of 4 more sessions?",
     conversationContext:'Completed full 4-session package this week; logged manually after a phone call.',
-    aiDraft:"Hi Customer G, thanks for checking in! A 4-session top-up is available at our current published rate — let us know if you'd like us to help set this up.",
+    aiDraft:"Hi Demo Client 7, thanks for checking in! A 4-session top-up is available at our current published rate — let us know if you'd like us to help set this up.",
     internalAssessment:'Simple pricing enquiry, answered from published rate card.', missingInfo:[], customerDataUsed:['Manual Case Entry'],
     citations:[{label:'Official Mumsrelle website — Pricing',tier:1}],
     onHold:false, approvedBy:'Yihui', approvedTime:'Yesterday, 4:00 PM', respondIoSent:false,
-    finalCustomerReply:"Hi Customer G, thanks for checking in! A 4-session top-up is available at our current published rate — let us know if you'd like us to help set this up.",
+    finalCustomerReply:"Hi Demo Client 7, thanks for checking in! A 4-session top-up is available at our current published rate — let us know if you'd like us to help set this up.",
     history:[{status:'New',timestamp:'Yesterday, 3:40 PM',actor:'Manual Entry'},{status:'AI Drafted',timestamp:'Yesterday, 3:42 PM',actor:'AI Assistant'},
       {status:'Pending Approval',timestamp:'Yesterday, 3:50 PM',actor:'Yihui'},{status:'Approved',timestamp:'Yesterday, 4:00 PM',actor:'Yihui'},
       {status:'Closed',timestamp:'Yesterday, 4:05 PM',actor:'Yihui'}] },
@@ -1257,7 +1273,7 @@ const MOCK_SHEET_ROWS = [
   {'Ref No.':'REF-2026-1051','Customer Name':'Farah Yusof','Contact Number':'PHONE_REDACTED','Customer Type':'Returning','Customer Message':"I'm 5 weeks post C-section, can I do the deep tissue massage?",'Category':'Medical / Treatment Suitability','Priority':'Medium','Status':'New','Approval Status':'Approved','Draft Reply':'Sure, that should be fine!','Received Time':'Today, 3:05 PM'},
   {'Customer Name':'Unknown Caller','Customer Message':'Hi, do you have any promo?','Category':'Appointment Enquiry','Received Time':'Today, 3:10 PM'},
   {'Ref No.':'REF-2026-1052','Customer Name':'Alicia Goh','Contact Number':'PHONE_REDACTED','Customer Message':'Can you check my Aoikumo wallet balance?','Category':'Wallet Balance Query','Priority':'Medium','Aoikumo Lookup Required':'true','Aoikumo Lookup Type':'Cash Wallet Balance','Received Time':'Today, 3:15 PM'},
-  {'Ref No.':'REF-2026-1042','Customer Name':'Customer A Duplicate','Customer Message':'Testing duplicate ref no.','Category':'Appointment Enquiry','Received Time':'Today, 3:20 PM'},
+  {'Ref No.':'REF-2026-1042','Customer Name':'Demo Client 1 Duplicate','Customer Message':'Testing duplicate ref no.','Category':'Appointment Enquiry','Received Time':'Today, 3:20 PM'},
   {'Ref No.':'REF-2026-1053','Customer Name':'Ken Lim','Contact Number':'PHONE_REDACTED','Customer Message':'Refund please, cancel my remaining sessions.','Category':'Refund / Cancellation / Package Dispute','Priority':'High','Status':'Weird Status','On Hold':'maybe','Hold Until':'not-a-date','Respond.io Sent':'yes','Received Time':'Today, 3:25 PM'},
   {'Ref No.':'REF-2026-1054','Customer Name':'Siti Rahman','Category':'Appointment Enquiry','Received Time':'Today, 3:30 PM'},
 ];
@@ -1659,6 +1675,7 @@ class Component extends DCLogic {
     templateSearch: '',
     selectedKnowledgeKey: 'reply',
     searchQuery: '', activeTab: 'All', priorityFilter: 'All',
+    showWorkflowDemo: false, ownerFilter: 'All', sourceFilter: 'All', timingFilter: 'All',
     cases: RAW_CASES.map(c=>({...c})),
     draftOverrides: {}, categoryOverrides: {}, priorityOverrides: {},
     holdOverrides: Object.fromEntries(RAW_CASES.map(c=>[c.id, !!c.onHold])),
@@ -1830,11 +1847,44 @@ class Component extends DCLogic {
       onCopy:()=>{ if(typeof navigator!=='undefined' && navigator.clipboard) navigator.clipboard.writeText(a.answer).catch(()=>{}); this.showToast('Approved reply copied. Review the customer name and details before sending.'); }
     }));
 
-    const statusTabsDef = ['All','New','AI Drafted','Pending Approval','Escalated','On Hold','Approved','Closed'];
+    const actionRequiredFor = (c) => {
+      if(c.owner==='Unassigned') return 'Assign an owner now';
+      if(c.overdue && c.riskLevel==='High') return c.escalateTo ? `Escalate now · ${c.escalateTo}` : 'Escalate and follow up now';
+      if(c.overdue) return 'Follow up now';
+      if(c.displayStatus==='Escalated') return c.escalateTo ? `Awaiting ${c.escalateTo}` : 'Follow up on escalation';
+      if(c.displayStatus==='AI Drafted') return 'Review the customer reply draft';
+      if(c.displayStatus==='Pending Approval') return 'Approve or request revision';
+      if(c.displayStatus==='On Hold') return 'Check hold reason and follow-up date';
+      if(c.displayStatus==='New') return 'Review and assign next action';
+      if(c.displayStatus==='Approved') return 'Copy/send reply and confirm sent';
+      if(c.displayStatus==='Closed') return 'No action required';
+      return c.nextAction || 'Review case';
+    };
+    const queueRank = (c) => c.overdue ? 0
+      : c.riskLevel==='High' ? 1
+      : c.owner==='Unassigned' ? 2
+      : c.displayStatus==='New' ? 3
+      : c.displayStatus==='Pending Approval' ? 4
+      : c.displayStatus==='On Hold' ? 5
+      : c.displayStatus==='AI Drafted' ? 6
+      : c.displayStatus==='Escalated' ? 7
+      : c.displayStatus==='Approved' ? 8 : 9;
+    const demoCases = cases.map((c,index)=>({
+      ...c,
+      demoId:`DEMO-${String(index+1).padStart(3,'0')}`,
+      actionRequired:actionRequiredFor(c)
+    })).sort((a,b)=>queueRank(a)-queueRank(b));
+    const ownerOptions = ['All', ...new Set(demoCases.map(c=>c.owner).filter(Boolean))];
+    const sourceOptions = ['All', ...new Set(demoCases.map(c=>c.source).filter(Boolean))];
+    const timingOptions = ['All','Overdue','Today'];
     const q = s.searchQuery.trim().toLowerCase();
-    const searchFiltered = cases.filter(c => !q || c.customer.toLowerCase().includes(q) || c.id.toLowerCase().includes(q) || c.category.toLowerCase().includes(q));
-    const priFiltered = searchFiltered.filter(c => s.priorityFilter==='All' || c.priority===s.priorityFilter);
+    const searchFiltered = demoCases.filter(c => !q || `${c.demoId} ${c.category} ${c.actionRequired} ${c.owner} ${c.source} ${c.displayStatus}`.toLowerCase().includes(q));
+    const ownerFiltered = searchFiltered.filter(c=>s.ownerFilter==='All' || c.owner===s.ownerFilter);
+    const sourceFiltered = ownerFiltered.filter(c=>s.sourceFilter==='All' || c.source===s.sourceFilter);
+    const timingFiltered = sourceFiltered.filter(c=>s.timingFilter==='All' || (s.timingFilter==='Overdue' ? c.overdue : String(c.receivedTime||c.updatedTime).startsWith('Today')));
+    const priFiltered = timingFiltered.filter(c => s.priorityFilter==='All' || c.priority===s.priorityFilter);
     const tabFiltered = priFiltered.filter(c => s.activeTab==='All' || c.displayStatus===s.activeTab);
+    const statusTabsDef = ['All','New','AI Drafted','Pending Approval','Escalated','On Hold','Approved','Closed'];
 
     const statusTabs = statusTabsDef.map(t => {
       const count = t==='All' ? priFiltered.length : priFiltered.filter(c=>c.displayStatus===t).length;
@@ -1852,10 +1902,24 @@ class Component extends DCLogic {
 
     const filteredCases = tabFiltered.map(c=>{
       const ri = riskInfo(c.riskLevel, c.safety);
-      return { id:c.id, customer:c.customer, category:c.category, priority:c.priority, owner:c.owner, source:c.source, updatedTime:c.updatedTime,
+      return { id:c.id, demoId:c.demoId, category:c.category, actionRequired:c.actionRequired, priority:c.priority,
+        owner:c.owner, ownerLabel:c.owner==='Unassigned'?'⚠ Unassigned':c.owner,
+        ownerStyle:c.owner==='Unassigned' ? pillStyle(RED_BG,RED) : '', unassigned:c.owner==='Unassigned',
+        source:c.source, updatedTime:c.updatedTime,
         status:c.displayStatus, statusStyle: statusStyle(c.displayStatus)+'margin-top:4px;', priorityStyle: priorityStyle(c.priority), riskStyle: ri.style, riskLabel: ri.label,
-        overdue: c.overdue, onClick: () => this.setState({ view:'detail', selectedCaseId: c.id }) };
+        overdue: c.overdue,
+        rowStyle:`display:grid;grid-template-columns:95px minmax(190px,1.25fr) minmax(230px,1.5fr) 90px 120px 105px 130px 100px;gap:14px;padding:15px 18px;border-top:1px solid ${BORDER};align-items:center;cursor:pointer;background:${c.overdue?'#FFF9F7':'#fff'};`,
+        mobileCardStyle:`background:${c.overdue?'#FFF9F7':'#fff'};border:1px solid ${c.overdue?'#E7CACA':BORDER};border-radius:12px;padding:14px;cursor:pointer;`,
+        onClick: () => this.setState({ view:'detail', selectedCaseId: c.id }) };
     });
+    const queueSummary = [
+      {label:'Overdue', value:demoCases.filter(c=>c.overdue).length, color:RED},
+      {label:'High Risk', value:demoCases.filter(c=>c.riskLevel==='High').length, color:RED},
+      {label:'Unassigned', value:demoCases.filter(c=>c.owner==='Unassigned').length, color:AMBER},
+      {label:'New', value:demoCases.filter(c=>c.displayStatus==='New').length, color:SAGE_DARK},
+      {label:'Pending Approval', value:demoCases.filter(c=>c.displayStatus==='Pending Approval').length, color:AMBER},
+    ].map(x=>({...x,style:`background:#fff;border:1px solid ${BORDER};border-radius:12px;padding:14px;`}));
+    const queueSummaryCols = isMobile ? 'repeat(2,minmax(0,1fr))' : 'repeat(5,minmax(0,1fr))';
 
     const EMPTY_CASE = { id:'', refNo:'', customer:'', customerType:'', phone:'', email:'', package:'', packageBalance:'',
       lastTreatmentDate:'', respondIoLink:'', category:'General Enquiry', priority:'Low', owner:'', source:'', status:'New',
@@ -1891,6 +1955,12 @@ class Component extends DCLogic {
 
     const selectedCase = {
       ...selRaw,
+      id: s.showWorkflowDemo ? `DEMO-${String(Math.max(cases.findIndex(c=>c.id===selRaw.id),0)+1).padStart(3,'0')}` : selRaw.id,
+      refNo: s.showWorkflowDemo ? 'Anonymised workflow demo' : selRaw.refNo,
+      customer: s.showWorkflowDemo ? 'Anonymised Demo Case' : selRaw.customer,
+      customerName: s.showWorkflowDemo ? 'Anonymised Demo Case' : selRaw.customerName,
+      phone: s.showWorkflowDemo ? 'Not displayed in public demo' : selRaw.phone,
+      email: s.showWorkflowDemo ? 'Not displayed in public demo' : selRaw.email,
       statusStyle: statusStyle(selRaw.displayStatus), priorityStyle: priorityStyle(selRaw.priority), riskStyle: ri.style, riskLabel: ri.label,
       escBorder: selRaw.escalationRequired ? '#E9CBCB' : BORDER,
       escRequiredLabel: selRaw.escalationRequired ? 'Yes' : 'No',
@@ -2120,12 +2190,18 @@ class Component extends DCLogic {
     const selectedKnowledge = knowledgeSectionDefs.find(k=>k.key===s.selectedKnowledgeKey) || knowledgeSectionDefs[0];
     const selectedKnowledgePoints = selectedKnowledge.points.map(text=>({text}));
     const selectedKnowledgeStatusStyle = pillStyle(SAGE_BG,SAGE_DARK);
-    const liveCaseGuide = [
-      { step:'STEP 1 · CAPTURE', text:'Add the exact customer question and assign the correct owner in the live Sheet.' },
-      { step:'STEP 2 · REVIEW', text:'Use Approved wording only; medical, refund and unclear cases require the correct reviewer.' },
-      { step:'STEP 3 · CLOSE THE LOOP', text:'Copy the final reply to Respond.io, record the outcome and schedule any KIV follow-up.' },
+    const liveSourceStatus = [
+      { label:'DATA SOURCE', value:'Protected Google Sheet' },
+      { label:'WEBSITE MIRROR', value:'Off · privacy protected' },
+      { label:'LIVE STATUS', value:'Open Sheet for current cases' },
+      { label:'AUTO-SEND', value:'Disabled' },
     ];
-    const liveGuideCols = isMobile ? '1fr' : 'repeat(3,1fr)';
+    const liveStatusCols = isMobile ? 'repeat(2,minmax(0,1fr))' : 'repeat(4,minmax(0,1fr))';
+    const toggleWorkflowDemo = () => this.setState({
+      showWorkflowDemo:!s.showWorkflowDemo,
+      searchQuery:'', activeTab:'All', priorityFilter:'All',
+      ownerFilter:'All', sourceFilter:'All', timingFilter:'All'
+    });
     const backendGuide = [
       { step:'1 · EDIT', text:'Open cso_helpdesk_approved_answers in Supabase.' },
       { step:'2 · CONTROL', text:'Update Reviewed By, then set Status = Approved and Active = true only after review.' },
@@ -2300,7 +2376,10 @@ class Component extends DCLogic {
       approvedTemplates, approvedTemplateCount, templateCols, knowledgeCols, knowledgeSections,
       selectedKnowledgeTitle:selectedKnowledge.title, selectedKnowledgeIntro:selectedKnowledge.intro,
       selectedKnowledgePoints, selectedKnowledgeSource:selectedKnowledge.source, selectedKnowledgeStatusStyle,
-      liveCaseGuide, liveGuideCols, backendGuide, backendGuideCols, dailyKpiRows,
+      liveSourceStatus, liveStatusCols, backendGuide, backendGuideCols, dailyKpiRows,
+      toggleWorkflowDemo, workflowDemoButtonLabel:s.showWorkflowDemo?'Hide Workflow Demo':'View Anonymised Workflow Demo',
+      showWorkflowDemo:s.showWorkflowDemo, noWorkflowDemo:!s.showWorkflowDemo,
+      queueSummary, queueSummaryCols,
       schemaRows, syncCards, importMockRows, exportMockRows, previewMapping, toggleUnsyncedPanel,
       validationSection, auditLogDisplay, hasAuditLog: auditLogDisplay.length>0,
       showMappingPreview: s.showMappingPreview, mappingPreviewRows, hasMappingPreview: mappingPreviewRows.length>0,
@@ -2312,6 +2391,9 @@ class Component extends DCLogic {
       timelineDisplay, hasTimeline: timelineDisplay.length>0,
       copyDraft, confirmReplySentManually,
       searchQuery: s.searchQuery, onSearchChange: (e)=>this.setState({searchQuery:e.target.value}),
+      ownerFilter:s.ownerFilter, onOwnerFilterChange:(e)=>this.setState({ownerFilter:e.target.value,activeTab:'All'}),
+      sourceFilter:s.sourceFilter, onSourceFilterChange:(e)=>this.setState({sourceFilter:e.target.value,activeTab:'All'}),
+      timingFilter:s.timingFilter, onTimingFilterChange:(e)=>this.setState({timingFilter:e.target.value,activeTab:'All'}),
       priorityFilters, statusTabs, filteredCases, showDesktopTable: !isMobile,
       kpis, kpiCols, dashCols, repeatedQuestions, knowledgeGaps, csoVolume, categoryDist,
       selectedCase, noCaseSelected, riskFlagsAll, customerDataSources, knowledgeHierarchy, integrationStatus, detailGridStyle, infoCols,
