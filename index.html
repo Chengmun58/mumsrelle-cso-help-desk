@@ -2078,7 +2078,6 @@ class Component extends DCLogic {
         method:'PATCH',
         headers:{
           apikey:SUPABASE_PUBLISHABLE_KEY,
-          Authorization:`Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
           'Content-Type':'application/json',
           Prefer:'return=representation'
         },
@@ -2096,6 +2095,7 @@ class Component extends DCLogic {
       this.showToast(error && error.message && error.message.includes('changed after')
         ? error.message
         : 'Unable to save the daily update. Refresh KPI and try again.');
+      console.warn('Anonymous daily KPI update failed.', error);
     } finally {
       this.setState({dailyUpdateSaving:false});
     }
