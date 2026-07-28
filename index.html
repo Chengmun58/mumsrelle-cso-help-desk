@@ -163,6 +163,84 @@
         <div style="margin-top:11px;background:#F5EBD8;border-radius:9px;padding:9px 11px;font-size:11.5px;color:#7A5C24;line-height:1.45;"><strong>Next action:</strong> {{ livePrimaryAction }}</div>
       </div>
 
+      <div style="background:#F8FAF7;border:1px solid #B9C9B7;border-radius:14px;padding:18px;margin-bottom:18px;">
+        <div style="display:flex;justify-content:space-between;gap:14px;align-items:flex-start;flex-wrap:wrap;margin-bottom:15px;">
+          <div>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+              <div style="font-family:'Lora',serif;font-size:19px;font-weight:600;color:#2E2B26;">Live Agent Console</div>
+              <span style="background:#F5EBD8;color:#7A5C24;font-size:10px;font-weight:700;padding:4px 7px;border-radius:5px;">ANONYMOUS DEMO</span>
+            </div>
+            <div style="font-size:11.5px;color:#8A8272;margin-top:4px;">Agent presence, workload and demo-case ownership. No customer data is stored here.</div>
+          </div>
+          <div style="display:flex;gap:9px;align-items:center;flex-wrap:wrap;">
+            <span style="{{ liveAgentBackendStyle }}">{{ liveAgentBackendLabel }}</span>
+            <button style="background:#fff;color:#4F6B54;border:1px solid #6F8C74;padding:8px 11px;border-radius:8px;font-size:11.5px;font-weight:600;cursor:pointer;" onClick="{{ refreshLiveAgentData }}">Refresh Live Agent</button>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;background:#fff;border:1px solid #E6E0D4;border-radius:10px;padding:11px 12px;margin-bottom:13px;">
+          <div style="font-size:11.5px;color:#6E6759;"><strong>Working as {{ currentCso }}</strong> · {{ liveAgentSyncLabel }}</div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <label style="font-size:11px;font-weight:700;color:#8A8272;">MY STATUS</label>
+            <select aria-label="Current agent status" value="{{ currentAgentStatus }}" onChange="{{ onCurrentAgentStatusChange }}" style="padding:8px 28px 8px 10px;border-radius:8px;border:1px solid #E6E0D4;background:#fff;color:#2E2B26;font-size:12px;">
+              <option>Online</option><option>Busy</option><option>Away</option><option>Offline</option><option>Reviewing</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:{{ liveAgentCardCols }};gap:10px;margin-bottom:14px;">
+          <sc-for list="{{ liveAgentCards }}" as="agent" hint-placeholder-count="4">
+            <div style="{{ agent.cardStyle }}">
+              <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:9px;">
+                <div>
+                  <div style="font-weight:700;color:#2E2B26;font-size:13.5px;">{{ agent.name }}</div>
+                  <div style="font-size:10.5px;color:#8A8272;margin-top:2px;">{{ agent.role }}</div>
+                </div>
+                <span style="{{ agent.statusStyle }}">{{ agent.status }}</span>
+              </div>
+              <div style="font-size:10.5px;color:#6E6759;line-height:1.45;min-height:30px;margin-bottom:9px;">{{ agent.coverage }}</div>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px;">
+                <div style="background:#FBFAF7;border-radius:7px;padding:7px;"><div style="font-size:9px;color:#8A8272;">ASSIGNED</div><div style="font-weight:700;color:#2E2B26;margin-top:2px;">{{ agent.assigned }}</div></div>
+                <div style="background:#FBFAF7;border-radius:7px;padding:7px;"><div style="font-size:9px;color:#8A8272;">OVERDUE</div><div style="font-weight:700;color:#B3261E;margin-top:2px;">{{ agent.overdue }}</div></div>
+                <div style="background:#FBFAF7;border-radius:7px;padding:7px;"><div style="font-size:9px;color:#8A8272;">BA TODAY</div><div style="font-weight:700;color:#2E2B26;margin-top:2px;">{{ agent.ba }}</div></div>
+              </div>
+              <div style="font-size:10px;color:#8A8272;">Current: {{ agent.currentCase }} · {{ agent.lastSeen }}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="display:grid;grid-template-columns:{{ liveAgentControlCols }};gap:12px;">
+          <div style="background:#fff;border:1px solid #E6E0D4;border-radius:11px;padding:14px;">
+            <div style="font-weight:700;color:#2E2B26;font-size:12.5px;margin-bottom:4px;">Demo Case Assignment</div>
+            <div style="font-size:10.5px;color:#8A8272;margin-bottom:11px;">Take an unassigned case or assign/transfer it to another agent.</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+              <select aria-label="Demo case assignment" value="{{ selectedAssignmentCase }}" onChange="{{ onAssignmentCaseChange }}" style="padding:9px 28px 9px 10px;border-radius:8px;border:1px solid #E6E0D4;background:#fff;color:#2E2B26;font-size:12px;">
+                <option>DEMO-001</option><option>DEMO-002</option><option>DEMO-003</option><option>DEMO-004</option><option>DEMO-005</option><option>DEMO-006</option><option>DEMO-007</option>
+              </select>
+              <span style="font-size:11.5px;color:#6E6759;">Owner: <strong>{{ selectedAssignmentOwner }}</strong></span>
+              <button style="{{ takeCaseButtonStyle }}" onClick="{{ takeSelectedCase }}">Take Case as {{ currentCso }}</button>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:9px;padding-top:9px;border-top:1px solid #EFEBE1;">
+              <select aria-label="Assignment target" value="{{ assignmentTarget }}" onChange="{{ onAssignmentTargetChange }}" style="padding:9px 28px 9px 10px;border-radius:8px;border:1px solid #E6E0D4;background:#fff;color:#2E2B26;font-size:12px;">
+                <option>Mun</option><option>Rebecca</option><option>Yihui</option><option>Fiverr</option>
+              </select>
+              <button style="{{ assignCaseButtonStyle }}" onClick="{{ assignSelectedCase }}">Assign / Transfer</button>
+            </div>
+          </div>
+
+          <div style="background:#fff;border:1px solid #E6E0D4;border-radius:11px;padding:14px;">
+            <div style="font-weight:700;color:#2E2B26;font-size:12.5px;margin-bottom:4px;">Recent Live Agent Activity</div>
+            <div style="font-size:10.5px;color:#8A8272;margin-bottom:8px;">Anonymous demo events. Full audit history remains private in Supabase.</div>
+            <sc-for list="{{ liveAgentActivityRows }}" as="event" hint-placeholder-count="4">
+              <div style="display:grid;grid-template-columns:72px 1fr auto;gap:8px;align-items:center;padding:7px 0;border-top:1px solid #EFEBE1;font-size:10.5px;">
+                <span style="{{ event.style }}">{{ event.caseId }}</span>
+                <div style="color:#2E2B26;"><strong>{{ event.action }}</strong><div style="color:#8A8272;margin-top:2px;">{{ event.route }}</div></div>
+                <div style="color:#8A8272;">{{ event.time }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+
       <sc-if value="{{ noWorkflowDemo }}" hint-placeholder-val="{{ true }}">
         <div style="background:#fff;border:1px dashed #CFC7B8;border-radius:14px;padding:30px;text-align:center;">
           <div style="width:42px;height:42px;border-radius:12px;background:#EAF0E7;color:#4F6B54;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-weight:700;">✓</div>
@@ -1729,6 +1807,9 @@ class Component extends DCLogic {
     backendAnswers: null, backendStatus: 'loading', backendLastSynced: null, backendError: '',
     backendKpiRows: null, kpiBackendStatus: 'loading', kpiLastSynced: null, kpiBackendError: '',
     answerUsageDaily: [], usageRecordedCount: 0,
+    agentPresenceRows: null, agentAssignmentRows: null, agentEventRows: [],
+    liveAgentBackendStatus: 'loading', liveAgentLastSynced: null, liveAgentError: '',
+    selectedAssignmentCase: 'DEMO-006', assignmentTarget: getSavedCsoName(), agentActionBusy: false,
     templateSearch: '',
     selectedKnowledgeKey: 'reply',
     searchQuery: '', activeTab: 'All', priorityFilter: 'All',
@@ -1752,8 +1833,13 @@ class Component extends DCLogic {
     window.addEventListener('resize', this._onResize);
     this.loadBackendAnswers(false);
     this.loadDashboardData(false);
+    this.loadLiveAgentData(false);
+    this._liveAgentPoll = setInterval(()=>this.loadLiveAgentData(false), 20000);
   }
-  componentWillUnmount(){ window.removeEventListener('resize', this._onResize); }
+  componentWillUnmount(){
+    window.removeEventListener('resize', this._onResize);
+    clearInterval(this._liveAgentPoll);
+  }
   componentDidUpdate(){
     try {
       const s = this.state;
@@ -1902,6 +1988,148 @@ class Component extends DCLogic {
     }
   }
 
+  async loadLiveAgentData(showSuccessToast = true){
+    this.setState({ liveAgentBackendStatus:'loading', liveAgentError:'' });
+    try {
+      const presenceFields = 'agent_key,display_name,role_label,coverage,status,status_note,last_seen_at,current_demo_case_id,is_demo,version,updated_at';
+      const assignmentFields = 'demo_case_id,owner,assignment_status,assigned_by,is_overdue,last_activity_at,is_demo,version,updated_at';
+      const eventFields = 'id,demo_case_id,event_type,actor,from_owner,to_owner,created_at,is_demo';
+      const [presenceResponse, assignmentResponse, eventResponse] = await Promise.all([
+        fetch(`${SUPABASE_URL}/rest/v1/cso_helpdesk_agent_presence?select=${presenceFields}&is_demo=eq.true&order=display_name.asc`, {
+          headers:{ apikey:SUPABASE_PUBLISHABLE_KEY }
+        }),
+        fetch(`${SUPABASE_URL}/rest/v1/cso_helpdesk_case_assignments?select=${assignmentFields}&is_demo=eq.true&order=demo_case_id.asc`, {
+          headers:{ apikey:SUPABASE_PUBLISHABLE_KEY }
+        }),
+        fetch(`${SUPABASE_URL}/rest/v1/cso_helpdesk_case_events?select=${eventFields}&is_demo=eq.true&order=created_at.desc&limit=12`, {
+          headers:{ apikey:SUPABASE_PUBLISHABLE_KEY }
+        })
+      ]);
+      if(!presenceResponse.ok) throw new Error(`Presence backend returned ${presenceResponse.status}`);
+      if(!assignmentResponse.ok) throw new Error(`Assignment backend returned ${assignmentResponse.status}`);
+      if(!eventResponse.ok) throw new Error(`Event backend returned ${eventResponse.status}`);
+      const [presenceRows, assignmentRows, eventRows] = await Promise.all([
+        presenceResponse.json(), assignmentResponse.json(), eventResponse.json()
+      ]);
+      if(!Array.isArray(presenceRows) || !Array.isArray(assignmentRows) || !Array.isArray(eventRows)){
+        throw new Error('Live Agent backend response was invalid');
+      }
+      this.setState({
+        agentPresenceRows:presenceRows,
+        agentAssignmentRows:assignmentRows,
+        agentEventRows:eventRows,
+        liveAgentBackendStatus:'live',
+        liveAgentLastSynced:new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
+        liveAgentError:''
+      });
+      if(showSuccessToast) this.showToast(`Live Agent refreshed — ${presenceRows.length} agent(s), ${assignmentRows.length} demo case(s).`);
+    } catch (error) {
+      this.setState({
+        agentPresenceRows:null,
+        agentAssignmentRows:null,
+        agentEventRows:[],
+        liveAgentBackendStatus:'fallback',
+        liveAgentLastSynced:new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
+        liveAgentError:error && error.message ? error.message : 'Unable to reach Live Agent backend'
+      });
+      if(showSuccessToast) this.showToast('Live Agent backend unavailable. Using the anonymous fallback snapshot.');
+    }
+  }
+
+  async updateCurrentAgentPresence(nextStatus){
+    const allowedStatuses = ['Online','Busy','Away','Offline','Reviewing'];
+    const currentCso = CSO_NAMES.includes(this.state.currentCso) ? this.state.currentCso : 'Mun';
+    if(!allowedStatuses.includes(nextStatus) || this.state.agentActionBusy) return;
+    this.setState({agentActionBusy:true});
+    try {
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/cso_helpdesk_agent_presence?agent_key=eq.${encodeURIComponent(currentCso.toLowerCase())}&is_demo=eq.true`, {
+        method:'PATCH',
+        headers:{
+          apikey:SUPABASE_PUBLISHABLE_KEY,
+          'Content-Type':'application/json',
+          Prefer:'return=minimal'
+        },
+        body:JSON.stringify({status:nextStatus,last_seen_at:new Date().toISOString()})
+      });
+      if(!response.ok) throw new Error(`Presence update returned ${response.status}`);
+      await this.loadLiveAgentData(false);
+      this.showToast(`${currentCso} status updated to ${nextStatus}. Demo only.`);
+    } catch (error) {
+      this.showToast('Unable to update the Live Agent demo status.');
+    } finally {
+      this.setState({agentActionBusy:false});
+    }
+  }
+
+  async assignDemoCase(targetOwner, claimOnly = false){
+    const allowedOwners = ['Mun','Rebecca','Yihui','Fiverr'];
+    const currentCso = CSO_NAMES.includes(this.state.currentCso) ? this.state.currentCso : 'Mun';
+    const demoCaseId = this.state.selectedAssignmentCase;
+    const assignments = Array.isArray(this.state.agentAssignmentRows) ? this.state.agentAssignmentRows : [];
+    const current = assignments.find(row=>row.demo_case_id===demoCaseId);
+    if(!current || !allowedOwners.includes(targetOwner) || this.state.agentActionBusy) return;
+    if(claimOnly && current.owner!=='Unassigned'){
+      this.showToast(`${demoCaseId} is already owned by ${current.owner}. Use Assign / Transfer instead.`);
+      return;
+    }
+    const eventType = claimOnly ? 'TAKE_CASE' : current.owner==='Unassigned' ? 'ASSIGN' : 'TRANSFER';
+    const assignmentStatus = claimOnly ? 'Claimed' : current.owner===targetOwner ? 'Assigned' : 'Transferred';
+    this.setState({agentActionBusy:true});
+    try {
+      const assignmentResponse = await fetch(`${SUPABASE_URL}/rest/v1/cso_helpdesk_case_assignments?demo_case_id=eq.${encodeURIComponent(demoCaseId)}&is_demo=eq.true`, {
+        method:'PATCH',
+        headers:{
+          apikey:SUPABASE_PUBLISHABLE_KEY,
+          'Content-Type':'application/json',
+          Prefer:'return=minimal'
+        },
+        body:JSON.stringify({
+          owner:targetOwner,
+          assignment_status:assignmentStatus,
+          assigned_by:currentCso,
+          last_activity_at:new Date().toISOString()
+        })
+      });
+      if(!assignmentResponse.ok) throw new Error(`Assignment update returned ${assignmentResponse.status}`);
+
+      const eventResponse = await fetch(`${SUPABASE_URL}/rest/v1/cso_helpdesk_case_events`, {
+        method:'POST',
+        headers:{
+          apikey:SUPABASE_PUBLISHABLE_KEY,
+          'Content-Type':'application/json',
+          Prefer:'return=minimal'
+        },
+        body:JSON.stringify({
+          demo_case_id:demoCaseId,
+          event_type:eventType,
+          actor:currentCso,
+          from_owner:current.owner,
+          to_owner:targetOwner,
+          is_demo:true
+        })
+      });
+      if(!eventResponse.ok) throw new Error(`Case event returned ${eventResponse.status}`);
+
+      if(claimOnly){
+        await fetch(`${SUPABASE_URL}/rest/v1/cso_helpdesk_agent_presence?agent_key=eq.${encodeURIComponent(currentCso.toLowerCase())}&is_demo=eq.true`, {
+          method:'PATCH',
+          headers:{
+            apikey:SUPABASE_PUBLISHABLE_KEY,
+            'Content-Type':'application/json',
+            Prefer:'return=minimal'
+          },
+          body:JSON.stringify({status:'Busy',current_demo_case_id:demoCaseId,last_seen_at:new Date().toISOString()})
+        });
+      }
+      await this.loadLiveAgentData(false);
+      this.showToast(`${demoCaseId} ${claimOnly?'taken by':'assigned to'} ${targetOwner}. Demo only.`);
+    } catch (error) {
+      this.showToast('Unable to update the demo case assignment.');
+    } finally {
+      this.setState({agentActionBusy:false});
+    }
+  }
+
   renderVals(){
     const s = this.state;
     const isMobile = s.isMobile;
@@ -1910,7 +2138,7 @@ class Component extends DCLogic {
     const onCsoChange = (e) => {
       const nextCso = CSO_NAMES.includes(e.target.value) ? e.target.value : 'Mun';
       try { window.localStorage.setItem('mumsrelle-current-cso', nextCso); } catch (_) {}
-      this.setState({ currentCso: nextCso });
+      this.setState({ currentCso: nextCso, assignmentTarget: nextCso });
       this.showToast(`Working as ${nextCso}.`);
     };
     const rootStyle = `background:${IVORY};min-height:100vh;color:${INK};padding-bottom:80px;`;
@@ -1932,6 +2160,7 @@ class Component extends DCLogic {
     const openLiveCasesSheet = () => window.open(LIVE_CASES_SHEET_URL, '_blank', 'noopener,noreferrer');
     const refreshBackendAnswers = () => this.loadBackendAnswers(true);
     const refreshDashboardData = () => this.loadDashboardData(true);
+    const refreshLiveAgentData = () => this.loadLiveAgentData(true);
     const approvedQa = Array.isArray(s.backendAnswers) ? s.backendAnswers : APPROVED_QA;
     const backendStatusLabel = s.backendStatus==='live'
       ? `Backend Live · ${approvedQa.length} Approved`
@@ -1956,6 +2185,24 @@ class Component extends DCLogic {
       const history = Array.isArray(c.history) ? c.history : [];
       return { ...c, ...d, onHold, status: underlyingStatus, displayStatus, history: [...history, ...(s.historyAppends[c.id]||[])] };
     });
+    const fallbackAgentPresence = [
+      {agent_key:'rebecca',display_name:'Rebecca',role_label:'Full-time CSO',coverage:'Primary · KIVs, blast messages and existing clients',status:'Online',last_seen_at:new Date().toISOString(),current_demo_case_id:'DEMO-005',is_demo:true},
+      {agent_key:'yihui',display_name:'Yihui',role_label:'Upwork CSO',coverage:'Weekend · Public holiday · Rebecca leave cover',status:'Away',last_seen_at:new Date(Date.now()-18*60000).toISOString(),current_demo_case_id:'DEMO-003',is_demo:true},
+      {agent_key:'fiverr',display_name:'Fiverr',role_label:'Outsource CSO',coverage:'Weekend · Public holiday · Rebecca leave cover',status:'Offline',last_seen_at:new Date(Date.now()-3*3600000).toISOString(),current_demo_case_id:null,is_demo:true},
+      {agent_key:'mun',display_name:'Mun',role_label:'Review & Management',coverage:'Approvals · Escalations · SOP gaps',status:'Reviewing',last_seen_at:new Date().toISOString(),current_demo_case_id:'DEMO-004',is_demo:true},
+    ];
+    const fallbackAssignments = [
+      {demo_case_id:'DEMO-001',owner:'Mun',assignment_status:'Assigned',assigned_by:'Mun',is_overdue:false,is_demo:true},
+      {demo_case_id:'DEMO-002',owner:'Rebecca',assignment_status:'Assigned',assigned_by:'Rebecca',is_overdue:true,is_demo:true},
+      {demo_case_id:'DEMO-003',owner:'Yihui',assignment_status:'Assigned',assigned_by:'Yihui',is_overdue:false,is_demo:true},
+      {demo_case_id:'DEMO-004',owner:'Mun',assignment_status:'Assigned',assigned_by:'Mun',is_overdue:true,is_demo:true},
+      {demo_case_id:'DEMO-005',owner:'Rebecca',assignment_status:'Assigned',assigned_by:'Rebecca',is_overdue:false,is_demo:true},
+      {demo_case_id:'DEMO-006',owner:'Unassigned',assignment_status:'Unassigned',assigned_by:'Mun',is_overdue:false,is_demo:true},
+      {demo_case_id:'DEMO-007',owner:'Yihui',assignment_status:'Closed',assigned_by:'Yihui',is_overdue:false,is_demo:true},
+    ];
+    const liveAgentPresenceRows = Array.isArray(s.agentPresenceRows) && s.agentPresenceRows.length ? s.agentPresenceRows : fallbackAgentPresence;
+    const liveAgentAssignmentRows = Array.isArray(s.agentAssignmentRows) && s.agentAssignmentRows.length ? s.agentAssignmentRows : fallbackAssignments;
+    const assignmentByCase = Object.fromEntries(liveAgentAssignmentRows.map(row=>[row.demo_case_id,row]));
 
     const approvedSearchText = (s.approvedSearchQuery || '').trim().toLowerCase();
     const searchApprovedAnswers = () => {
@@ -2008,11 +2255,12 @@ class Component extends DCLogic {
       : c.displayStatus==='AI Drafted' ? 6
       : c.displayStatus==='Escalated' ? 7
       : c.displayStatus==='Approved' ? 8 : 9;
-    const demoCases = cases.map((c,index)=>({
-      ...c,
-      demoId:`DEMO-${String(index+1).padStart(3,'0')}`,
-      actionRequired:actionRequiredFor(c)
-    })).sort((a,b)=>queueRank(a)-queueRank(b));
+    const demoCases = cases.map((c,index)=>{
+      const demoId = `DEMO-${String(index+1).padStart(3,'0')}`;
+      const assignment = assignmentByCase[demoId];
+      const merged = {...c,demoId,owner:assignment?.owner || c.owner};
+      return {...merged,actionRequired:actionRequiredFor(merged),assignmentStatus:assignment?.assignment_status || 'Assigned'};
+    }).sort((a,b)=>queueRank(a)-queueRank(b));
     const ownerOptions = ['All', ...new Set(demoCases.map(c=>c.owner).filter(Boolean))];
     const sourceOptions = ['All', ...new Set(demoCases.map(c=>c.source).filter(Boolean))];
     const timingOptions = ['All','Overdue','Today'];
@@ -2300,6 +2548,95 @@ class Component extends DCLogic {
       {label:'EXISTING FUNNEL',value:`${teamKpi.existing_ba} BA`,sub:`${teamKpi.existing_attended} attended`,color:SAGE_DARK},
     ];
     const liveManagementCols = isMobile ? 'repeat(2,minmax(0,1fr))' : 'repeat(4,minmax(0,1fr))';
+    const liveAgentBackendLabel = s.liveAgentBackendStatus==='live'
+      ? `Supabase Live · ${liveAgentPresenceRows.length} agents`
+      : s.liveAgentBackendStatus==='loading'
+        ? 'Connecting to Live Agent…'
+        : 'Anonymous fallback snapshot';
+    const liveAgentBackendStyle = s.liveAgentBackendStatus==='live'
+      ? pillStyle(SAGE_BG,SAGE_DARK)
+      : s.liveAgentBackendStatus==='loading'
+        ? pillStyle(AMBER_BG,AMBER)
+        : pillStyle(RED_BG,RED);
+    const liveAgentSyncLabel = s.liveAgentLastSynced
+      ? `Last synced ${s.liveAgentLastSynced} · Auto-refresh every 20 sec${s.liveAgentError?` · ${s.liveAgentError}`:''}`
+      : 'Checking anonymous Live Agent data';
+    const agentStatusStyle = status => status==='Online'
+      ? pillStyle(SAGE_BG,SAGE_DARK)
+      : status==='Busy' || status==='Reviewing'
+        ? pillStyle(AMBER_BG,AMBER)
+        : status==='Away'
+          ? pillStyle(GRAY_BG,INK_MUTED)
+          : pillStyle('#F3F1EC','#91897A');
+    const formatAgentTime = value => {
+      if(!value) return 'Not recorded';
+      const diffMinutes = Math.max(0,Math.round((Date.now()-new Date(value).getTime())/60000));
+      if(diffMinutes<2) return 'Just now';
+      if(diffMinutes<60) return `${diffMinutes}m ago`;
+      const hours=Math.round(diffMinutes/60);
+      return hours<24?`${hours}h ago`:`${Math.round(hours/24)}d ago`;
+    };
+    const liveAgentCards = [...liveAgentPresenceRows]
+      .sort((a,b)=>['Rebecca','Yihui','Fiverr','Mun'].indexOf(a.display_name)-['Rebecca','Yihui','Fiverr','Mun'].indexOf(b.display_name))
+      .map(agent=>{
+        const owned = liveAgentAssignmentRows.filter(row=>row.owner===agent.display_name && row.assignment_status!=='Closed');
+        const overdue = owned.filter(row=>row.is_overdue).length;
+        const agentKpi = latestKpiRows.find(row=>row.owner===agent.display_name);
+        return {
+          name:agent.display_name,
+          role:agent.role_label,
+          coverage:agent.coverage,
+          status:agent.status,
+          statusStyle:agentStatusStyle(agent.status),
+          assigned:owned.length,
+          overdue,
+          ba:agentKpi ? `${agentKpi.ba_actual}/${agentKpi.ba_target||'—'}` : '—',
+          currentCase:agent.current_demo_case_id || 'None',
+          lastSeen:formatAgentTime(agent.last_seen_at),
+          cardStyle:`background:#fff;border:1px solid ${agent.status==='Online'||agent.status==='Busy'||agent.status==='Reviewing'?SAGE:BORDER};border-radius:12px;padding:14px;`
+        };
+      });
+    const liveAgentCardCols = isMobile ? '1fr' : 'repeat(4,minmax(0,1fr))';
+    const liveAgentControlCols = isMobile ? '1fr' : '1fr 1fr';
+    const currentPresence = liveAgentPresenceRows.find(row=>row.display_name===currentCso) || liveAgentPresenceRows[0] || {status:'Offline'};
+    const currentAgentStatus = currentPresence.status || 'Offline';
+    const onCurrentAgentStatusChange = e => this.updateCurrentAgentPresence(e.target.value);
+    const selectedAssignmentCase = liveAgentAssignmentRows.some(row=>row.demo_case_id===s.selectedAssignmentCase)
+      ? s.selectedAssignmentCase
+      : liveAgentAssignmentRows[0]?.demo_case_id || 'DEMO-001';
+    const selectedAssignment = liveAgentAssignmentRows.find(row=>row.demo_case_id===selectedAssignmentCase) || fallbackAssignments[0];
+    const assignmentTarget = ['Mun','Rebecca','Yihui','Fiverr'].includes(s.assignmentTarget) ? s.assignmentTarget : currentCso;
+    const onAssignmentCaseChange = e => this.setState({selectedAssignmentCase:e.target.value});
+    const onAssignmentTargetChange = e => this.setState({assignmentTarget:e.target.value});
+    const takeSelectedCase = () => this.assignDemoCase(currentCso,true);
+    const assignSelectedCase = () => this.assignDemoCase(assignmentTarget,false);
+    const takeCaseButtonStyle = selectedAssignment.owner==='Unassigned' && !s.agentActionBusy
+      ? `background:${SAGE};color:#fff;border:none;padding:10px 14px;border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;`
+      : `background:${GRAY_BG};color:#A8A192;border:none;padding:10px 14px;border-radius:8px;font-size:12.5px;font-weight:600;cursor:not-allowed;`;
+    const assignCaseButtonStyle = s.agentActionBusy
+      ? `background:${GRAY_BG};color:#A8A192;border:none;padding:10px 14px;border-radius:8px;font-size:12.5px;font-weight:600;cursor:not-allowed;`
+      : `background:#fff;color:${SAGE_DARK};border:1px solid ${SAGE};padding:10px 14px;border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;`;
+    const fallbackEvents = [
+      {demo_case_id:'DEMO-006',event_type:'STATUS_CHANGE',actor:'Mun',from_owner:'Unassigned',to_owner:'Unassigned',created_at:new Date(Date.now()-3*60000).toISOString()},
+      {demo_case_id:'DEMO-004',event_type:'ASSIGN',actor:'Mun',from_owner:'Unassigned',to_owner:'Mun',created_at:new Date(Date.now()-10*60000).toISOString()},
+      {demo_case_id:'DEMO-002',event_type:'TRANSFER',actor:'Mun',from_owner:'Mun',to_owner:'Rebecca',created_at:new Date(Date.now()-25*60000).toISOString()},
+    ];
+    const eventLabel = type => ({
+      TAKE_CASE:'took the case',
+      ASSIGN:'assigned the case',
+      TRANSFER:'transferred the case',
+      STATUS_CHANGE:'updated the case',
+      PRESENCE_CHANGE:'updated agent status'
+    })[type] || 'updated the case';
+    const liveAgentActivityRows = (Array.isArray(s.agentEventRows) && s.agentEventRows.length ? s.agentEventRows : fallbackEvents)
+      .slice(0,8)
+      .map(event=>({
+        caseId:event.demo_case_id,
+        action:`${event.actor} ${eventLabel(event.event_type)}`,
+        route:event.from_owner && event.to_owner && event.from_owner!==event.to_owner ? `${event.from_owner} → ${event.to_owner}` : event.to_owner || event.from_owner || '—',
+        time:formatAgentTime(event.created_at),
+        style:event.event_type==='TRANSFER'?pillStyle(AMBER_BG,AMBER):pillStyle(SAGE_BG,SAGE_DARK)
+      }));
     const dashCols = isMobile ? '1fr' : '1fr 1fr';
 
     const tq = (s.templateSearch || '').trim().toLowerCase();
@@ -2553,7 +2890,7 @@ class Component extends DCLogic {
       rootStyle, pagePadding, isMobile, currentCso, currentCsoInitials, onCsoChange,
       navBtnStyleAsk, navBtnStyleInbox, navBtnStyleTemplates, navBtnStyleKnowledge, navBtnStyleDash,
       goToAsk, goToInbox, goToTemplates, goToKnowledge, goToDashboard, goToIntegration,
-      openBackendEditor, openLiveCasesSheet, refreshBackendAnswers, refreshDashboardData,
+      openBackendEditor, openLiveCasesSheet, refreshBackendAnswers, refreshDashboardData, refreshLiveAgentData,
       toast: s.toast, isAsk: s.view==='ask', isInbox: s.view==='inbox', isTemplates: s.view==='templates',
       isKnowledge: s.view==='knowledge', isDashboard: s.view==='dashboard', isDetail: s.view==='detail', isIntegration: s.view==='integration',
       approvedSearchQuery:s.approvedSearchQuery, onApprovedSearchChange:(e)=>this.setState({approvedSearchQuery:e.target.value}),
@@ -2566,6 +2903,13 @@ class Component extends DCLogic {
       selectedKnowledgePoints, selectedKnowledgeSource:selectedKnowledge.source, selectedKnowledgeStatusStyle,
       liveSourceStatus, liveStatusCols, backendGuide, backendGuideCols, dailyKpiRows,
       liveManagementSnapshot, liveManagementCols, livePrimaryAction:teamKpi.action,
+      liveAgentBackendLabel, liveAgentBackendStyle, liveAgentSyncLabel,
+      liveAgentCards, liveAgentCardCols, liveAgentControlCols,
+      currentAgentStatus, onCurrentAgentStatusChange,
+      selectedAssignmentCase, selectedAssignmentOwner:selectedAssignment.owner,
+      assignmentTarget, onAssignmentCaseChange, onAssignmentTargetChange,
+      takeSelectedCase, assignSelectedCase, takeCaseButtonStyle, assignCaseButtonStyle,
+      liveAgentActivityRows,
       toggleWorkflowDemo, workflowDemoButtonLabel:s.showWorkflowDemo?'Hide Workflow Demo':'View Anonymised Workflow Demo',
       showWorkflowDemo:s.showWorkflowDemo, noWorkflowDemo:!s.showWorkflowDemo,
       queueSummary, queueSummaryCols,
