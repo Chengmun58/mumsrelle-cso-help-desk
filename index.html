@@ -201,7 +201,7 @@
               <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px;">
                 <div style="background:#FBFAF7;border-radius:7px;padding:7px;"><div style="font-size:9px;color:#8A8272;">ASSIGNED</div><div style="font-weight:700;color:#2E2B26;margin-top:2px;">{{ agent.assigned }}</div></div>
                 <div style="background:#FBFAF7;border-radius:7px;padding:7px;"><div style="font-size:9px;color:#8A8272;">OVERDUE</div><div style="font-weight:700;color:#B3261E;margin-top:2px;">{{ agent.overdue }}</div></div>
-                <div style="background:#FBFAF7;border-radius:7px;padding:7px;"><div style="font-size:9px;color:#8A8272;">BA TODAY</div><div style="font-weight:700;color:#2E2B26;margin-top:2px;">{{ agent.ba }}</div></div>
+                <div style="background:#FBFAF7;border-radius:7px;padding:7px;"><div style="font-size:9px;color:#8A8272;">{{ agent.baLabel }}</div><div style="font-weight:700;color:#2E2B26;margin-top:2px;">{{ agent.ba }}</div></div>
               </div>
               <div style="font-size:10px;color:#8A8272;">Current: {{ agent.currentCase }} · {{ agent.lastSeen }}</div>
             </div>
@@ -451,9 +451,77 @@
         </sc-for>
       </div>
 
+      <sc-if value="{{ showCsoDailyUpdate }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#F8FAF7;border:1px solid #B9C9B7;border-radius:14px;padding:20px;margin-bottom:18px;">
+          <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-bottom:16px;">
+            <div>
+              <div style="font-family:'Lora',serif;font-size:19px;font-weight:600;color:#2E2B26;">My Daily Update · {{ currentCso }}</div>
+              <div style="font-size:11.5px;color:#6E6759;margin-top:4px;">{{ myDailyUpdateTargetText }} · Update only your own anonymous demo row.</div>
+            </div>
+            <div style="text-align:right;">
+              <span style="background:#EAF0E7;color:#4F6B54;font-size:10.5px;font-weight:700;padding:5px 8px;border-radius:6px;">BACKEND LOG ACTIVE</span>
+              <div style="font-size:10.5px;color:#8A8272;margin-top:6px;">{{ myDailyUpdateLastSaved }}</div>
+            </div>
+          </div>
+
+          <div style="font-size:10.5px;font-weight:700;color:#8A8272;letter-spacing:0.04em;margin-bottom:8px;">TODAY'S OPERATIONS</div>
+          <div style="display:grid;grid-template-columns:{{ myDailyUpdateOpsCols }};gap:10px;margin-bottom:16px;">
+            <label style="font-size:11px;color:#6E6759;">BA Actual
+              <input aria-label="My BA actual" type="number" min="0" step="1" value="{{ myUpdateBaActual }}" onChange="{{ onMyUpdateBaActualChange }}" style="{{ myDailyInputStyle }}">
+            </label>
+            <label style="font-size:11px;color:#6E6759;">Follow-up Due
+              <input aria-label="My follow-up due" type="number" min="0" step="1" value="{{ myUpdateFollowupDue }}" onChange="{{ onMyUpdateFollowupDueChange }}" style="{{ myDailyInputStyle }}">
+            </label>
+            <label style="font-size:11px;color:#6E6759;">Follow-up Completed
+              <input aria-label="My follow-up completed" type="number" min="0" step="1" value="{{ myUpdateFollowupCompleted }}" onChange="{{ onMyUpdateFollowupCompletedChange }}" style="{{ myDailyInputStyle }}">
+            </label>
+          </div>
+
+          <div style="font-size:10.5px;font-weight:700;color:#8A8272;letter-spacing:0.04em;margin-bottom:8px;">EXISTING CLIENT FUNNEL</div>
+          <div style="display:grid;grid-template-columns:{{ myDailyUpdateFunnelCols }};gap:10px;margin-bottom:16px;">
+            <label style="font-size:11px;color:#6E6759;">Contacted
+              <input aria-label="My existing contacted" type="number" min="0" step="1" value="{{ myUpdateExistingContacted }}" onChange="{{ onMyUpdateExistingContactedChange }}" style="{{ myDailyInputStyle }}">
+            </label>
+            <label style="font-size:11px;color:#6E6759;">Replied
+              <input aria-label="My existing replied" type="number" min="0" step="1" value="{{ myUpdateExistingReplied }}" onChange="{{ onMyUpdateExistingRepliedChange }}" style="{{ myDailyInputStyle }}">
+            </label>
+            <label style="font-size:11px;color:#6E6759;">Interested
+              <input aria-label="My existing interested" type="number" min="0" step="1" value="{{ myUpdateExistingInterested }}" onChange="{{ onMyUpdateExistingInterestedChange }}" style="{{ myDailyInputStyle }}">
+            </label>
+            <label style="font-size:11px;color:#6E6759;">BA Arranged
+              <input aria-label="My existing BA arranged" type="number" min="0" step="1" value="{{ myUpdateExistingBa }}" onChange="{{ onMyUpdateExistingBaChange }}" style="{{ myDailyInputStyle }}">
+            </label>
+            <label style="font-size:11px;color:#6E6759;">Attended
+              <input aria-label="My existing attended" type="number" min="0" step="1" value="{{ myUpdateExistingAttended }}" onChange="{{ onMyUpdateExistingAttendedChange }}" style="{{ myDailyInputStyle }}">
+            </label>
+            <label style="font-size:11px;color:#6E6759;">Attributed Sales (S$)
+              <input aria-label="My existing attributed sales" type="number" min="0" step="0.01" value="{{ myUpdateExistingSales }}" onChange="{{ onMyUpdateExistingSalesChange }}" style="{{ myDailyInputStyle }}">
+            </label>
+          </div>
+
+          <label style="display:block;font-size:11px;color:#6E6759;margin-bottom:12px;">Today's Action
+            <textarea aria-label="My daily action" maxlength="240" value="{{ myUpdateAction }}" onChange="{{ onMyUpdateActionChange }}" style="{{ myDailyActionStyle }}"></textarea>
+          </label>
+          <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;">
+            <div style="font-size:10.5px;color:#8A8272;line-height:1.45;">Saving recalculates Team totals and writes both old and new values to the private Supabase history.</div>
+            <button style="{{ saveMyDailyUpdateStyle }}" onClick="{{ saveMyDailyUpdate }}">{{ saveMyDailyUpdateLabel }}</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showManagementDailyReview }}" hint-placeholder-val="{{ true }}">
+        <div style="background:#F8FAF7;border:1px solid #B9C9B7;border-radius:14px;padding:18px 20px;margin-bottom:18px;display:flex;justify-content:space-between;gap:14px;align-items:center;flex-wrap:wrap;">
+          <div>
+            <div style="font-family:'Lora',serif;font-size:19px;font-weight:600;color:#2E2B26;">Management Review · Mun</div>
+            <div style="font-size:12px;color:#6E6759;margin-top:5px;line-height:1.5;">Mun has no BA assignment. Review team gaps, approvals, escalations and SOP improvements here; Rebecca, Yihui and Fiverr update their own operational rows.</div>
+          </div>
+          <span style="background:#EAF0E7;color:#4F6B54;font-size:10.5px;font-weight:700;padding:6px 9px;border-radius:6px;">MANAGEMENT · NO BA KPI</span>
+        </div>
+      </sc-if>
+
       <div style="background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:20px;margin-bottom:18px;overflow-x:auto;">
         <div style="font-weight:600;color:#2E2B26;margin-bottom:4px;">Team and Individual BA Ownership</div>
-        <div style="font-size:11.5px;color:#8A8272;margin-bottom:12px;">Team achievement never replaces Rebecca’s personal 4-BA target.</div>
+        <div style="font-size:11.5px;color:#8A8272;margin-bottom:12px;">Team achievement never replaces Rebecca’s personal 4-BA target. Mun is Management and has no BA KPI.</div>
         <div style="min-width:920px;">
           <div style="display:grid;grid-template-columns:0.8fr 1.25fr 0.65fr 0.65fr 0.65fr 0.9fr 2fr;padding:9px 0;font-size:10.5px;font-weight:700;color:#8A8272;text-transform:uppercase;">
             <div>Owner</div><div>Coverage</div><div>Target</div><div>Actual</div><div>Gap</div><div>Status</div><div>Action</div>
@@ -1806,6 +1874,7 @@ class Component extends DCLogic {
     approvedSearchQuery: '', approvedSearchHasRun: false, approvedMatchIds: [],
     backendAnswers: null, backendStatus: 'loading', backendLastSynced: null, backendError: '',
     backendKpiRows: null, kpiBackendStatus: 'loading', kpiLastSynced: null, kpiBackendError: '',
+    dailyUpdateDraft: {}, dailyUpdateSaving: false,
     answerUsageDaily: [], usageRecordedCount: 0,
     agentPresenceRows: null, agentAssignmentRows: null, agentEventRows: [],
     liveAgentBackendStatus: 'loading', liveAgentLastSynced: null, liveAgentError: '',
@@ -1911,7 +1980,7 @@ class Component extends DCLogic {
   async loadDashboardData(showSuccessToast = true){
     this.setState({ kpiBackendStatus:'loading', kpiBackendError:'' });
     try {
-      const kpiFields = 'id,kpi_date,owner,coverage,ba_target,ba_actual,followup_due,followup_completed,followup_target_pct,existing_contacted,existing_replied,existing_interested,existing_ba,existing_attended,existing_sales,approved_answer_uses,action,notes,is_demo,version,updated_at';
+      const kpiFields = 'id,kpi_date,owner,coverage,ba_target,ba_actual,followup_due,followup_completed,followup_target_pct,existing_contacted,existing_replied,existing_interested,existing_ba,existing_attended,existing_sales,approved_answer_uses,action,notes,is_demo,version,updated_by,last_submitted_at,updated_at';
       const usageFields = 'usage_date,answer_id,copy_count,last_used_at,is_demo';
       const [kpiResponse, usageResponse] = await Promise.all([
         fetch(`${SUPABASE_URL}/rest/v1/cso_helpdesk_daily_kpi?select=${kpiFields}&is_demo=eq.true&order=kpi_date.desc,owner.asc`, {
@@ -1943,6 +2012,92 @@ class Component extends DCLogic {
         kpiBackendError:error && error.message ? error.message : 'Unable to reach KPI backend'
       });
       if(showSuccessToast) this.showToast('KPI backend unavailable. Using the anonymous fallback snapshot.');
+    }
+  }
+
+  async saveMyDailyUpdate(){
+    const allowedOwners = ['Rebecca','Yihui','Fiverr'];
+    const owner = this.state.currentCso;
+    if(!allowedOwners.includes(owner) || this.state.dailyUpdateSaving) return;
+
+    const rows = Array.isArray(this.state.backendKpiRows) ? this.state.backendKpiRows : [];
+    const ownerRows = rows.filter(row=>row.owner===owner && row.is_demo===true)
+      .sort((a,b)=>String(b.kpi_date).localeCompare(String(a.kpi_date)));
+    const current = ownerRows[0];
+    if(!current){
+      this.showToast('No live demo KPI row is available for this CSO. Refresh KPI and try again.');
+      return;
+    }
+
+    const draft = this.state.dailyUpdateDraft || {};
+    const valueFor = field => Object.prototype.hasOwnProperty.call(draft,field) ? draft[field] : current[field];
+    const integerFields = [
+      'ba_actual','followup_due','followup_completed','existing_contacted',
+      'existing_replied','existing_interested','existing_ba','existing_attended'
+    ];
+    const payload = {};
+    for(const field of integerFields){
+      const raw = valueFor(field);
+      const value = Number(raw);
+      if(raw==='' || !Number.isInteger(value) || value<0){
+        this.showToast('Please enter whole numbers of 0 or above for all activity fields.');
+        return;
+      }
+      payload[field] = value;
+    }
+
+    const sales = Number(valueFor('existing_sales'));
+    if(valueFor('existing_sales')==='' || !Number.isFinite(sales) || sales<0){
+      this.showToast('Attributed Sales must be 0 or above.');
+      return;
+    }
+    payload.existing_sales = Math.round(sales*100)/100;
+    payload.action = String(valueFor('action') ?? '').trim();
+    payload.updated_by = owner;
+
+    if(payload.followup_completed > payload.followup_due){
+      this.showToast('Follow-up Completed cannot be higher than Follow-up Due.');
+      return;
+    }
+    if(payload.existing_replied > payload.existing_contacted ||
+       payload.existing_interested > payload.existing_replied ||
+       payload.existing_ba > payload.existing_interested ||
+       payload.existing_attended > payload.existing_ba){
+      this.showToast('Please keep the Existing Client funnel in order: Contacted ≥ Replied ≥ Interested ≥ BA ≥ Attended.');
+      return;
+    }
+    if(payload.action.length>240){
+      this.showToast('Today’s Action must be 240 characters or fewer.');
+      return;
+    }
+
+    this.setState({dailyUpdateSaving:true});
+    try {
+      const endpoint = `${SUPABASE_URL}/rest/v1/cso_helpdesk_daily_kpi?id=eq.${encodeURIComponent(current.id)}&version=eq.${encodeURIComponent(current.version)}&is_demo=eq.true`;
+      const response = await fetch(endpoint, {
+        method:'PATCH',
+        headers:{
+          apikey:SUPABASE_PUBLISHABLE_KEY,
+          Authorization:`Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
+          'Content-Type':'application/json',
+          Prefer:'return=representation'
+        },
+        body:JSON.stringify(payload)
+      });
+      if(!response.ok) throw new Error(`Daily update returned ${response.status}`);
+      const updatedRows = await response.json();
+      if(!Array.isArray(updatedRows) || updatedRows.length!==1){
+        throw new Error('This row changed after it was loaded. Refresh and try again.');
+      }
+      this.setState({dailyUpdateDraft:{}});
+      await this.loadDashboardData(false);
+      this.showToast(`${owner} daily update saved. Team totals recalculated and backend history recorded.`);
+    } catch (error) {
+      this.showToast(error && error.message && error.message.includes('changed after')
+        ? error.message
+        : 'Unable to save the daily update. Refresh KPI and try again.');
+    } finally {
+      this.setState({dailyUpdateSaving:false});
     }
   }
 
@@ -2138,7 +2293,7 @@ class Component extends DCLogic {
     const onCsoChange = (e) => {
       const nextCso = CSO_NAMES.includes(e.target.value) ? e.target.value : 'Mun';
       try { window.localStorage.setItem('mumsrelle-current-cso', nextCso); } catch (_) {}
-      this.setState({ currentCso: nextCso, assignmentTarget: nextCso });
+      this.setState({ currentCso: nextCso, assignmentTarget: nextCso, dailyUpdateDraft:{} });
       this.showToast(`Working as ${nextCso}.`);
     };
     const rootStyle = `background:${IVORY};min-height:100vh;color:${INK};padding-bottom:80px;`;
@@ -2507,14 +2662,64 @@ class Component extends DCLogic {
     ].map(x=>({...x,style:`background:#fff;border:1px solid ${BORDER};border-radius:14px;padding:17px;`}));
     const dailySummaryCols = isMobile ? 'repeat(2,minmax(0,1fr))' : 'repeat(4,minmax(0,1fr))';
     const kpiCols = isMobile ? 'repeat(2,minmax(0,1fr))' : 'repeat(4,minmax(0,1fr))';
+    const editableCsoNames = ['Rebecca','Yihui','Fiverr'];
+    const showCsoDailyUpdate = editableCsoNames.includes(currentCso);
+    const showManagementDailyReview = currentCso==='Mun';
+    const myDailyRow = latestKpiRows.find(r=>r.owner===currentCso);
+    const draftValue = field => {
+      if(Object.prototype.hasOwnProperty.call(s.dailyUpdateDraft||{},field)) return String(s.dailyUpdateDraft[field]);
+      return String(myDailyRow?.[field] ?? (field==='action' ? '' : 0));
+    };
+    const updateDailyDraft = field => e => {
+      const value = e.target.value;
+      this.setState(prev=>({dailyUpdateDraft:{...(prev.dailyUpdateDraft||{}),[field]:value}}));
+    };
+    const myUpdateBaActual = draftValue('ba_actual');
+    const myUpdateFollowupDue = draftValue('followup_due');
+    const myUpdateFollowupCompleted = draftValue('followup_completed');
+    const myUpdateExistingContacted = draftValue('existing_contacted');
+    const myUpdateExistingReplied = draftValue('existing_replied');
+    const myUpdateExistingInterested = draftValue('existing_interested');
+    const myUpdateExistingBa = draftValue('existing_ba');
+    const myUpdateExistingAttended = draftValue('existing_attended');
+    const myUpdateExistingSales = draftValue('existing_sales');
+    const myUpdateAction = draftValue('action');
+    const onMyUpdateBaActualChange = updateDailyDraft('ba_actual');
+    const onMyUpdateFollowupDueChange = updateDailyDraft('followup_due');
+    const onMyUpdateFollowupCompletedChange = updateDailyDraft('followup_completed');
+    const onMyUpdateExistingContactedChange = updateDailyDraft('existing_contacted');
+    const onMyUpdateExistingRepliedChange = updateDailyDraft('existing_replied');
+    const onMyUpdateExistingInterestedChange = updateDailyDraft('existing_interested');
+    const onMyUpdateExistingBaChange = updateDailyDraft('existing_ba');
+    const onMyUpdateExistingAttendedChange = updateDailyDraft('existing_attended');
+    const onMyUpdateExistingSalesChange = updateDailyDraft('existing_sales');
+    const onMyUpdateActionChange = updateDailyDraft('action');
+    const saveMyDailyUpdate = () => this.saveMyDailyUpdate();
+    const myDailyUpdateTargetText = currentCso==='Rebecca'
+      ? `Personal BA target: ${myDailyRow?.ba_target || 4}`
+      : 'BA target: as assigned during weekend, public-holiday or leave cover';
+    const myDailyUpdateLastSaved = myDailyRow?.last_submitted_at
+      ? `Last saved ${new Date(myDailyRow.last_submitted_at).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Kuala_Lumpur'})} by ${myDailyRow.updated_by || currentCso}`
+      : 'No CSO submission recorded yet';
+    const myDailyInputStyle = `display:block;width:100%;box-sizing:border-box;margin-top:5px;padding:9px 10px;border:1px solid ${BORDER};border-radius:8px;background:#fff;color:${INK};font-size:13px;outline:none;`;
+    const myDailyActionStyle = `display:block;width:100%;box-sizing:border-box;min-height:70px;margin-top:5px;padding:10px;border:1px solid ${BORDER};border-radius:8px;background:#fff;color:${INK};font-size:13px;line-height:1.45;resize:vertical;outline:none;`;
+    const saveMyDailyUpdateStyle = s.dailyUpdateSaving
+      ? `background:${GRAY_BG};color:#A8A192;border:none;padding:10px 15px;border-radius:9px;font-size:12.5px;font-weight:600;cursor:not-allowed;`
+      : `background:${SAGE};color:#fff;border:none;padding:10px 15px;border-radius:9px;font-size:12.5px;font-weight:600;cursor:pointer;`;
+    const saveMyDailyUpdateLabel = s.dailyUpdateSaving ? 'Saving…' : 'Save Daily Update';
+    const myDailyUpdateOpsCols = isMobile ? '1fr' : 'repeat(3,minmax(0,1fr))';
+    const myDailyUpdateFunnelCols = isMobile ? 'repeat(2,minmax(0,1fr))' : 'repeat(6,minmax(0,1fr))';
     const dailyKpiRows = latestKpiRows.map(r=>{
       const target=Number(r.ba_target||0), actual=Number(r.ba_actual||0), gap=Math.max(target-actual,0);
-      const status = target>0 ? (gap===0?'Achieved':`Gap ${gap}`) : (actual>0?'Contributed':'Support');
+      const isManagement = r.owner==='Mun';
+      const status = isManagement ? 'Management' : target>0 ? (gap===0?'Achieved':`Gap ${gap}`) : (actual>0?'Contributed':'Support');
       return {
-        name:r.owner, coverage:r.coverage, target:target>0?String(target):'As assigned', actual:String(actual),
-        gap:target>0?String(gap):'—', action:r.action,
+        name:r.owner, coverage:r.coverage,
+        target:isManagement?'N/A':target>0?String(target):'As assigned',
+        actual:isManagement?'N/A':String(actual),
+        gap:isManagement?'—':target>0?String(gap):'—', action:r.action,
         rowStyle:`display:grid;grid-template-columns:0.8fr 1.25fr 0.65fr 0.65fr 0.65fr 0.9fr 2fr;padding:12px 0;border-top:1px solid ${BORDER};font-size:12.5px;color:${INK};align-items:center;background:${r.owner==='Team'?'#FBFAF7':'transparent'};`,
-        status, statusStyle:status==='Achieved'?pillStyle(SAGE_BG,SAGE_DARK):status.startsWith('Gap')?pillStyle(RED_BG,RED):pillStyle(GRAY_BG,INK_MUTED)
+        status, statusStyle:status==='Achieved'||status==='Management'?pillStyle(SAGE_BG,SAGE_DARK):status.startsWith('Gap')?pillStyle(RED_BG,RED):pillStyle(GRAY_BG,INK_MUTED)
       };
     });
     const existingFunnelStages = [
@@ -2590,7 +2795,8 @@ class Component extends DCLogic {
           statusStyle:agentStatusStyle(agent.status),
           assigned:owned.length,
           overdue,
-          ba:agentKpi ? `${agentKpi.ba_actual}/${agentKpi.ba_target||'—'}` : '—',
+          baLabel:agent.display_name==='Mun' ? 'ROLE' : 'BA TODAY',
+          ba:agent.display_name==='Mun' ? 'Management' : agentKpi ? `${agentKpi.ba_actual}/${agentKpi.ba_target||'—'}` : '—',
           currentCase:agent.current_demo_case_id || 'None',
           lastSeen:formatAgentTime(agent.last_seen_at),
           cardStyle:`background:#fff;border:1px solid ${agent.status==='Online'||agent.status==='Busy'||agent.status==='Reviewing'?SAGE:BORDER};border-radius:12px;padding:14px;`
@@ -2902,6 +3108,15 @@ class Component extends DCLogic {
       selectedKnowledgeTitle:selectedKnowledge.title, selectedKnowledgeIntro:selectedKnowledge.intro,
       selectedKnowledgePoints, selectedKnowledgeSource:selectedKnowledge.source, selectedKnowledgeStatusStyle,
       liveSourceStatus, liveStatusCols, backendGuide, backendGuideCols, dailyKpiRows,
+      showCsoDailyUpdate, showManagementDailyReview, myDailyUpdateTargetText, myDailyUpdateLastSaved,
+      myUpdateBaActual, myUpdateFollowupDue, myUpdateFollowupCompleted,
+      myUpdateExistingContacted, myUpdateExistingReplied, myUpdateExistingInterested,
+      myUpdateExistingBa, myUpdateExistingAttended, myUpdateExistingSales, myUpdateAction,
+      onMyUpdateBaActualChange, onMyUpdateFollowupDueChange, onMyUpdateFollowupCompletedChange,
+      onMyUpdateExistingContactedChange, onMyUpdateExistingRepliedChange, onMyUpdateExistingInterestedChange,
+      onMyUpdateExistingBaChange, onMyUpdateExistingAttendedChange, onMyUpdateExistingSalesChange,
+      onMyUpdateActionChange, saveMyDailyUpdate, saveMyDailyUpdateStyle, saveMyDailyUpdateLabel,
+      myDailyInputStyle, myDailyActionStyle, myDailyUpdateOpsCols, myDailyUpdateFunnelCols,
       liveManagementSnapshot, liveManagementCols, livePrimaryAction:teamKpi.action,
       liveAgentBackendLabel, liveAgentBackendStyle, liveAgentSyncLabel,
       liveAgentCards, liveAgentCardCols, liveAgentControlCols,
